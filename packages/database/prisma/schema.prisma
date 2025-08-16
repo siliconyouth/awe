@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  path        String   @unique
+  type        String   // ProjectType enum
+  languages   String[] // Array of Language enums
+  frameworks  String[] // Array of Framework enums
+  
+  // Analysis data
+  fileCount           Int
+  codeComplexity      Float
+  maintainabilityScore Float
+  testCoverage        Float?
+  
+  // Performance metrics
+  bundleSize  Int?
+  loadTime    Int?
+  lighthouse  Int?
+  
+  // Claude integration
+  hasClaudeMd        Boolean @default(false)
+  hasMemoryFile      Boolean @default(false)
+  optimizationLevel  Float   @default(0)
+  
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  dependencies    ProjectDependency[]
+  recommendations Recommendation[]
+  templates       ProjectTemplate[]
+  
+  @@map("projects")
+}
+
+model ProjectDependency {
+  id        String  @id @default(cuid())
+  projectId String
+  name      String
+  version   String
+  type      String  // "dependency" | "devDependency" | "peerDependency"
+  
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, name])
+  @@map("project_dependencies")
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  category    String
+  tags        String[]
+  type        String   // ProjectType enum
+  framework   String?  // Framework enum
+  language    String   // Language enum
+  
+  // Template content
+  files       Json     // Record<string, string> - filename -> content
+  metadata    Json     // Metadata object
+  requirements Json?   // Requirements object
+  
+  // Analytics
+  usageCount  Int      @default(0)
+  rating      Float?   @default(0)
+  
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  projects ProjectTemplate[]
+  
+  @@map("templates")
+}
+
+model ProjectTemplate {
+  id         String @id @default(cuid())
+  projectId  String
+  templateId String
+  
+  project  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  template Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, templateId])
+  @@map("project_templates")
+}
+
+model Recommendation {
+  id          String   @id @default(cuid())
+  projectId   String
+  type        String   // "performance" | "security" | "maintainability" | "testing" | "accessibility"
+  priority    String   // "low" | "medium" | "high" | "critical"
+  title       String
+  description String
+  effort      String   // "low" | "medium" | "high"
+  impact      String   // "low" | "medium" | "high"
+  
+  // Status
+  status      String   @default("pending") // "pending" | "applied" | "dismissed"
+  appliedAt   DateTime?
+  
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@map("recommendations")
+}
+
+model AnalysisCache {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  data        Json
+  expiresAt   DateTime
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([expiresAt])
+  @@map("analysis_cache")
+}
+
+model UserConfig {
+  id     String @id @default(cuid())
+  userId String @unique
+  config Json
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("user_configs")
+}
+
+model TelemetryEvent {
+  id        String   @id @default(cuid())
+  event     String
+  userId    String?
+  projectId String?
+  data      Json?
+  
+  createdAt DateTime @default(now())
+  
+  @@index([event])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("telemetry_events")
+}

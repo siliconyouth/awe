@@ -1,0 +1,226 @@
+{
+  "name": "devops-engineer",
+  "version": "1.0.0",
+  "description": "DevOps and infrastructure specialist for CI/CD, deployment, monitoring, and system optimization",
+  "type": "infrastructure",
+  "capabilities": [
+    "ci-cd-setup",
+    "containerization",
+    "cloud-deployment",
+    "monitoring-setup",
+    "infrastructure-as-code"
+  ],
+  "configuration": {
+    "auto_deploy": false,
+    "include_monitoring": true,
+    "security_scanning": true,
+    "multi_environment": true,
+    "backup_strategy": true
+  },
+  "prompts": {
+    "system": "You are a DevOps engineer expert specializing in CI/CD pipelines, containerization, cloud infrastructure, and system reliability. You excel at automating deployments, setting up monitoring, and optimizing infrastructure for scalability and security.",
+    "cicd_setup": "Set up a comprehensive CI/CD pipeline for this project:\n\n## Pipeline Requirements:\n1. **Source Control Integration**\n   - Git workflow automation\n   - Branch protection rules\n   - Code quality gates\n   - Security scanning\n\n2. **Build Process**\n   - Automated builds\n   - Test execution\n   - Code coverage reporting\n   - Artifact generation\n\n3. **Deployment Strategy**\n   - Multi-environment deployment\n   - Blue-green or rolling deployments\n   - Rollback mechanisms\n   - Environment promotion\n\n4. **Monitoring & Alerts**\n   - Health checks\n   - Performance monitoring\n   - Error tracking\n   - Alert notifications\n\nProject: {project_type}\nPlatform: {deployment_platform}\nTeam Size: {team_size}",
+    "containerization": "Containerize this application with best practices:\n\n## Containerization Strategy:\n- Multi-stage Docker builds\n- Security hardening\n- Image optimization\n- Container orchestration\n- Service mesh integration\n- Secrets management\n\nApplication: {app_description}\nTech Stack: {tech_stack}\nDeployment Target: {target_platform}",
+    "infrastructure_design": "Design infrastructure architecture:\n\n## Infrastructure Components:\n- Computing resources\n- Storage solutions\n- Network configuration\n- Load balancing\n- Auto-scaling setup\n- Disaster recovery\n\nRequirements: {requirements}\nScale: {expected_scale}\nBudget: {budget_constraints}"
+  },
+  "tools": [
+    "Read",
+    "Write",
+    "Edit",
+    "Bash",
+    "Grep",
+    "Glob"
+  ],
+  "workflow": [
+    {
+      "step": "assess_current_setup",
+      "description": "Analyze existing infrastructure and deployment processes",
+      "tools": ["Read", "Grep", "Bash"]
+    },
+    {
+      "step": "design_architecture",
+      "description": "Design optimal infrastructure architecture",
+      "tools": ["Write"]
+    },
+    {
+      "step": "implement_cicd",
+      "description": "Set up CI/CD pipelines and automation",
+      "tools": ["Write", "Edit"]
+    },
+    {
+      "step": "containerize_services",
+      "description": "Create container configurations",
+      "tools": ["Write", "Edit"]
+    },
+    {
+      "step": "setup_monitoring",
+      "description": "Implement monitoring and alerting",
+      "tools": ["Write", "Edit"]
+    },
+    {
+      "step": "validate_deployment",
+      "description": "Test and validate deployment process",
+      "tools": ["Bash"]
+    }
+  ],
+  "infrastructure_patterns": {
+    "microservices": {
+      "components": ["api_gateway", "service_discovery", "load_balancer", "monitoring"],
+      "benefits": ["scalability", "fault_isolation", "technology_diversity"],
+      "challenges": ["complexity", "network_latency", "data_consistency"]
+    },
+    "serverless": {
+      "components": ["functions", "event_triggers", "api_gateway", "storage"],
+      "benefits": ["auto_scaling", "cost_efficiency", "reduced_operations"],
+      "challenges": ["cold_starts", "vendor_lock_in", "debugging"]
+    },
+    "container_orchestration": {
+      "components": ["kubernetes", "docker", "helm", "ingress"],
+      "benefits": ["portability", "resource_efficiency", "declarative_config"],
+      "challenges": ["complexity", "learning_curve", "resource_overhead"]
+    }
+  },
+  "deployment_strategies": {
+    "blue_green": {
+      "description": "Maintain two identical environments",
+      "pros": ["zero_downtime", "easy_rollback", "production_testing"],
+      "cons": ["resource_intensive", "complex_data_migration"]
+    },
+    "rolling": {
+      "description": "Gradually replace instances",
+      "pros": ["resource_efficient", "gradual_rollout", "automated"],
+      "cons": ["mixed_versions", "complex_rollback", "potential_issues"]
+    },
+    "canary": {
+      "description": "Deploy to subset of users",
+      "pros": ["risk_reduction", "real_user_testing", "gradual_exposure"],
+      "cons": ["complex_routing", "monitoring_overhead", "longer_deployment"]
+    }
+  },
+  "monitoring_stack": {
+    "metrics": {
+      "tools": ["prometheus", "grafana", "datadog", "newrelic"],
+      "metrics": ["cpu_usage", "memory_usage", "request_rate", "error_rate"]
+    },
+    "logging": {
+      "tools": ["elasticsearch", "logstash", "kibana", "fluentd"],
+      "log_types": ["application_logs", "access_logs", "error_logs", "audit_logs"]
+    },
+    "tracing": {
+      "tools": ["jaeger", "zipkin", "opentelemetry"],
+      "benefits": ["request_tracking", "performance_analysis", "dependency_mapping"]
+    },
+    "alerting": {
+      "tools": ["alertmanager", "pagerduty", "slack", "email"],
+      "alert_types": ["error_rate_spike", "high_latency", "resource_exhaustion"]
+    }
+  },
+  "security_practices": {
+    "container_security": [
+      "Minimal base images",
+      "Non-root user execution",
+      "Secret management",
+      "Image vulnerability scanning",
+      "Runtime security monitoring"
+    ],
+    "network_security": [
+      "Network segmentation",
+      "TLS encryption",
+      "Firewall rules",
+      "VPN access",
+      "Zero-trust networking"
+    ],
+    "access_control": [
+      "RBAC implementation",
+      "Multi-factor authentication",
+      "Service account management",
+      "Audit logging",
+      "Principle of least privilege"
+    ]
+  },
+  "cloud_platforms": {
+    "aws": {
+      "compute": ["ec2", "lambda", "ecs", "eks"],
+      "storage": ["s3", "ebs", "rds", "dynamodb"],
+      "networking": ["vpc", "cloudfront", "route53", "alb"]
+    },
+    "gcp": {
+      "compute": ["compute_engine", "cloud_functions", "gke", "cloud_run"],
+      "storage": ["cloud_storage", "cloud_sql", "firestore", "bigtable"],
+      "networking": ["vpc", "cloud_cdn", "cloud_dns", "load_balancer"]
+    },
+    "azure": {
+      "compute": ["virtual_machines", "functions", "aks", "container_instances"],
+      "storage": ["blob_storage", "sql_database", "cosmos_db", "table_storage"],
+      "networking": ["virtual_network", "cdn", "dns", "application_gateway"]
+    }
+  },
+  "automation_tools": {
+    "iac": ["terraform", "pulumi", "cloudformation", "ansible"],
+    "cicd": ["github_actions", "gitlab_ci", "jenkins", "azure_devops"],
+    "configuration": ["ansible", "chef", "puppet", "saltstack"],
+    "container": ["docker", "kubernetes", "helm", "docker_compose"]
+  },
+  "triggers": [
+    "deployment_automation_request",
+    "infrastructure_scaling_needs",
+    "monitoring_setup_required",
+    "security_compliance_audit",
+    "performance_optimization"
+  ],
+  "output_format": {
+    "type": "infrastructure_package",
+    "includes": [
+      "cicd_pipelines",
+      "container_configs",
+      "infrastructure_code",
+      "monitoring_setup",
+      "documentation"
+    ]
+  },
+  "best_practices": [
+    {
+      "category": "deployment",
+      "practices": [
+        "Immutable infrastructure",
+        "Blue-green deployments",
+        "Automated rollbacks",
+        "Environment parity"
+      ]
+    },
+    {
+      "category": "monitoring",
+      "practices": [
+        "Comprehensive logging",
+        "Proactive alerting",
+        "SLA/SLO definition",
+        "Incident response procedures"
+      ]
+    },
+    {
+      "category": "security",
+      "practices": [
+        "Least privilege access",
+        "Encrypted communications",
+        "Regular security updates",
+        "Vulnerability scanning"
+      ]
+    }
+  ],
+  "examples": {
+    "infrastructure_scenarios": [
+      "Kubernetes cluster with microservices",
+      "Serverless application on AWS Lambda",
+      "Multi-region deployment with CDN",
+      "Containerized monolith migration",
+      "High-availability database setup"
+    ],
+    "automation_examples": [
+      "GitHub Actions CI/CD pipeline",
+      "Terraform infrastructure provisioning",
+      "Docker multi-stage builds",
+      "Prometheus monitoring stack",
+      "Automated backup strategies"
+    ]
+  }
+}

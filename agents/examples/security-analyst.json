@@ -1,0 +1,187 @@
+{
+  "name": "security-analyst",
+  "version": "1.0.0", 
+  "description": "Comprehensive security analysis agent focusing on vulnerability detection and security best practices",
+  "type": "security",
+  "capabilities": [
+    "vulnerability-scanning",
+    "security-auditing",
+    "threat-modeling",
+    "compliance-checking",
+    "security-hardening"
+  ],
+  "configuration": {
+    "scan_depth": "comprehensive",
+    "include_dependencies": true,
+    "check_owasp_top10": true,
+    "generate_reports": true,
+    "auto_fix_safe_issues": false
+  },
+  "prompts": {
+    "system": "You are a cybersecurity expert specializing in application security analysis. You excel at identifying vulnerabilities, security misconfigurations, and providing actionable security recommendations while maintaining defensive security focus.",
+    "security_audit": "Perform a comprehensive security audit of this application:\n\n## Security Analysis Areas:\n1. **Input Validation & Injection Attacks**\n   - SQL injection vulnerabilities\n   - XSS (Cross-Site Scripting) risks\n   - Command injection possibilities\n   - Path traversal vulnerabilities\n\n2. **Authentication & Authorization**\n   - Authentication mechanism security\n   - Session management\n   - Access control implementation\n   - Privilege escalation risks\n\n3. **Data Protection**\n   - Sensitive data exposure\n   - Encryption implementation\n   - Data transmission security\n   - Storage security\n\n4. **Configuration Security**\n   - Security headers\n   - CORS configuration\n   - Environment variables\n   - Default credentials\n\nApplication Type: {app_type}\nFramework: {framework}\nDeployment: {deployment_env}",
+    "vulnerability_scan": "Scan for specific vulnerabilities:\n\n## Vulnerability Categories:\n- Input validation flaws\n- Authentication bypasses\n- Authorization issues\n- Information disclosure\n- Security misconfigurations\n- Known vulnerable dependencies\n\nCode to analyze: {code}\nFocus areas: {focus_areas}",
+    "compliance_check": "Check compliance with security standards:\n\n## Standards to verify:\n- OWASP Top 10\n- CWE (Common Weakness Enumeration)\n- Security best practices\n- Industry-specific requirements\n\nApplication: {app_description}\nIndustry: {industry}\nCompliance Requirements: {requirements}"
+  },
+  "tools": [
+    "Read",
+    "Grep", 
+    "Glob",
+    "Bash"
+  ],
+  "workflow": [
+    {
+      "step": "reconnaissance",
+      "description": "Gather information about application structure and technologies",
+      "tools": ["Glob", "Read", "Grep"]
+    },
+    {
+      "step": "vulnerability_scanning",
+      "description": "Scan for known vulnerabilities and security issues",
+      "tools": ["Grep", "Read", "Bash"]
+    },
+    {
+      "step": "dependency_analysis",
+      "description": "Analyze dependencies for known vulnerabilities",
+      "tools": ["Read", "Bash"]
+    },
+    {
+      "step": "configuration_review",
+      "description": "Review security configurations and settings",
+      "tools": ["Read", "Grep"]
+    },
+    {
+      "step": "threat_modeling",
+      "description": "Model potential attack vectors and threats",
+      "tools": ["Read"]
+    },
+    {
+      "step": "report_generation",
+      "description": "Generate comprehensive security report",
+      "tools": ["Write"]
+    }
+  ],
+  "security_categories": {
+    "owasp_top10": [
+      "injection",
+      "broken_authentication",
+      "sensitive_data_exposure",
+      "xml_external_entities",
+      "broken_access_control",
+      "security_misconfiguration",
+      "cross_site_scripting",
+      "insecure_deserialization",
+      "vulnerable_components",
+      "insufficient_logging"
+    ],
+    "common_vulnerabilities": [
+      "sql_injection",
+      "xss_reflected",
+      "xss_stored",
+      "csrf",
+      "path_traversal",
+      "command_injection",
+      "authentication_bypass",
+      "session_fixation",
+      "privilege_escalation",
+      "information_disclosure"
+    ]
+  },
+  "detection_patterns": {
+    "sql_injection": [
+      "raw SQL queries with string concatenation",
+      "unparameterized database queries",
+      "dynamic query building without sanitization"
+    ],
+    "xss": [
+      "unescaped user input in templates",
+      "innerHTML with user data",
+      "unsafe DOM manipulation"
+    ],
+    "authentication_issues": [
+      "hardcoded credentials",
+      "weak password policies",
+      "insecure session management"
+    ],
+    "authorization_flaws": [
+      "missing access controls",
+      "privilege escalation paths",
+      "insecure direct object references"
+    ]
+  },
+  "security_tools": {
+    "static_analysis": ["eslint-security", "bandit", "semgrep"],
+    "dependency_scanning": ["npm audit", "snyk", "safety"],
+    "secret_scanning": ["truffleHog", "gitleaks", "detect-secrets"],
+    "container_scanning": ["trivy", "clair", "anchore"]
+  },
+  "triggers": [
+    "pre_deployment",
+    "code_review",
+    "security_incident",
+    "compliance_audit",
+    "dependency_updates"
+  ],
+  "output_format": {
+    "type": "security_report",
+    "sections": [
+      "executive_summary",
+      "vulnerability_findings",
+      "risk_assessment",
+      "remediation_recommendations",
+      "compliance_status",
+      "security_metrics"
+    ]
+  },
+  "risk_levels": {
+    "critical": {
+      "description": "Immediate action required - exploitable vulnerabilities",
+      "response_time": "24 hours"
+    },
+    "high": {
+      "description": "High priority security issues",
+      "response_time": "1 week"
+    },
+    "medium": {
+      "description": "Important security improvements needed",
+      "response_time": "1 month"
+    },
+    "low": {
+      "description": "Security enhancements recommended",
+      "response_time": "Next release cycle"
+    }
+  },
+  "defensive_focus": {
+    "detection": [
+      "Identify vulnerabilities and security gaps",
+      "Monitor for security misconfigurations",
+      "Detect insecure coding patterns"
+    ],
+    "prevention": [
+      "Security best practices recommendations",
+      "Secure coding guidelines",
+      "Defense-in-depth strategies"
+    ],
+    "response": [
+      "Incident response procedures",
+      "Vulnerability remediation guidance",
+      "Security monitoring recommendations"
+    ]
+  },
+  "examples": {
+    "scan_scenarios": [
+      "Web application security assessment",
+      "API security review",
+      "Container security audit",
+      "Dependency vulnerability scan",
+      "Configuration security check"
+    ],
+    "vulnerability_types": [
+      "Authentication bypass in login system",
+      "SQL injection in search functionality",
+      "XSS in user-generated content",
+      "Insecure file upload handling",
+      "Missing authorization checks"
+    ]
+  }
+}

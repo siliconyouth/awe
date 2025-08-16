@@ -1,0 +1,422 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AWE Agent Configuration Schema",
+  "description": "Schema for validating AWE agent configuration files",
+  "type": "object",
+  "required": [
+    "name",
+    "version", 
+    "description",
+    "type"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "minLength": 3,
+      "maxLength": 50,
+      "description": "Agent name (lowercase, hyphen-separated)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version (e.g., 1.0.0)"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500,
+      "description": "Clear description of agent purpose and capabilities"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "analysis",
+        "implementation", 
+        "infrastructure",
+        "review",
+        "testing",
+        "documentation",
+        "security",
+        "optimization"
+      ],
+      "description": "Agent category type"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "minItems": 1,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "description": "List of agent capabilities"
+    },
+    "configuration": {
+      "type": "object",
+      "description": "Agent-specific configuration options",
+      "additionalProperties": true
+    },
+    "prompts": {
+      "type": "object",
+      "required": ["system"],
+      "properties": {
+        "system": {
+          "type": "string",
+          "minLength": 50,
+          "maxLength": 2000,
+          "description": "System prompt defining agent personality and role"
+        }
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 20,
+        "maxLength": 5000,
+        "description": "Task-specific prompts"
+      },
+      "description": "Prompt definitions for agent tasks"
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Read",
+          "Write", 
+          "Edit",
+          "Bash",
+          "Grep",
+          "Glob",
+          "LS",
+          "Task",
+          "WebFetch",
+          "WebSearch"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Claude Code tools available to this agent"
+    },
+    "workflow": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step", "description"],
+        "properties": {
+          "step": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "Workflow step identifier"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 200,
+            "description": "Step description"
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tools required for this step"
+          },
+          "depends_on": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ],
+            "description": "Dependencies on other workflow steps"
+          },
+          "parallel": {
+            "type": "boolean",
+            "description": "Whether this step can run in parallel with others"
+          },
+          "timeout": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 3600000,
+            "description": "Step timeout in milliseconds"
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Workflow steps definition"
+    },
+    "triggers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "pre_commit",
+          "post_commit",
+          "pull_request",
+          "manual_review",
+          "file_change",
+          "dependency_update",
+          "performance_regression",
+          "security_incident",
+          "deployment_request",
+          "feature_request",
+          "user_story",
+          "enhancement_request",
+          "new_feature_development",
+          "bug_fix_implementation",
+          "refactoring_activities",
+          "release_preparation",
+          "coverage_analysis_request",
+          "pre_deployment",
+          "code_review",
+          "compliance_audit",
+          "performance_degradation",
+          "slow_page_loads",
+          "high_server_response_times",
+          "database_slowdowns",
+          "user_complaints",
+          "new_api_endpoints",
+          "code_changes",
+          "feature_releases",
+          "documentation_requests"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Events that trigger agent activation"
+    },
+    "output_format": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "structured_report",
+            "code_files",
+            "configuration_files",
+            "test_suite_package",
+            "infrastructure_package",
+            "comprehensive_docs",
+            "security_report",
+            "performance_report",
+            "feature_implementation"
+          ],
+          "description": "Expected output format type"
+        },
+        "includes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Components included in output"
+        },
+        "sections": {
+          "type": "array", 
+          "items": {
+            "type": "string"
+          },
+          "description": "Report sections (for report outputs)"
+        }
+      },
+      "description": "Expected output format definition"
+    },
+    "quality_gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "criteria"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Quality gate name"
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Quality criteria that must be met"
+          },
+          "blocking": {
+            "type": "boolean",
+            "description": "Whether failure blocks workflow continuation"
+          }
+        }
+      },
+      "description": "Quality gates for agent execution"
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "success_criteria": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Criteria for measuring agent success"
+        },
+        "performance_targets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Performance targets and thresholds"
+        }
+      },
+      "description": "Agent metrics and success criteria"
+    },
+    "integration": {
+      "type": "object",
+      "properties": {
+        "git_hooks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["pre-commit", "post-commit", "pre-push", "post-receive"]
+          },
+          "description": "Git hooks integration points"
+        },
+        "ci_cd": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["github_actions", "gitlab_ci", "jenkins", "azure_devops", "circle_ci"]
+          },
+          "description": "CI/CD platform integrations"
+        },
+        "ide": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["vscode", "intellij", "sublime", "vim", "emacs"]
+          },
+          "description": "IDE integrations"
+        }
+      },
+      "description": "Integration configuration"
+    },
+    "examples": {
+      "type": "object",
+      "description": "Usage examples and scenarios",
+      "additionalProperties": true
+    },
+    "dependencies": {
+      "type": "object",
+      "properties": {
+        "agents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Other agents this agent depends on"
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "External tools required"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "External services required"
+        }
+      },
+      "description": "Agent dependencies"
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["read", "write", "execute", "network", "admin"]
+          },
+          "description": "Required permissions"
+        },
+        "sensitive_data": {
+          "type": "boolean",
+          "description": "Whether agent handles sensitive data"
+        },
+        "sandbox_required": {
+          "type": "boolean",
+          "description": "Whether agent should run in sandbox"
+        }
+      },
+      "description": "Security configuration"
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "timeout": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 3600000,
+          "description": "Default timeout in milliseconds"
+        },
+        "memory_limit": {
+          "type": "string",
+          "pattern": "^\\d+[MG]B$",
+          "description": "Memory limit (e.g., 512MB, 2GB)"
+        },
+        "cpu_limit": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 8.0,
+          "description": "CPU limit in cores"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["low", "normal", "high", "critical"],
+          "description": "Execution priority"
+        }
+      },
+      "description": "Performance constraints"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string",
+          "description": "Agent author"
+        },
+        "created": {
+          "type": "string",
+          "format": "date",
+          "description": "Creation date"
+        },
+        "updated": {
+          "type": "string", 
+          "format": "date",
+          "description": "Last update date"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Agent tags for categorization"
+        },
+        "license": {
+          "type": "string",
+          "description": "Agent license"
+        },
+        "repository": {
+          "type": "string",
+          "format": "uri",
+          "description": "Agent source repository"
+        }
+      },
+      "description": "Agent metadata"
+    }
+  },
+  "additionalProperties": false
+}

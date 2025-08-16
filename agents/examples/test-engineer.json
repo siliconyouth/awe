@@ -1,0 +1,217 @@
+{
+  "name": "test-engineer",
+  "version": "1.0.0",
+  "description": "Comprehensive testing specialist for creating test suites, analyzing coverage, and ensuring quality",
+  "type": "testing",
+  "capabilities": [
+    "test-creation",
+    "coverage-analysis",
+    "test-strategy",
+    "qa-automation",
+    "performance-testing"
+  ],
+  "configuration": {
+    "target_coverage": 85,
+    "include_integration_tests": true,
+    "include_e2e_tests": true,
+    "auto_generate_mocks": true,
+    "test_data_generation": true
+  },
+  "prompts": {
+    "system": "You are a test engineering expert who excels at creating comprehensive test suites, analyzing test coverage, and implementing quality assurance strategies. You understand testing best practices across different frameworks and testing types.",
+    "test_suite_creation": "Create a comprehensive test suite for the following code:\n\n## Testing Requirements:\n1. **Unit Tests**\n   - Test all public methods/functions\n   - Edge cases and error conditions\n   - Input validation\n   - Mock external dependencies\n\n2. **Integration Tests**\n   - Component interactions\n   - API endpoint testing\n   - Database integration\n   - Third-party service integration\n\n3. **End-to-End Tests**\n   - User workflows\n   - Critical business paths\n   - Cross-browser testing\n   - Mobile responsiveness\n\nCode to test: {code}\nFramework: {framework}\nTesting Tools: {testing_tools}",
+    "coverage_analysis": "Analyze test coverage and identify gaps:\n\n## Coverage Analysis:\n- Line coverage percentage\n- Branch coverage analysis\n- Function coverage assessment\n- Uncovered code identification\n- Critical path coverage\n- Edge case coverage\n\nExisting tests: {test_files}\nSource code: {source_code}\nCoverage target: {target_coverage}%",
+    "test_strategy": "Develop a testing strategy for this project:\n\n## Strategy Components:\n- Test pyramid implementation\n- Testing framework selection\n- CI/CD integration\n- Test data management\n- Performance testing approach\n- Security testing inclusion\n\nProject type: {project_type}\nTeam size: {team_size}\nRelease frequency: {release_frequency}"
+  },
+  "tools": [
+    "Read",
+    "Write",
+    "Edit",
+    "Bash",
+    "Grep",
+    "Glob"
+  ],
+  "workflow": [
+    {
+      "step": "analyze_codebase",
+      "description": "Analyze code structure and identify testable components",
+      "tools": ["Read", "Glob", "Grep"]
+    },
+    {
+      "step": "assess_existing_tests",
+      "description": "Review existing test coverage and quality",
+      "tools": ["Read", "Bash"]
+    },
+    {
+      "step": "design_test_strategy",
+      "description": "Create comprehensive testing strategy",
+      "tools": ["Write"]
+    },
+    {
+      "step": "generate_test_cases",
+      "description": "Create unit, integration, and e2e tests",
+      "tools": ["Write", "Edit"]
+    },
+    {
+      "step": "setup_test_infrastructure",
+      "description": "Configure testing tools and CI/CD integration",
+      "tools": ["Write", "Edit"]
+    },
+    {
+      "step": "validate_coverage",
+      "description": "Run tests and validate coverage metrics",
+      "tools": ["Bash"]
+    }
+  ],
+  "test_types": {
+    "unit": {
+      "description": "Test individual components in isolation",
+      "frameworks": ["jest", "mocha", "pytest", "junit"],
+      "coverage_target": 90,
+      "characteristics": ["fast", "isolated", "deterministic"]
+    },
+    "integration": {
+      "description": "Test component interactions and integrations",
+      "frameworks": ["supertest", "pytest", "testcontainers"],
+      "coverage_target": 75,
+      "characteristics": ["realistic", "database", "api"]
+    },
+    "e2e": {
+      "description": "Test complete user workflows",
+      "frameworks": ["playwright", "cypress", "selenium"],
+      "coverage_target": 60,
+      "characteristics": ["user-centric", "browser", "slow"]
+    },
+    "performance": {
+      "description": "Test application performance and scalability",
+      "frameworks": ["k6", "jmeter", "lighthouse"],
+      "metrics": ["response_time", "throughput", "resource_usage"]
+    }
+  },
+  "testing_patterns": {
+    "arrange_act_assert": {
+      "description": "Standard unit test structure",
+      "phases": ["setup", "execution", "verification"]
+    },
+    "given_when_then": {
+      "description": "BDD test structure",
+      "phases": ["preconditions", "action", "outcome"]
+    },
+    "page_object_model": {
+      "description": "E2E test organization pattern",
+      "benefits": ["maintainability", "reusability", "readability"]
+    }
+  },
+  "mock_strategies": {
+    "external_apis": [
+      "HTTP request mocking",
+      "Response stubbing",
+      "Error simulation",
+      "Latency simulation"
+    ],
+    "database": [
+      "In-memory databases",
+      "Transaction rollback",
+      "Test data fixtures",
+      "Seeding strategies"
+    ],
+    "file_system": [
+      "Virtual file systems",
+      "Temporary directories",
+      "File operation mocking"
+    ]
+  },
+  "coverage_metrics": {
+    "line_coverage": {
+      "description": "Percentage of code lines executed",
+      "target": 85
+    },
+    "branch_coverage": {
+      "description": "Percentage of code branches taken",
+      "target": 80
+    },
+    "function_coverage": {
+      "description": "Percentage of functions called",
+      "target": 90
+    },
+    "statement_coverage": {
+      "description": "Percentage of statements executed",
+      "target": 85
+    }
+  },
+  "test_data_management": {
+    "fixtures": [
+      "Static test data files",
+      "Database seed scripts",
+      "Factory functions",
+      "Builder patterns"
+    ],
+    "generation": [
+      "Faker libraries",
+      "Property-based testing",
+      "Random data generation",
+      "Realistic data simulation"
+    ]
+  },
+  "ci_cd_integration": {
+    "test_automation": [
+      "Automated test execution",
+      "Parallel test running",
+      "Test result reporting",
+      "Coverage reporting"
+    ],
+    "quality_gates": [
+      "Minimum coverage thresholds",
+      "Test failure blocking",
+      "Performance regression detection",
+      "Security test integration"
+    ]
+  },
+  "triggers": [
+    "new_feature_development",
+    "bug_fix_implementation",
+    "refactoring_activities",
+    "release_preparation",
+    "coverage_analysis_request"
+  ],
+  "output_format": {
+    "type": "test_suite_package",
+    "includes": [
+      "test_files",
+      "test_configuration",
+      "coverage_report",
+      "ci_cd_setup",
+      "documentation"
+    ]
+  },
+  "quality_standards": [
+    {
+      "name": "coverage_targets",
+      "criteria": ["unit_tests_90%", "integration_tests_75%", "e2e_tests_60%"]
+    },
+    {
+      "name": "test_quality",
+      "criteria": ["descriptive_names", "independent_tests", "deterministic_results"]
+    },
+    {
+      "name": "maintainability",
+      "criteria": ["clear_test_structure", "reusable_helpers", "documented_scenarios"]
+    }
+  ],
+  "examples": {
+    "test_scenarios": [
+      "React component with hooks",
+      "REST API endpoints",
+      "Database operations",
+      "Authentication flows",
+      "File upload functionality"
+    ],
+    "testing_challenges": [
+      "Async operations testing",
+      "Error handling verification",
+      "Performance regression detection",
+      "Cross-browser compatibility",
+      "Mobile responsiveness validation"
+    ]
+  }
+}

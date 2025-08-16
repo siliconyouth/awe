@@ -1,0 +1,87 @@
+{
+  "name": "code-reviewer",
+  "version": "1.0.0",
+  "description": "Comprehensive code review agent with security analysis and quality assessment",
+  "type": "review",
+  "capabilities": [
+    "code-analysis",
+    "security-scanning",
+    "performance-review",
+    "best-practices",
+    "documentation-check"
+  ],
+  "configuration": {
+    "review_depth": "comprehensive",
+    "include_suggestions": true,
+    "check_security": true,
+    "validate_tests": true,
+    "style_enforcement": true
+  },
+  "prompts": {
+    "system": "You are an expert code reviewer with deep knowledge of software engineering best practices, security vulnerabilities, and performance optimization. Your role is to provide comprehensive, actionable feedback on code changes.",
+    "review_template": "Please review the following code changes:\n\n## Review Checklist\n- [ ] Code quality and readability\n- [ ] Security vulnerabilities\n- [ ] Performance implications\n- [ ] Test coverage\n- [ ] Documentation completeness\n- [ ] Best practices adherence\n\n## Code to Review:\n{code}\n\n## Analysis Required:\n1. **Security Analysis**: Check for common vulnerabilities (SQL injection, XSS, authentication issues)\n2. **Performance Review**: Identify potential bottlenecks or inefficient patterns\n3. **Quality Assessment**: Evaluate code structure, naming, and maintainability\n4. **Test Coverage**: Assess if adequate tests are present\n5. **Documentation**: Check if code is properly documented\n\nProvide specific, actionable feedback with examples of improvements.",
+    "security_focus": "Focus specifically on security vulnerabilities in this code. Check for:\n- Input validation issues\n- Authentication/authorization flaws\n- Data exposure risks\n- Injection vulnerabilities\n- Insecure dependencies\n\nCode: {code}",
+    "performance_focus": "Analyze this code for performance issues:\n- Time complexity problems\n- Memory usage concerns\n- Database query optimization\n- Caching opportunities\n- Async/await usage\n\nCode: {code}"
+  },
+  "tools": [
+    "Read",
+    "Grep",
+    "Bash"
+  ],
+  "workflow": [
+    {
+      "step": "analyze_changes",
+      "description": "Identify and read changed files",
+      "tools": ["Bash", "Read"]
+    },
+    {
+      "step": "security_scan",
+      "description": "Scan for security vulnerabilities",
+      "tools": ["Grep", "Read"]
+    },
+    {
+      "step": "quality_check",
+      "description": "Assess code quality and best practices",
+      "tools": ["Read", "Grep"]
+    },
+    {
+      "step": "generate_report",
+      "description": "Create comprehensive review report",
+      "tools": ["Write"]
+    }
+  ],
+  "triggers": [
+    "pre_commit",
+    "pull_request",
+    "manual_review"
+  ],
+  "output_format": {
+    "type": "structured_report",
+    "sections": [
+      "executive_summary",
+      "security_findings",
+      "performance_issues",
+      "quality_recommendations",
+      "action_items"
+    ]
+  },
+  "integration": {
+    "git_hooks": ["pre-commit", "pre-push"],
+    "ci_cd": ["github_actions", "gitlab_ci"],
+    "ide": ["vscode", "intellij"]
+  },
+  "examples": {
+    "usage": [
+      "Review all changes in current branch",
+      "Security-focused review of authentication code",
+      "Performance analysis of database queries",
+      "Pre-commit quality gate"
+    ],
+    "commands": [
+      "/review",
+      "/review --security-focus",
+      "/review --performance-focus",
+      "/review --files src/auth/*"
+    ]
+  }
+}

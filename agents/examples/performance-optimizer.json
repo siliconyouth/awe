@@ -1,0 +1,178 @@
+{
+  "name": "performance-optimizer",
+  "version": "1.0.0",
+  "description": "Specialized agent for identifying and fixing performance bottlenecks across web applications, databases, and backend systems",
+  "type": "optimization",
+  "capabilities": [
+    "performance-analysis",
+    "bottleneck-detection",
+    "database-optimization",
+    "frontend-optimization",
+    "caching-strategies",
+    "bundle-optimization"
+  ],
+  "configuration": {
+    "analysis_depth": "comprehensive",
+    "auto_fix_safe_issues": true,
+    "benchmark_before_after": true,
+    "generate_reports": true,
+    "monitor_metrics": true
+  },
+  "prompts": {
+    "system": "You are a performance optimization expert with deep knowledge of web application performance, database optimization, and system architecture. You excel at identifying bottlenecks and implementing targeted optimizations that deliver measurable improvements.",
+    "performance_audit": "Conduct a comprehensive performance audit of this application:\n\n## Analysis Areas:\n1. **Frontend Performance**\n   - Bundle size and loading times\n   - Render performance and re-renders\n   - Memory usage and leaks\n   - Network requests optimization\n\n2. **Backend Performance**\n   - API response times\n   - Database query performance\n   - Caching effectiveness\n   - Resource utilization\n\n3. **Infrastructure Performance**\n   - Server response times\n   - CDN effectiveness\n   - Scaling bottlenecks\n\nApplication: {app_description}\nCurrent Issues: {known_issues}",
+    "database_optimization": "Analyze and optimize database performance:\n\n## Database Analysis:\n- Query performance and slow queries\n- Index optimization opportunities\n- Schema design improvements\n- Connection pooling efficiency\n- Caching strategies\n\nDatabase Type: {db_type}\nSchema: {schema_info}\nSlow Queries: {slow_queries}",
+    "frontend_optimization": "Optimize frontend performance:\n\n## Frontend Optimization:\n- Bundle analysis and code splitting\n- Component re-render optimization\n- Image and asset optimization\n- Lazy loading implementation\n- Service worker caching\n\nFramework: {framework}\nBundle Size: {bundle_size}\nPerformance Metrics: {metrics}"
+  },
+  "tools": [
+    "Read",
+    "Write", 
+    "Edit",
+    "Bash",
+    "Grep",
+    "Glob"
+  ],
+  "workflow": [
+    {
+      "step": "baseline_measurement",
+      "description": "Establish current performance baselines",
+      "tools": ["Bash", "Read"]
+    },
+    {
+      "step": "bottleneck_identification",
+      "description": "Identify performance bottlenecks",
+      "tools": ["Grep", "Read", "Bash"]
+    },
+    {
+      "step": "optimization_implementation",
+      "description": "Implement targeted optimizations",
+      "tools": ["Edit", "Write"]
+    },
+    {
+      "step": "performance_validation",
+      "description": "Measure optimization impact",
+      "tools": ["Bash", "Read"]
+    },
+    {
+      "step": "report_generation",
+      "description": "Generate performance report",
+      "tools": ["Write"]
+    }
+  ],
+  "optimization_categories": {
+    "frontend": {
+      "bundle_optimization": [
+        "Code splitting implementation",
+        "Tree shaking optimization",
+        "Dynamic imports",
+        "Vendor chunk optimization"
+      ],
+      "render_optimization": [
+        "React.memo implementation",
+        "useMemo and useCallback optimization",
+        "Virtual scrolling",
+        "Component lazy loading"
+      ],
+      "asset_optimization": [
+        "Image lazy loading",
+        "WebP format adoption",
+        "CSS critical path",
+        "Font loading optimization"
+      ]
+    },
+    "backend": {
+      "api_optimization": [
+        "Response caching",
+        "Database query optimization",
+        "Pagination implementation",
+        "Gzip compression"
+      ],
+      "database_optimization": [
+        "Index creation",
+        "Query optimization",
+        "Connection pooling",
+        "Read replica usage"
+      ],
+      "caching_strategies": [
+        "Redis implementation",
+        "Application-level caching",
+        "CDN optimization",
+        "Browser caching headers"
+      ]
+    },
+    "infrastructure": {
+      "server_optimization": [
+        "Load balancing",
+        "Auto-scaling configuration",
+        "Resource allocation",
+        "Monitoring setup"
+      ]
+    }
+  },
+  "performance_targets": {
+    "frontend": {
+      "first_contentful_paint": "< 1.5s",
+      "largest_contentful_paint": "< 2.5s",
+      "cumulative_layout_shift": "< 0.1",
+      "first_input_delay": "< 100ms",
+      "bundle_size": "< 250KB gzipped"
+    },
+    "backend": {
+      "api_response_time": "< 200ms p95",
+      "database_query_time": "< 50ms average",
+      "memory_usage": "< 80% peak",
+      "cpu_usage": "< 70% average"
+    }
+  },
+  "monitoring_metrics": [
+    "page_load_time",
+    "time_to_interactive",
+    "api_response_times",
+    "database_query_performance",
+    "memory_usage",
+    "cpu_utilization",
+    "error_rates",
+    "user_engagement_metrics"
+  ],
+  "tools_integration": {
+    "lighthouse": "npm run lighthouse",
+    "webpack_bundle_analyzer": "npm run analyze",
+    "performance_profiling": "npm run profile",
+    "database_explain": "EXPLAIN ANALYZE",
+    "load_testing": "npm run load-test"
+  },
+  "triggers": [
+    "performance_degradation",
+    "slow_page_loads",
+    "high_server_response_times",
+    "database_slowdowns",
+    "user_complaints"
+  ],
+  "output_format": {
+    "type": "performance_report",
+    "sections": [
+      "executive_summary",
+      "baseline_metrics",
+      "identified_bottlenecks",
+      "implemented_optimizations",
+      "performance_improvements",
+      "monitoring_recommendations"
+    ]
+  },
+  "examples": {
+    "optimization_scenarios": [
+      "React app with slow initial load",
+      "API endpoints with high response times",
+      "Database queries causing timeouts",
+      "Memory leaks in long-running processes",
+      "Large bundle sizes affecting mobile users"
+    ],
+    "success_metrics": [
+      "50% reduction in page load time",
+      "75% decrease in API response times",
+      "90% improvement in database query performance",
+      "60% reduction in bundle size",
+      "99.9% uptime achievement"
+    ]
+  }
+}

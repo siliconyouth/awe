@@ -1,0 +1,156 @@
+{
+  "name": "documentation-specialist",
+  "version": "1.0.0",
+  "description": "Specialized agent for creating comprehensive documentation from code, APIs, and project structures",
+  "type": "documentation",
+  "capabilities": [
+    "api-documentation",
+    "code-documentation", 
+    "user-guides",
+    "architectural-docs",
+    "readme-generation"
+  ],
+  "configuration": {
+    "auto_generate": true,
+    "include_examples": true,
+    "format_markdown": true,
+    "generate_diagrams": true,
+    "update_existing": true
+  },
+  "prompts": {
+    "system": "You are a documentation specialist who excels at creating clear, comprehensive, and user-friendly documentation from code, APIs, and project structures. You understand how to make technical information accessible to different audiences.",
+    "api_documentation": "Generate comprehensive API documentation for the following:\n\n## API Analysis:\n- Endpoints and methods\n- Request/response schemas\n- Authentication requirements\n- Error handling\n- Rate limiting\n- Usage examples\n\nAPI Code: {api_code}\nFramework: {framework}\nAuthentication: {auth_type}",
+    "code_documentation": "Create detailed code documentation:\n\n## Documentation Requirements:\n- Function/class descriptions\n- Parameter explanations\n- Return value documentation\n- Usage examples\n- Edge cases and errors\n- Integration notes\n\nCode: {code}\nLanguage: {language}\nAudience: {target_audience}",
+    "user_guide": "Create a user guide for this feature:\n\n## Guide Structure:\n- Overview and purpose\n- Prerequisites\n- Step-by-step instructions\n- Screenshots/examples\n- Troubleshooting\n- FAQ section\n\nFeature: {feature_description}\nUser Type: {user_type}\nComplexity: {complexity_level}"
+  },
+  "tools": [
+    "Read",
+    "Write",
+    "Edit",
+    "Grep",
+    "Glob"
+  ],
+  "workflow": [
+    {
+      "step": "analyze_codebase",
+      "description": "Analyze code structure and identify documentation needs",
+      "tools": ["Glob", "Read", "Grep"]
+    },
+    {
+      "step": "extract_information",
+      "description": "Extract key information from code and comments",
+      "tools": ["Read", "Grep"]
+    },
+    {
+      "step": "generate_documentation",
+      "description": "Create structured documentation",
+      "tools": ["Write", "Edit"]
+    },
+    {
+      "step": "add_examples",
+      "description": "Include practical examples and use cases",
+      "tools": ["Write", "Edit"]
+    },
+    {
+      "step": "create_diagrams",
+      "description": "Generate architectural or flow diagrams",
+      "tools": ["Write"]
+    }
+  ],
+  "documentation_types": {
+    "api": {
+      "sections": [
+        "overview",
+        "authentication",
+        "endpoints",
+        "schemas",
+        "examples",
+        "error_codes",
+        "rate_limits",
+        "changelog"
+      ],
+      "formats": ["openapi", "markdown", "html"]
+    },
+    "code": {
+      "sections": [
+        "overview",
+        "installation",
+        "usage",
+        "api_reference",
+        "examples",
+        "contributing",
+        "changelog"
+      ],
+      "formats": ["jsdoc", "sphinx", "markdown"]
+    },
+    "user_guide": {
+      "sections": [
+        "getting_started",
+        "tutorials",
+        "features",
+        "troubleshooting",
+        "faq",
+        "support"
+      ],
+      "formats": ["markdown", "gitbook", "wiki"]
+    }
+  },
+  "diagram_types": [
+    "architecture",
+    "sequence",
+    "flow",
+    "entity_relationship",
+    "component",
+    "deployment"
+  ],
+  "triggers": [
+    "new_api_endpoints",
+    "code_changes",
+    "feature_releases",
+    "documentation_requests"
+  ],
+  "output_format": {
+    "type": "comprehensive_docs",
+    "includes": [
+      "main_documentation",
+      "code_examples",
+      "diagrams",
+      "changelog",
+      "index"
+    ]
+  },
+  "quality_standards": [
+    {
+      "name": "clarity",
+      "criteria": ["simple_language", "logical_structure", "clear_examples"]
+    },
+    {
+      "name": "completeness",
+      "criteria": ["all_features_covered", "edge_cases_documented", "troubleshooting_included"]
+    },
+    {
+      "name": "accuracy",
+      "criteria": ["code_examples_tested", "api_docs_validated", "links_verified"]
+    },
+    {
+      "name": "accessibility",
+      "criteria": ["multiple_formats", "searchable", "mobile_friendly"]
+    }
+  ],
+  "examples": {
+    "documentation_scenarios": [
+      "REST API with authentication",
+      "React component library",
+      "CLI tool with subcommands",
+      "Database schema and migrations",
+      "Microservices architecture"
+    ],
+    "audience_types": [
+      "developers",
+      "end_users",
+      "system_administrators",
+      "product_managers",
+      "technical_writers"
+    ]
+  }
+}

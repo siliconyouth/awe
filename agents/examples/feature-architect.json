@@ -1,0 +1,154 @@
+{
+  "name": "feature-architect",
+  "version": "1.0.0",
+  "description": "AI architect that designs and implements complete features using parallel task execution",
+  "type": "development",
+  "capabilities": [
+    "feature-design",
+    "architecture-planning",
+    "parallel-implementation",
+    "integration-coordination",
+    "testing-strategy"
+  ],
+  "configuration": {
+    "parallel_tasks": 7,
+    "auto_execute": true,
+    "integration_testing": true,
+    "documentation_required": true,
+    "performance_validation": true
+  },
+  "prompts": {
+    "system": "You are an expert software architect specialized in feature implementation using parallel task execution. You excel at breaking down complex features into coordinated, parallel work streams while maintaining code quality and integration integrity.",
+    "feature_analysis": "Analyze this feature request and create an implementation plan:\n\nFeature: {feature_description}\n\nProvide:\n1. **Architecture Overview**: High-level design approach\n2. **Component Breakdown**: Individual components needed\n3. **Parallel Task Plan**: 7 coordinated tasks for implementation\n4. **Integration Strategy**: How components will work together\n5. **Testing Approach**: Comprehensive testing strategy\n6. **Performance Considerations**: Optimization opportunities",
+    "task_coordination": "Coordinate the following parallel tasks for feature implementation:\n\nTasks:\n1. Component: {component_task}\n2. Styles: {styles_task}\n3. Tests: {tests_task}\n4. Types: {types_task}\n5. Hooks: {hooks_task}\n6. Integration: {integration_task}\n7. Documentation: {docs_task}\n\nEnsure proper coordination and dependency management.",
+    "implementation_review": "Review the implemented feature for:\n- Code quality and consistency\n- Integration completeness\n- Test coverage adequacy\n- Performance optimization\n- Documentation completeness\n\nFeature: {feature_name}\nComponents: {component_list}"
+  },
+  "tools": [
+    "Task",
+    "Read",
+    "Write",
+    "Edit",
+    "Bash",
+    "Grep"
+  ],
+  "workflow": [
+    {
+      "step": "feature_analysis",
+      "description": "Analyze feature requirements and design architecture",
+      "tools": ["Read", "Grep"]
+    },
+    {
+      "step": "task_planning",
+      "description": "Break down into 7 parallel tasks",
+      "tools": ["Task"]
+    },
+    {
+      "step": "parallel_execution",
+      "description": "Execute all tasks in parallel",
+      "tools": ["Task"]
+    },
+    {
+      "step": "integration_testing",
+      "description": "Test feature integration",
+      "tools": ["Bash", "Read"]
+    },
+    {
+      "step": "performance_validation",
+      "description": "Validate performance requirements",
+      "tools": ["Bash", "Grep"]
+    }
+  ],
+  "parallel_tasks": {
+    "1_component": {
+      "name": "Component Implementation",
+      "description": "Create main component files and core logic",
+      "tools": ["Write", "Edit"],
+      "dependencies": []
+    },
+    "2_styles": {
+      "name": "Styling Implementation", 
+      "description": "Create component styles and CSS",
+      "tools": ["Write", "Edit"],
+      "dependencies": ["1_component"]
+    },
+    "3_tests": {
+      "name": "Test Implementation",
+      "description": "Create comprehensive test files",
+      "tools": ["Write", "Edit"],
+      "dependencies": ["1_component"]
+    },
+    "4_types": {
+      "name": "Type Definitions",
+      "description": "Create TypeScript type definitions",
+      "tools": ["Write", "Edit"],
+      "dependencies": []
+    },
+    "5_hooks": {
+      "name": "Custom Hooks/Utilities",
+      "description": "Create custom hooks and utility functions",
+      "tools": ["Write", "Edit"],
+      "dependencies": ["4_types"]
+    },
+    "6_integration": {
+      "name": "Integration Updates",
+      "description": "Update routing, imports, and exports",
+      "tools": ["Edit", "Read"],
+      "dependencies": ["1_component", "4_types"]
+    },
+    "7_documentation": {
+      "name": "Documentation & Config",
+      "description": "Update package.json, docs, and config files",
+      "tools": ["Edit", "Write"],
+      "dependencies": ["1_component", "3_tests"]
+    }
+  },
+  "triggers": [
+    "feature_request",
+    "user_story",
+    "enhancement_request"
+  ],
+  "output_format": {
+    "type": "feature_implementation",
+    "includes": [
+      "architecture_diagram",
+      "implementation_files",
+      "test_suite",
+      "documentation",
+      "integration_guide"
+    ]
+  },
+  "quality_gates": [
+    {
+      "name": "code_quality",
+      "criteria": ["linting_passed", "type_checking_passed", "formatting_correct"]
+    },
+    {
+      "name": "test_coverage",
+      "criteria": ["unit_tests_present", "integration_tests_present", "coverage_threshold_met"]
+    },
+    {
+      "name": "integration",
+      "criteria": ["builds_successfully", "no_conflicts", "dependencies_resolved"]
+    },
+    {
+      "name": "performance",
+      "criteria": ["bundle_size_acceptable", "render_performance_good", "memory_usage_optimal"]
+    }
+  ],
+  "examples": {
+    "feature_types": [
+      "User authentication system",
+      "Dashboard with real-time data",
+      "File upload and processing",
+      "Search and filtering interface",
+      "Payment integration system"
+    ],
+    "implementation_patterns": [
+      "React component with hooks",
+      "API endpoint with validation",
+      "Database model with migrations",
+      "Background job processing",
+      "Third-party service integration"
+    ]
+  }
+}
