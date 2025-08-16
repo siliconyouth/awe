@@ -15,6 +15,7 @@ export * from './commands/chat'
 export * from './commands/patterns'
 export { GenerateConfigCommand } from './commands/generate-config'
 export { HooksCommand } from './commands/hooks'
+export { AgentsCommand } from './commands/agents'
 
 export * from './utils/logger'
 export * from './utils/validation'

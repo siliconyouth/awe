@@ -23,6 +23,7 @@ import { ChatCommand } from '../commands/chat'
 import { LearnCommand } from '../commands/learn'
 import { GenerateConfigCommand } from '../commands/generate-config'
 import { HooksCommand } from '../commands/hooks'
+import { AgentsCommand } from '../commands/agents'
 
 import { validateEnvironment } from '../utils/validation'
 import { createLogger } from '../utils/logger'
@@ -93,6 +94,7 @@ async function main() {
     program.addCommand(new LearnCommand().getCommand())
     program.addCommand(new GenerateConfigCommand().getCommand())
     program.addCommand(new HooksCommand().getCommand())
+    program.addCommand(new AgentsCommand().getCommand())
 
     // Default action for bare command
     program.action(() => {
