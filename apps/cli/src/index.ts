@@ -12,6 +12,7 @@ export * from './commands/scaffold'
 export * from './commands/sync'
 export * from './commands/setup'
 export * from './commands/chat'
+export * from './commands/patterns'
 
 export * from './utils/logger'
 export * from './utils/validation'
