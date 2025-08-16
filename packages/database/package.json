@@ -12,6 +12,7 @@
     }
   },
   "scripts": {
+    "postinstall": "prisma generate",
     "build": "tsup",
     "dev": "tsup --watch",
     "type-check": "tsc --noEmit",

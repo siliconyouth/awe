@@ -13,6 +13,7 @@ export * from './commands/sync'
 export * from './commands/setup'
 export * from './commands/chat'
 export * from './commands/patterns'
+export { GenerateConfigCommand } from './commands/generate-config'
 
 export * from './utils/logger'
 export * from './utils/validation'
