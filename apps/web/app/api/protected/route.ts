@@ -43,8 +43,26 @@ export async function GET() {
 // POST example with role protection
 export async function POST(request: Request) {
   try {
-    // Protect route - only admins can access
-    await auth().protect({ role: 'admin' });
+    // Check authentication and admin role
+    const { userId, sessionClaims, orgRole } = await auth();
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    
+    // Check for admin role
+    const isAdmin = sessionClaims?.metadata?.role === 'admin' || 
+                    orgRole === 'org:admin';
+    
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: "Forbidden: Admin access required" },
+        { status: 403 }
+      );
+    }
     
     const data = await request.json();
     
@@ -54,10 +72,10 @@ export async function POST(request: Request) {
       data: data
     });
   } catch (error) {
-    // auth().protect() will throw if unauthorized
+    console.error("Error in protected POST route:", error);
     return NextResponse.json(
-      { error: "Forbidden: Admin access required" },
-      { status: 403 }
+      { error: "Internal server error" },
+      { status: 500 }
     );
   }
 }

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPrisma } from '@awe/database'
-import { KnowledgeMonitor } from '@/lib/monitoring/knowledge-monitor'
+// import { getPrisma } from '@awe/database' // TODO: Fix database import
+// TODO: Implement KnowledgeMonitor
 
 // GET /api/monitor - Get monitoring status
 export async function GET(request: NextRequest) {
+  return NextResponse.json({ message: "Monitor API temporarily disabled" }, { status: 503 })
+  /*
   try {
-    const db = getPrisma()
+    // const db = getPrisma() // TODO: Fix database
     
     const sources = await db.knowledgeSource.findMany({
       select: {
@@ -36,13 +38,16 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
+  */
 }
 
 // POST /api/monitor - Trigger monitoring for specific sources
 export async function POST(request: NextRequest) {
+  return NextResponse.json({ message: "Monitor API temporarily disabled" }, { status: 503 })
+  /*
   try {
     const { sourceIds, frequency } = await request.json()
-    const db = getPrisma()
+    // const db = getPrisma() // TODO: Fix database
     
     // Get sources to monitor
     const sources = await db.knowledgeSource.findMany({
@@ -101,4 +106,5 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+  */
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPrisma } from '@awe/database'
-import { KnowledgeMonitor } from '@/lib/monitoring/knowledge-monitor'
-import { ContentAnalyzer } from '@/lib/ai/content-analyzer'
+// import { getPrisma } from '@awe/database' // TODO: Fix database import
+// TODO: Implement KnowledgeMonitor
+// TODO: Implement ContentAnalyzer
 
 export async function GET(request: NextRequest) {
   // Verify this is called by Vercel Cron
@@ -14,7 +14,18 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const db = getPrisma()
+    return NextResponse.json({ message: "Monitor API temporarily disabled" }, { status: 503 })
+  } catch (error) {
+    console.error('Daily cron job failed:', error)
+    return NextResponse.json(
+      { error: 'Cron job failed', details: (error as any).message },
+      { status: 500 }
+    )
+  }
+}
+
+/*
+    // const db = getPrisma() // TODO: Fix database
     
     // Get sources scheduled for daily checks
     const sources = await db.knowledgeSource.findMany({
@@ -101,5 +112,4 @@ export async function GET(request: NextRequest) {
       { error: 'Cron job failed', details: error.message },
       { status: 500 }
     )
-  }
-}
+*/

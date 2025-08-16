@@ -96,7 +96,7 @@ class BrowserlessService {
         quality: options.type === 'jpeg' ? (options.quality || 80) : undefined,
       });
 
-      return screenshot as Buffer;
+      return Buffer.from(screenshot as Uint8Array);
     } finally {
       await page.close();
     }
@@ -136,7 +136,7 @@ class BrowserlessService {
         },
       });
 
-      return pdf;
+      return Buffer.from(pdf);
     } finally {
       await page.close();
     }

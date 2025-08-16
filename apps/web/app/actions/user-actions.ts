@@ -2,7 +2,7 @@
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { requireRole, hasRole } from "@/lib/clerk-backend";
+import { requireRole, hasRole } from "../../lib/clerk-backend";
 
 /**
  * Server Action: Update user profile

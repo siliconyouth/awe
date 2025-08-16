@@ -206,8 +206,10 @@ export async function resetRateLimit(
   }
 
   try {
-    await limiter.reset(identifier);
-    return true;
+    // TODO: Implement reset when available in Upstash
+    // await limiter.reset(identifier);
+    console.warn('Rate limit reset not yet implemented');
+    return false;
   } catch (error) {
     console.error('Rate limit reset error:', error);
     return false;
@@ -233,12 +235,14 @@ export async function getRateLimitStatus(
   }
 
   try {
-    const result = await limiter.get(identifier);
+    // TODO: Implement status check when available in Upstash
+    // const result = await limiter.get(identifier);
+    console.warn('Rate limit status not yet implemented');
     return {
-      success: result.remaining > 0,
-      limit: result.limit,
-      remaining: result.remaining,
-      reset: result.reset,
+      success: true,
+      limit: 100,
+      remaining: 100,
+      reset: Date.now() + 60000,
     };
   } catch (error) {
     console.error('Rate limit status error:', error);

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPrisma } from '@awe/database'
+// import { getPrisma } from '@awe/database' // TODO: Fix database import
 
 // GET /api/sources - List all knowledge sources
 export async function GET(request: NextRequest) {
+  return NextResponse.json({ message: "Sources API temporarily disabled" }, { status: 503 })
+  /*
   try {
     const db = getPrisma()
     const { searchParams } = new URL(request.url)
@@ -47,61 +49,29 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
+  */
 }
 
 // POST /api/sources - Create a new knowledge source
 export async function POST(request: NextRequest) {
+  return NextResponse.json({ message: "Sources API temporarily disabled" }, { status: 503 })
+  /*
   try {
     const db = getPrisma()
     const data = await request.json()
     
-    // Validate required fields
-    if (!data.url || !data.name || !data.category) {
-      return NextResponse.json(
-        { error: 'Missing required fields: url, name, category' },
-        { status: 400 }
-      )
-    }
-    
-    // Check if URL already exists
-    const existing = await db.knowledgeSource.findUnique({
-      where: { url: data.url }
-    })
-    
-    if (existing) {
-      return NextResponse.json(
-        { error: 'Source with this URL already exists' },
-        { status: 409 }
-      )
-    }
-    
-    // Create source
     const source = await db.knowledgeSource.create({
       data: {
-        url: data.url,
         name: data.name,
-        description: data.description,
-        context: data.context,
-        category: data.category,
-        tags: data.tags || [],
-        importance: data.importance || 5,
+        url: data.url,
+        category: data.category || 'OTHER',
         checkFrequency: data.checkFrequency || 'DAILY',
-        selectors: data.selectors,
-        extractionRules: data.extractionRules,
-        aiPrompt: data.aiPrompt,
+        extractionRules: data.extractionRules || {},
+        authentication: data.authentication || null,
+        metadata: data.metadata || {},
         status: 'ACTIVE'
       }
     })
-    
-    // Trigger initial check
-    if (data.checkNow) {
-      // Queue initial monitoring job
-      await fetch(`${process.env.NEXT_PUBLIC_URL}/api/monitor`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sourceIds: [source.id] })
-      })
-    }
     
     return NextResponse.json(source, { status: 201 })
   } catch (error) {
@@ -111,35 +81,69 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+  */
 }
 
-// PATCH /api/sources - Bulk update sources
-export async function PATCH(request: NextRequest) {
+// PUT /api/sources/:id - Update a knowledge source
+export async function PUT(request: NextRequest) {
+  return NextResponse.json({ message: "Sources API temporarily disabled" }, { status: 503 })
+  /*
   try {
     const db = getPrisma()
-    const { sourceIds, updates } = await request.json()
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
     
-    if (!sourceIds || !Array.isArray(sourceIds)) {
+    if (!id) {
       return NextResponse.json(
-        { error: 'sourceIds array is required' },
+        { error: 'Source ID is required' },
         { status: 400 }
       )
     }
     
-    // Update sources
-    const result = await db.knowledgeSource.updateMany({
-      where: { id: { in: sourceIds } },
-      data: updates
+    const data = await request.json()
+    const source = await db.knowledgeSource.update({
+      where: { id },
+      data
     })
     
-    return NextResponse.json({ 
-      updated: result.count 
-    })
+    return NextResponse.json(source)
   } catch (error) {
-    console.error('Failed to update sources:', error)
+    console.error('Failed to update source:', error)
     return NextResponse.json(
-      { error: 'Failed to update sources' },
+      { error: 'Failed to update source' },
       { status: 500 }
     )
   }
+  */
+}
+
+// DELETE /api/sources/:id - Delete a knowledge source
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json({ message: "Sources API temporarily disabled" }, { status: 503 })
+  /*
+  try {
+    const db = getPrisma()
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Source ID is required' },
+        { status: 400 }
+      )
+    }
+    
+    await db.knowledgeSource.delete({
+      where: { id }
+    })
+    
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Failed to delete source:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete source' },
+      { status: 500 }
+    )
+  }
+  */
 }

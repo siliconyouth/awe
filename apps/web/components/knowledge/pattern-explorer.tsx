@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { toast } from '@/components/ui/use-toast'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import { Input } from '../ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { Badge } from '../ui/badge'
+import { Button } from '../ui/button'
+import { toast } from '../ui/use-toast'
 import { SearchIcon, FilterIcon, DownloadIcon, CopyIcon } from 'lucide-react'
 
 interface Pattern {
@@ -104,7 +104,7 @@ export function PatternExplorer() {
   }
 
   const getTypeIcon = (type: string) => {
-    const icons = {
+    const icons: Record<string, string> = {
       CODE_EXAMPLE: '📝',
       CONFIGURATION: '⚙️',
       SYSTEM_PROMPT: '🤖',

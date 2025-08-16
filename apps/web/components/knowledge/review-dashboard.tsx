@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { Label } from '@/components/ui/label'
-import { toast } from '@/components/ui/use-toast'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import { Button } from '../ui/button'
+import { Textarea } from '../ui/textarea'
+import { Badge } from '../ui/badge'
+import { Label } from '../ui/label'
+import { toast } from '../ui/use-toast'
 import { CheckIcon, XIcon, RefreshCwIcon, SparklesIcon } from 'lucide-react'
 
 interface ExtractedPattern {
@@ -92,7 +92,7 @@ export function ReviewDashboard() {
     } catch (error) {
       toast({
         title: 'Error',
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Failed to review pattern',
         variant: 'destructive'
       })
     } finally {
@@ -101,7 +101,7 @@ export function ReviewDashboard() {
   }
 
   const getPatternTypeColor = (type: string) => {
-    const colors = {
+    const colors: Record<string, string> = {
       CODE_EXAMPLE: 'bg-blue-500',
       CONFIGURATION: 'bg-green-500',
       SYSTEM_PROMPT: 'bg-purple-500',

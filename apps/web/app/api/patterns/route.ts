@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPrisma } from '@awe/database'
+// import { getPrisma } from '@awe/database' // TODO: Fix database import
 
 // GET /api/patterns - List patterns for review
 export async function GET(request: NextRequest) {
+  return NextResponse.json({ message: "Patterns API temporarily disabled" }, { status: 503 })
+  /*
   try {
     const db = getPrisma()
     const { searchParams } = new URL(request.url)
@@ -51,10 +53,13 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
+  */
 }
 
 // POST /api/patterns/review - Review a pattern
 export async function POST(request: NextRequest) {
+  return NextResponse.json({ message: "Patterns API temporarily disabled" }, { status: 503 })
+  /*
   try {
     const db = getPrisma()
     const { patternId, action, refinements, feedback } = await request.json()
@@ -130,10 +135,13 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+  */
 }
 
 // DELETE /api/patterns/:id - Delete a pattern
 export async function DELETE(request: NextRequest) {
+  return NextResponse.json({ message: "Patterns API temporarily disabled" }, { status: 503 })
+  /*
   try {
     const db = getPrisma()
     const { searchParams } = new URL(request.url)
@@ -158,4 +166,5 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     )
   }
+  */
 }

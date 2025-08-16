@@ -24,6 +24,7 @@ import { LearnCommand } from '../commands/learn'
 import { GenerateConfigCommand } from '../commands/generate-config'
 import { HooksCommand } from '../commands/hooks'
 import { AgentsCommand } from '../commands/agents'
+import { ScrapeCommand } from '../commands/scrape'
 
 import { validateEnvironment } from '../utils/validation'
 import { createLogger } from '../utils/logger'
@@ -95,6 +96,7 @@ async function main() {
     program.addCommand(new GenerateConfigCommand().getCommand())
     program.addCommand(new HooksCommand().getCommand())
     program.addCommand(new AgentsCommand().getCommand())
+    program.addCommand(new ScrapeCommand().getCommand())
 
     // Default action for bare command
     program.action(() => {

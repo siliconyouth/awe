@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import type { Roles } from './types/globals';
 
 // Define which routes should be protected
 const isProtectedRoute = createRouteMatcher([
@@ -9,6 +10,9 @@ const isProtectedRoute = createRouteMatcher([
   '/api/user(.*)',
   '/api/session(.*)',
   '/test-api(.*)',
+  '/profile(.*)',
+  '/organizations(.*)',
+  '/organization(.*)',
 ]);
 
 // Define which routes require admin role
@@ -17,11 +21,34 @@ const isAdminRoute = createRouteMatcher([
   '/api/admin(.*)',
 ]);
 
+// Define which routes require moderator role or higher
+const isModeratorRoute = createRouteMatcher([
+  '/moderator(.*)',
+  '/api/moderator(.*)',
+  '/reports(.*)',
+]);
+
+// Define which routes require developer role or higher
+const isDeveloperRoute = createRouteMatcher([
+  '/developer(.*)',
+  '/api/developer(.*)',
+  '/api/debug(.*)',
+  '/logs(.*)',
+]);
+
 // Define which routes should be protected by rate limiting
 const isScraperRoute = createRouteMatcher([
   '/api/scrape(.*)',
   '/api/monitor(.*)',
 ]);
+
+// Role hierarchy for checking permissions
+const ROLE_HIERARCHY: Record<Roles, number> = {
+  admin: 100,
+  moderator: 50,
+  developer: 30,
+  user: 10,
+};
 
 export default clerkMiddleware(async (auth, req) => {
   // Protect routes that require authentication
@@ -29,23 +56,75 @@ export default clerkMiddleware(async (auth, req) => {
     await auth.protect();
   }
   
-  // Additional protection for admin routes
+  const { sessionClaims, orgRole } = await auth();
+  const userRole = (sessionClaims?.metadata?.role as Roles) || 'user';
+  const userLevel = ROLE_HIERARCHY[userRole] || 0;
+  
+  // Check admin routes
   if (isAdminRoute(req)) {
-    const { sessionClaims, orgRole } = await auth();
+    const requiredLevel = ROLE_HIERARCHY.admin;
     
-    const isAdmin = sessionClaims?.metadata?.role === 'admin' || 
-                    orgRole === 'org:admin';
-    
-    if (!isAdmin) {
-      // Return 403 Forbidden for non-admin users
+    if (userLevel < requiredLevel && orgRole !== 'org:admin') {
       return NextResponse.json(
-        { error: 'Forbidden: Admin access required' },
+        { 
+          error: 'Forbidden', 
+          message: 'Admin role required',
+          requiredRole: 'admin',
+          currentRole: userRole
+        },
         { status: 403 }
       );
     }
   }
   
-  return NextResponse.next();
+  // Check moderator routes
+  if (isModeratorRoute(req)) {
+    const requiredLevel = ROLE_HIERARCHY.moderator;
+    
+    if (userLevel < requiredLevel) {
+      return NextResponse.json(
+        { 
+          error: 'Forbidden', 
+          message: 'Moderator role or higher required',
+          requiredRole: 'moderator',
+          currentRole: userRole
+        },
+        { status: 403 }
+      );
+    }
+  }
+  
+  // Check developer routes
+  if (isDeveloperRoute(req)) {
+    const requiredLevel = ROLE_HIERARCHY.developer;
+    
+    if (userLevel < requiredLevel) {
+      return NextResponse.json(
+        { 
+          error: 'Forbidden', 
+          message: 'Developer role or higher required',
+          requiredRole: 'developer',
+          currentRole: userRole
+        },
+        { status: 403 }
+      );
+    }
+  }
+  
+  // Add role and permissions to request headers for downstream use
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set('x-user-role', userRole);
+  requestHeaders.set('x-user-role-level', userLevel.toString());
+  
+  if (sessionClaims?.metadata?.permissions) {
+    requestHeaders.set('x-user-permissions', JSON.stringify(sessionClaims.metadata.permissions));
+  }
+  
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 });
 
 export const config = {

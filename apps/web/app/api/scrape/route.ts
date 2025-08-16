@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { rateLimited } from '@/lib/rate-limit';
-import { browserless } from '@/lib/browserless';
-import { cache } from '@/lib/upstash';
+// TODO: Implement rate limiting and scraping libraries
+// import { rateLimited } from '@/lib/rate-limit';
+// import { browserless } from '@/lib/browserless';
+// import { cache } from '@/lib/upstash';
 
 /**
  * Protected API Route: Web Scraping with Browserless
@@ -33,9 +34,10 @@ async function handler(request: NextRequest) {
       );
     }
 
-    // Check cache first
+    // Check cache first (TODO: Implement caching)
     const cacheKey = `scrape:${userId}:${url}:${type}`;
-    const cached = await cache.get(cacheKey);
+    // const cached = await cache.get(cacheKey);
+    const cached = null;
     
     if (cached) {
       return NextResponse.json({
@@ -50,54 +52,30 @@ async function handler(request: NextRequest) {
     
     switch (type) {
       case 'screenshot':
-        // Take a screenshot
-        const screenshot = await browserless.screenshot(url, {
-          fullPage: options.fullPage || false,
-          width: options.width || 1920,
-          height: options.height || 1080,
-          type: options.format || 'png',
-        });
-        
-        // Convert to base64 for JSON response
-        result = {
-          type: 'screenshot',
-          format: options.format || 'png',
-          data: screenshot.toString('base64'),
-        };
-        break;
+        // TODO: Implement browserless screenshot
+        return NextResponse.json(
+          { error: 'Screenshot scraping not yet implemented' },
+          { status: 501 }
+        );
 
       case 'pdf':
-        // Convert to PDF
-        const pdf = await browserless.pdf(url, {
-          format: options.format || 'A4',
-          landscape: options.landscape || false,
-          margin: options.margin,
-        });
-        
-        // Convert to base64 for JSON response
-        result = {
-          type: 'pdf',
-          data: pdf.toString('base64'),
-        };
-        break;
+        // TODO: Implement browserless PDF
+        return NextResponse.json(
+          { error: 'PDF scraping not yet implemented' },
+          { status: 501 }
+        );
 
       case 'content':
       default:
-        // Scrape content
-        const content = await browserless.scrape(url, {
-          selector: options.selector,
-          waitForSelector: options.waitForSelector,
-        });
-        
-        result = {
-          type: 'content',
-          data: content,
-        };
-        break;
+        // TODO: Implement browserless content scraping
+        return NextResponse.json(
+          { error: 'Content scraping not yet implemented' },
+          { status: 501 }
+        );
     }
 
-    // Cache the result for 1 hour
-    await cache.set(cacheKey, result, 3600);
+    // TODO: Cache the result for 1 hour
+    // await cache.set(cacheKey, result, 3600);
 
     return NextResponse.json({
       success: true,
@@ -117,8 +95,9 @@ async function handler(request: NextRequest) {
   }
 }
 
-// Apply rate limiting (scraper type: 5 requests per minute)
-export const POST = rateLimited(handler, 'scraper');
+// TODO: Apply rate limiting (scraper type: 5 requests per minute)
+// export const POST = rateLimited(handler, 'scraper');
+export const POST = handler;
 
 // Document the API endpoint
 export async function GET(request: NextRequest) {
@@ -132,20 +111,14 @@ export async function GET(request: NextRequest) {
       url: 'string (required) - URL to scrape',
       type: 'string (optional) - Type of scraping: content, screenshot, pdf',
       options: {
-        // For content type
-        selector: 'string (optional) - CSS selector to extract',
-        waitForSelector: 'string (optional) - Wait for this selector before scraping',
-        
-        // For screenshot type
-        fullPage: 'boolean (optional) - Take full page screenshot',
-        width: 'number (optional) - Viewport width',
-        height: 'number (optional) - Viewport height',
-        format: 'string (optional) - Image format: png or jpeg',
-        
-        // For PDF type
-        format: 'string (optional) - Page format: A4, Letter, etc.',
-        landscape: 'boolean (optional) - Use landscape orientation',
-        margin: 'object (optional) - Page margins',
+        selector: 'string (optional) - CSS selector to extract (content type)',
+        waitForSelector: 'string (optional) - Wait for this selector before scraping (content type)',
+        fullPage: 'boolean (optional) - Take full page screenshot (screenshot type)',
+        width: 'number (optional) - Viewport width (screenshot type)',
+        height: 'number (optional) - Viewport height (screenshot type)',
+        format: 'string (optional) - Image format: png/jpeg or Page format: A4/Letter',
+        landscape: 'boolean (optional) - Use landscape orientation (PDF type)',
+        margin: 'object (optional) - Page margins (PDF type)',
       },
     },
     response: {
