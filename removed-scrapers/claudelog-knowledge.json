@@ -1,0 +1,343 @@
+{
+  "patterns": [
+    {
+      "type": "topic",
+      "name": "What is Claude?​",
+      "description": "Important topic from Home: What is Claude?​",
+      "source": "Home",
+      "confidence": 0.8
+    },
+    {
+      "type": "topic",
+      "name": "What is Claude Code?​",
+      "description": "Important topic from Home: What is Claude Code?​",
+      "source": "Home",
+      "confidence": 0.8
+    },
+    {
+      "type": "topic",
+      "name": "The Turning Point​",
+      "description": "Important topic from Home: The Turning Point​",
+      "source": "Home",
+      "confidence": 0.8
+    },
+    {
+      "type": "topic",
+      "name": "Claude Code Setup​",
+      "description": "Important topic from Home: Claude Code Setup​",
+      "source": "Home",
+      "confidence": 0.8
+    },
+    {
+      "type": "pattern",
+      "name": "claude-md pattern",
+      "description": "Found 3 references to claude-md in Home",
+      "source": "Home",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "context-management pattern",
+      "description": "Found 1 references to context-management in Home",
+      "source": "Home",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "sub-agents pattern",
+      "description": "Found 2 references to sub-agents in Home",
+      "source": "Home",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "ultrathinking pattern",
+      "description": "Found 3 references to ultrathinking in Home",
+      "source": "Home",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "performance pattern",
+      "description": "Found 5 references to performance in Home",
+      "source": "Home",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "bash-scripting pattern",
+      "description": "Found 1 references to bash-scripting in Home",
+      "source": "Home",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "memory-management pattern",
+      "description": "Found 1 references to memory-management in Home",
+      "source": "Home",
+      "confidence": 0.9
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "# Option 1: Environment variable (recommended)export ANTHROPIC_API_KEY=&quot;your-api-key-here&quot;# Option 2: Add to your shell profileecho &#x27;export ANTHROPIC_API_KEY=&quot;your-api-key-here&quot;&#x27; &gt;&gt; ~/.bashrcsource ~/.bashrc",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "export ANTHROPIC_MODEL=&quot;claude-sonnet-4-20250514&quot;",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "export ANTHROPIC_MODEL=&quot;claude-opus-4-1-20250805&quot;",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "export ANTHROPIC_MODEL=&quot;claude-opus-4-20250514&quot;",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "export ANTHROPIC_MODEL=&quot;claude-3-5-haiku-20241022&quot;",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "claude --model claude-sonnet-4-20250514claude --model claude-opus-4-1-20250805claude --model claude-opus-4-20250514claude --model claude-3-5-haiku-20241022",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": ".claude/settings.local.json",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "~/.claude/settings.local.json",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "~/.claude/settings.json",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "~/.claude/mcp_servers.json",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "// Example: ~/.claude.json (recommended for reliability){  &quot;projects&quot;: {    &quot;/path/to/your/project&quot;: {      &quot;mcpServers&quot;: {        &quot;filesystem&quot;: {          &quot;command&quot;: &quot;npx&quot;,          &quot;args&quot;: [&quot;-y&quot;, &quot;@modelcontextprotocol/server-filesystem&quot;, &quot;/Users/username/Desktop&quot;, &quot;/path/to/allowed/dir&quot;]        },        &quot;memory&quot;: {          &quot;command&quot;: &quot;npx&quot;,          &quot;args&quot;: [&quot;-y&quot;, &quot;@modelcontextprotocol/server-memory&quot;]        },        &quot;fetch&quot;: {          &quot;command&quot;: &quot;npx&quot;,          &quot;args&quot;: [&quot;-y&quot;, &quot;@modelcontextprotocol/server-fetch&quot;]        }      }    }  },  ...}",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": ".claude/settings.local.json",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "~/.claude/settings.local.json",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "~/.claude/settings.json",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "// Example: ~/.claude.json (recommended for reliability){  &quot;projects&quot;: {    &quot;/path/to/your/project&quot;: {      &quot;mcpServers&quot;: {        &quot;filesystem&quot;: {          &quot;command&quot;: &quot;npx&quot;,          &quot;args&quot;: [&quot;-y&quot;, &quot;@modelcontextprotocol/server-filesystem&quot;, &quot;/Users/username/Desktop&quot;, &quot;/path/to/allowed/dir&quot;]        }      },      &quot;allowedTools&quot;: [        &quot;Task&quot;,        &quot;Bash&quot;,                    // ⚠️ Dangerous: allows all system commands        &quot;Bash(git log:*)&quot;,   // Safer: only allows git log commands        &quot;Glob&quot;,        &quot;Grep&quot;,        &quot;LS&quot;,        &quot;Read&quot;,        &quot;Edit&quot;,        &quot;MultiEdit&quot;,        &quot;Write&quot;,        &quot;WebFetch&quot;,        &quot;WebSearch&quot;      ]    }  },  ...}",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "# Launch the interactive permissions UI/permissions",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "# Add a single additional directoryclaude --add-dir /path/to/other/project# Combine with other optionsclaude --add-dir ~/shared/libraries# Use with print mode for scriptingclaude --add-dir ../backend -p &quot;Validate that API calls in the current directory match endpoints defined in ../backend&quot;",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "# Add directory without restarting your session/add-dir /path/to/other/project# Add multiple directories as needed/add-dir ~/shared/libraries/add-dir ../backend-api",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "# At startup: Work on frontend while referencing the backend APIclaude --add-dir ../backend-api# Mid-session: Add backend when you need to reference API endpoints/add-dir ../backend-api",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "# At startup: Access shared configs or documentationclaude --add-dir ~/company/shared-configs# Mid-session: Add shared resources when needed/add-dir ~/company/shared-configs",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "code-example",
+      "name": "Code from Configuration",
+      "description": "# Start with current project, then expand as needed# No need to restart when you realize you need additional context/add-dir ../related-service/add-dir ~/templates",
+      "source": "Configuration",
+      "confidence": 0.7
+    },
+    {
+      "type": "topic",
+      "name": "API Key Setup​",
+      "description": "Important topic from Configuration: API Key Setup​",
+      "source": "Configuration",
+      "confidence": 0.8
+    },
+    {
+      "type": "topic",
+      "name": "Model Selection​",
+      "description": "Important topic from Configuration: Model Selection​",
+      "source": "Configuration",
+      "confidence": 0.8
+    },
+    {
+      "type": "topic",
+      "name": "Model Switching During Session​",
+      "description": "Important topic from Configuration: Model Switching During Session​",
+      "source": "Configuration",
+      "confidence": 0.8
+    },
+    {
+      "type": "topic",
+      "name": "MCP Configuration​",
+      "description": "Important topic from Configuration: MCP Configuration​",
+      "source": "Configuration",
+      "confidence": 0.8
+    },
+    {
+      "type": "topic",
+      "name": "Allowed Tools​",
+      "description": "Important topic from Configuration: Allowed Tools​",
+      "source": "Configuration",
+      "confidence": 0.8
+    },
+    {
+      "type": "topic",
+      "name": "Additional Working Directories / Extended Workspace​",
+      "description": "Important topic from Configuration: Additional Working Directories / Extended Workspace​",
+      "source": "Configuration",
+      "confidence": 0.8
+    },
+    {
+      "type": "topic",
+      "name": "Usage​",
+      "description": "Important topic from Configuration: Usage​",
+      "source": "Configuration",
+      "confidence": 0.8
+    },
+    {
+      "type": "topic",
+      "name": "Common Use Cases​",
+      "description": "Important topic from Configuration: Common Use Cases​",
+      "source": "Configuration",
+      "confidence": 0.8
+    },
+    {
+      "type": "pattern",
+      "name": "claude-md pattern",
+      "description": "Found 3 references to claude-md in Configuration",
+      "source": "Configuration",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "context-management pattern",
+      "description": "Found 1 references to context-management in Configuration",
+      "source": "Configuration",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "sub-agents pattern",
+      "description": "Found 2 references to sub-agents in Configuration",
+      "source": "Configuration",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "ultrathinking pattern",
+      "description": "Found 3 references to ultrathinking in Configuration",
+      "source": "Configuration",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "mcp pattern",
+      "description": "Found 15 references to mcp in Configuration",
+      "source": "Configuration",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "performance pattern",
+      "description": "Found 6 references to performance in Configuration",
+      "source": "Configuration",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "bash-scripting pattern",
+      "description": "Found 1 references to bash-scripting in Configuration",
+      "source": "Configuration",
+      "confidence": 0.9
+    },
+    {
+      "type": "pattern",
+      "name": "memory-management pattern",
+      "description": "Found 3 references to memory-management in Configuration",
+      "source": "Configuration",
+      "confidence": 0.9
+    }
+  ],
+  "bestPractices": [],
+  "configurations": [],
+  "tips": []
+}

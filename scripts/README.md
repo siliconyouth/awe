@@ -1,6 +1,6 @@
-# AWE Environment Setup Scripts
+# AWE Scripts
 
-This directory contains scripts to help you set up environment variables for AWE development.
+This directory contains utility scripts for AWE development, including the fast environment loader and setup tools.
 
 ## 🚀 Quick Setup
 

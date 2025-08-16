@@ -1,0 +1,91 @@
+name: awe-firecrawl
+
+x-common-service: &common-service
+  build: 
+    context: https://github.com/mendableai/firecrawl.git#main:apps/api
+  ulimits:
+    nofile:
+      soft: 65535
+      hard: 65535
+  networks:
+    - firecrawl-network
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+x-common-env: &common-env
+  REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+  REDIS_RATE_LIMIT_URL: ${REDIS_URL:-redis://redis:6379}
+  PLAYWRIGHT_MICROSERVICE_URL: ${PLAYWRIGHT_MICROSERVICE_URL:-http://playwright-service:3000/scrape}
+  USE_DB_AUTHENTICATION: ${USE_DB_AUTHENTICATION:-false}
+  OPENAI_API_KEY: ${OPENAI_API_KEY}
+  OPENAI_BASE_URL: ${OPENAI_BASE_URL}
+  MODEL_NAME: ${MODEL_NAME}
+  MODEL_EMBEDDING_NAME: ${MODEL_EMBEDDING_NAME} 
+  OLLAMA_BASE_URL: ${OLLAMA_BASE_URL} 
+  BULL_AUTH_KEY: ${BULL_AUTH_KEY:-awe-firecrawl-admin}
+  PROXY_SERVER: ${PROXY_SERVER}
+  PROXY_USERNAME: ${PROXY_USERNAME}
+  PROXY_PASSWORD: ${PROXY_PASSWORD}
+  SEARXNG_ENDPOINT: ${SEARXNG_ENDPOINT}
+  SEARXNG_ENGINES: ${SEARXNG_ENGINES}
+  SEARXNG_CATEGORIES: ${SEARXNG_CATEGORIES}
+  LLAMAPARSE_API_KEY: ${LLAMAPARSE_API_KEY}
+
+services:
+  playwright-service:
+    build: 
+      context: https://github.com/mendableai/firecrawl.git#main:apps/playwright-service-ts
+    environment:
+      PORT: 3000
+      PROXY_SERVER: ${PROXY_SERVER}
+      PROXY_USERNAME: ${PROXY_USERNAME}
+      PROXY_PASSWORD: ${PROXY_PASSWORD}
+      BLOCK_MEDIA: ${BLOCK_MEDIA:-false}
+    networks:
+      - firecrawl-network
+    restart: unless-stopped
+
+  api:
+    <<: *common-service
+    environment:
+      <<: *common-env
+      HOST: "0.0.0.0"
+      PORT: ${INTERNAL_PORT:-3002}
+      FLY_PROCESS_GROUP: app
+      ENV: local
+    depends_on:
+      - redis
+      - playwright-service
+    ports:
+      - "${FIRECRAWL_PORT:-3002}:${INTERNAL_PORT:-3002}"
+    command: [ "pnpm", "run", "start:production" ]
+    restart: unless-stopped
+
+  worker:
+    <<: *common-service
+    environment:
+      <<: *common-env
+      FLY_PROCESS_GROUP: worker
+      ENV: local
+    depends_on:
+      - redis
+      - playwright-service
+      - api
+    command: [ "pnpm", "run", "workers" ]
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    networks:
+      - firecrawl-network
+    command: redis-server --bind 0.0.0.0
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+networks:
+  firecrawl-network:
+    driver: bridge
+
+volumes:
+  redis-data:

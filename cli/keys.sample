@@ -1,0 +1,18 @@
+# dotenvx encryption keys template
+# Copy this to .env.keys and add your actual keys
+# Generate keys with: npx dotenvx genkey
+
+# Development environment key
+DOTENV_KEY_DEVELOPMENT="dotenv://:key_development@dotenvx.com/vault/.env.vault?environment=development"
+
+# Production environment key  
+DOTENV_KEY_PRODUCTION="dotenv://:key_production@dotenvx.com/vault/.env.vault?environment=production"
+
+# Staging environment key
+DOTENV_KEY_STAGING="dotenv://:key_staging@dotenvx.com/vault/.env.vault?environment=staging"
+
+# Instructions:
+# 1. Generate your own keys: npx dotenvx genkey
+# 2. Replace the example keys above with your generated keys
+# 3. Keep this file secure and never commit to version control
+# 4. Share keys securely with team members (use password managers)
