@@ -1,8 +1,9 @@
-# 🌆 AWE - Awesome Workspace Engineering
+# 🌆 AWE - Awesome Workspace Engineering v2.0
 
 > **The Industry-Leading AI Companion for Claude Code**  
-> Transform your development workflow with Claude Opus 4.1 powered intelligence, ultrathinking analysis, and automated optimization.
+> Transform your development workflow with Claude Opus 4.1 powered intelligence, authentication, web scraping, and automated optimization.
 
+[![Version](https://img.shields.io/badge/Version-2.0.0-red)](https://github.com/awe-team/awe/releases)
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-green)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
 [![Claude Opus](https://img.shields.io/badge/Claude-Opus%204.1-purple)](https://www.anthropic.com/claude)

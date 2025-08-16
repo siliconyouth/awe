@@ -33,6 +33,12 @@ export function getSupabase() {
 
 export async function initializeDatabase(config?: Config) {
   try {
+    // Check if DATABASE_URL is set, if not, return null for offline mode
+    if (!process.env.DATABASE_URL && !process.env.AWE_DATABASE_URL) {
+      // Silently return null - offline mode
+      return null
+    }
+    
     const db = getPrisma()
     
     // Test connection
@@ -45,9 +51,13 @@ export async function initializeDatabase(config?: Config) {
     }
     
     return db
-  } catch (error) {
-    console.error('Failed to initialize database:', error)
-    throw error
+  } catch (error: any) {
+    // Only log if it's not a missing DATABASE_URL error
+    if (!error?.message?.includes('DATABASE_URL')) {
+      console.error('Failed to initialize database:', error)
+    }
+    // Don't throw - allow offline mode
+    return null
   }
 }
 

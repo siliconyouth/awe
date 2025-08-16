@@ -1,6 +1,6 @@
 {
   "name": "@awe/database",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Database layer for AWE workspace with Prisma and Supabase",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -17,10 +17,13 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "clean": "rm -rf dist",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "env": "node ../../scripts/env-loader.js ../../.env.local",
+    "db:generate": "npm run env 'prisma generate'",
+    "db:push": "npm run env 'prisma db push'",
+    "db:migrate": "npm run env 'prisma migrate dev'",
+    "db:studio": "npm run env 'prisma studio'",
+    "db:migrate:raw": "prisma migrate dev",
+    "db:studio:raw": "prisma studio"
   },
   "dependencies": {
     "@awe/shared": "workspace:*",

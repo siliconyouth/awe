@@ -360,4 +360,29 @@ Provide a comprehensive analysis with specific, actionable recommendations. Focu
 
 Return the complete analysis as a JSON object.`
   }
+
+  /**
+   * Chat method for conversational interactions
+   */
+  async chat(input: string, context?: any): Promise<string> {
+    const response = await this.anthropic.messages.create({
+      model: this.model,
+      max_tokens: 2000,
+      temperature: 0.7,
+      system: `You are AWE, an intelligent AI assistant for Claude Code development. 
+You help developers optimize their workflows, configure Claude integration, and provide best practices.
+Be helpful, concise, and actionable in your responses.`,
+      messages: [{
+        role: 'user',
+        content: `${context ? `Context: ${JSON.stringify(context)}\n\n` : ''}${input}`
+      }]
+    })
+
+    const content = response.content[0]
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude')
+    }
+
+    return content.text
+  }
 }

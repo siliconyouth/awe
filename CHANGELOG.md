@@ -5,9 +5,78 @@ All notable changes to AWE (Awesome Workspace Engineering) will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2025-08-16
+## [2.0.0] - 2025-08-16
 
-### 🎉 Major Release - Claude Opus 4.1 Integration
+### 🚀 Major Release: Authentication, Web Scraping, and External Services
+
+This release introduces comprehensive authentication, advanced web scraping capabilities, and integration with external services for enhanced functionality.
+
+### Added
+
+#### Authentication & User Management
+- **Clerk Authentication Integration**: Complete authentication system with SSO support
+  - User sign-up/sign-in with multiple providers
+  - Protected routes and API endpoints
+  - Role-based access control (RBAC)
+  - Organization management
+  - Session management with JWT tokens
+  - Backend authentication utilities
+  - Server actions for user operations
+
+#### Web Scraping & Knowledge Management
+- **SmartScraper**: Custom intelligent web scraper replacing Firecrawl
+  - Automatic detection of static vs dynamic content
+  - Playwright integration for JavaScript-heavy sites
+  - Cheerio for fast static content extraction
+  - No API rate limits or dependencies
+  - Built-in caching and optimization
+
+- **Knowledge Monitoring System**: Continuous documentation tracking
+  - Automatic source monitoring with version control
+  - AI-powered pattern extraction and analysis
+  - Admin panel for source management
+  - Review dashboard for content approval
+  - Trend analysis and change detection
+  - Vercel Cron job support
+
+#### External Services Integration
+- **Browserless**: Headless Chrome automation
+  - Web scraping with dynamic content support
+  - Screenshot capture and PDF generation
+  - Form automation capabilities
+  - Support for cloud and self-hosted deployments
+
+- **Upstash Redis**: Serverless caching and rate limiting
+  - Multiple rate limiters (API, Scraper, AI, Auth)
+  - Distributed caching with TTL support
+  - Session storage management
+  - Queue system for background jobs
+  - Distributed locks for race condition prevention
+
+### Changed
+- Migrated from Firecrawl to custom SmartScraper solution
+- Updated all package versions to 2.0.0
+- Improved middleware architecture with rate limiting
+- Enhanced security with authentication on all sensitive endpoints
+
+### Removed
+- Firecrawl integration (replaced with SmartScraper)
+- Legacy web scraper implementation
+- Infisical and dotenvx dependencies
+- Environment symlink system
+
+### Security
+- Implemented comprehensive authentication system
+- Added rate limiting to prevent abuse
+- Protected all API endpoints with authentication
+- Added role-based access control
+- Secure session management with Redis
+
+---
+
+## [1.0.0] - 2025-08-15
+
+### 🎉 Initial Release - Claude Opus 4.1 Integration
 
 This release transforms AWE into a production-ready AI-powered development companion with comprehensive Claude Code integration.
 

@@ -18,6 +18,9 @@ import { InitCommand } from '../commands/init'
 import { ScaffoldCommand } from '../commands/scaffold'
 import { RecommendCommand } from '../commands/recommend'
 import { SyncCommand } from '../commands/sync'
+import { SetupCommand } from '../commands/setup'
+import { ChatCommand } from '../commands/chat'
+import { LearnCommand } from '../commands/learn'
 
 import { validateEnvironment } from '../utils/validation'
 import { createLogger } from '../utils/logger'
@@ -55,18 +58,26 @@ async function main() {
       process.exit(1)
     }
     
-    if (envValidation.warnings.length > 0) {
-      envValidation.warnings.forEach(warning => {
+    // Only show warnings if not in quiet mode and if they're important
+    const isQuiet = program.opts().quiet
+    if (!isQuiet && envValidation.warnings.length > 0) {
+      // Filter out database-related warnings if running without --debug
+      const importantWarnings = program.opts().debug 
+        ? envValidation.warnings 
+        : envValidation.warnings.filter(w => !w.includes('Supabase') && !w.includes('database'))
+      
+      importantWarnings.forEach(warning => {
         console.warn(chalk.yellow(`⚠️  ${warning}`))
       })
     }
 
-    // Initialize database
-    try {
-      await initializeDatabase()
-    } catch (error) {
-      logger.warn('Database initialization failed, running in offline mode:', error)
-    }
+    // Initialize database silently
+    await initializeDatabase().catch(() => {
+      // Silently continue in offline mode
+      if (program.opts().debug) {
+        logger.debug('Running in offline mode (no database)')
+      }
+    })
 
     // Add commands
     program.addCommand(new AnalyzeCommand().getCommand())
@@ -75,6 +86,9 @@ async function main() {
     program.addCommand(new ScaffoldCommand().getCommand())
     program.addCommand(new RecommendCommand().getCommand())
     program.addCommand(new SyncCommand().getCommand())
+    program.addCommand(new SetupCommand().getCommand())
+    program.addCommand(new ChatCommand().getCommand())
+    program.addCommand(new LearnCommand().getCommand())
 
     // Default action for bare command
     program.action(() => {
@@ -88,11 +102,11 @@ Intelligent companion for Claude Code that provides:
 • Context engineering best practices
 
 ${chalk.bold('Quick Start:')}
-  ${chalk.green('awe config')}     Configure credentials and settings
+  ${chalk.green('awe setup')}      Interactive setup wizard
+  ${chalk.green('awe chat')}       Chat with AI assistant
   ${chalk.green('awe init')}       Initialize project with Claude.md
   ${chalk.green('awe analyze')}    Analyze current project
   ${chalk.green('awe recommend')}  Get AI-powered recommendations
-  ${chalk.green('awe scaffold')}   Generate project skeleton
 
 ${chalk.bold('Learn More:')}
   ${chalk.green('awe --help')}     Show all available commands

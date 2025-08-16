@@ -1,6 +1,6 @@
 {
   "name": "@awe/cli",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "AWE CLI - TypeScript command line interface for Awesome Workspace Engineering",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -18,20 +18,19 @@
     "validate": "node dist/scripts/validate-setup.js"
   },
   "dependencies": {
-    "@awe/shared": "workspace:*",
-    "@awe/database": "workspace:*",
     "@awe/ai": "workspace:*",
-    "@dotenvx/dotenvx": "^1.14.2",
+    "@awe/database": "workspace:*",
+    "@awe/shared": "workspace:*",
     "@supabase/supabase-js": "^2.48.0",
     "boxen": "^7.1.1",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
-    "inquirer": "^12.1.0",
-    "ora": "^8.1.1",
+    "inquirer": "^12.9.2",
+    "ora": "^8.2.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@types/inquirer": "^9.0.7",
+    "@types/inquirer": "^9.0.9",
     "@types/node": "^22.10.6",
     "eslint": "^9.17.0",
     "tsup": "^8.5.0",
