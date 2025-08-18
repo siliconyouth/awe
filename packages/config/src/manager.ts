@@ -13,6 +13,7 @@ import { FileProvider } from './providers/file'
 import { DatabaseProvider } from './providers/database'
 import * as lodash from 'lodash'
 import chalk from 'chalk'
+import { DEFAULT_CONFIG } from './defaults'
 
 // Import schemas
 import { 
@@ -433,21 +434,7 @@ export class ConfigManager extends EventEmitter {
    * Get default configuration
    */
   private getDefaultConfig(overrides?: Partial<AWEConfig>): AWEConfig {
-    const defaults: AWEConfig = {
-      app: AppConfigSchema.parse({}),
-      database: DatabaseConfigSchema.parse({}),
-      api: ApiConfigSchema.parse({}),
-      auth: AuthConfigSchema.parse({}),
-      features: FeatureFlagsSchema.parse({}),
-      cache: CacheConfigSchema.parse({}),
-      queue: QueueConfigSchema.parse({}),
-      storage: StorageConfigSchema.parse({}),
-      email: EmailConfigSchema.parse({}),
-      scraper: ScraperConfigSchema.parse({}),
-      knowledge: KnowledgeConfigSchema.parse({}),
-      custom: {},
-    }
-
+    const defaults = { ...DEFAULT_CONFIG }
     return overrides ? lodash.merge({}, defaults, overrides) : defaults
   }
 

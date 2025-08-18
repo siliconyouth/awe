@@ -5,6 +5,7 @@
 import { ConfigManager, type ConfigManagerOptions } from './manager'
 import { EnvProvider } from './providers/env'
 import { FileProvider } from './providers/file'
+import type { IConfigProvider } from './providers/base'
 
 /**
  * Create a configuration manager for web applications
@@ -12,14 +13,14 @@ import { FileProvider } from './providers/file'
 export function createWebConfig(options?: Partial<ConfigManagerOptions>) {
   const manager = new ConfigManager({
     environment: process.env.NODE_ENV as 'development' | 'production' | 'test' || 'development',
-    autoSave: false,
-    watchChanges: false,
+    watch: false,
+    cache: true,
+    providers: [
+      new EnvProvider({ prefix: 'NEXT_PUBLIC_' }),
+      new EnvProvider({ prefix: '' })
+    ],
     ...options
   })
-
-  // Add environment provider
-  manager.addProvider(new EnvProvider({ prefix: 'NEXT_PUBLIC_' }))
-  manager.addProvider(new EnvProvider({ prefix: '' }))
 
   return manager
 }
@@ -28,24 +29,25 @@ export function createWebConfig(options?: Partial<ConfigManagerOptions>) {
  * Create a configuration manager for CLI applications
  */
 export function createCliConfig(options?: Partial<ConfigManagerOptions>) {
-  const manager = new ConfigManager({
-    environment: process.env.NODE_ENV as 'development' | 'production' | 'test' || 'development',
-    autoSave: true,
-    watchChanges: true,
-    ...options
-  })
-
-  // Add providers
-  manager.addProvider(new EnvProvider({ prefix: '' }))
-  
-  // Add file provider for user config
   const homeDir = process.env.HOME || process.env.USERPROFILE || ''
+  const providers: IConfigProvider[] = [
+    new EnvProvider({ prefix: '' })
+  ]
+  
   if (homeDir) {
-    manager.addProvider(new FileProvider({
-      filePath: `${homeDir}/.awe/config.json`,
-      createIfNotExists: true
+    providers.push(new FileProvider({
+      paths: [`${homeDir}/.awe/config.json`],
+      watch: true
     }))
   }
+  
+  const manager = new ConfigManager({
+    environment: process.env.NODE_ENV as 'development' | 'production' | 'test' || 'development',
+    watch: true,
+    cache: true,
+    providers,
+    ...options
+  })
 
   return manager
 }
@@ -56,19 +58,15 @@ export function createCliConfig(options?: Partial<ConfigManagerOptions>) {
 export function createApiConfig(options?: Partial<ConfigManagerOptions>) {
   const manager = new ConfigManager({
     environment: process.env.NODE_ENV as 'development' | 'production' | 'test' || 'production',
-    autoSave: false,
-    watchChanges: false,
+    watch: false,
+    cache: true,
+    providers: [
+      new EnvProvider({ 
+        prefix: ''
+      })
+    ],
     ...options
   })
-
-  // Add environment provider
-  manager.addProvider(new EnvProvider({ 
-    prefix: '',
-    required: [
-      'DATABASE_URL',
-      'CLERK_SECRET_KEY'
-    ]
-  }))
 
   return manager
 }

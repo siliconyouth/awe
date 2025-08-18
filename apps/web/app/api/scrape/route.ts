@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { AdvancedSmartScraper } from '@awe/ai';
+import { SmartScraper } from '@awe/ai';
 import { withRateLimit } from '../../../lib/rate-limit';
 
 /**
@@ -59,72 +59,24 @@ async function handler(request: NextRequest) {
     }
 
     // Initialize SmartScraper
-    const scraper = new AdvancedSmartScraper({
+    const scraper = new SmartScraper({
       cacheEnabled: true,
-      cacheDir: '/tmp/scraper-cache',
-      maxRetries: 3,
       timeout: 30000,
     });
 
-    // Perform scraping based on type
+    // Perform scraping
     let result;
     
     try {
-      switch (type) {
-        case 'screenshot': {
-          const screenshotResult = await scraper.screenshot(url, {
-            fullPage: true,
-            quality: 90,
-          });
-          
-          result = {
-            type: 'screenshot',
-            url,
-            screenshot: screenshotResult.screenshot,
-            metadata: screenshotResult.metadata,
-          };
-          break;
-        }
-
-        case 'pdf': {
-          const pdfResult = await scraper.pdf(url, {
-            format: 'A4',
-            printBackground: true,
-          });
-          
-          result = {
-            type: 'pdf',
-            url,
-            pdf: pdfResult.pdf,
-            metadata: pdfResult.metadata,
-          };
-          break;
-        }
-
-        case 'content':
-        default: {
-          const contentResult = await scraper.scrape(url, {
-            extractContent: true,
-            extractMetadata: true,
-            extractStructuredData: true,
-            waitForSelector: undefined,
-            screenshot: false,
-          });
-          
-          result = {
-            type: 'content',
-            url,
-            content: contentResult.content,
-            metadata: contentResult.metadata,
-            structuredData: contentResult.structuredData,
-            title: contentResult.title,
-            description: contentResult.description,
-            images: contentResult.images,
-            links: contentResult.links,
-          };
-          break;
-        }
-      }
+      const contentResult = await scraper.scrape(url);
+      
+      result = {
+        type: 'content',
+        url,
+        content: contentResult.content,
+        markdown: contentResult.markdown,
+        metadata: contentResult.metadata,
+      };
     } finally {
       // Clean up
       await scraper.close();

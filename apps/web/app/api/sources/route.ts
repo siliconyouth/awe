@@ -21,18 +21,18 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     
-    const category = searchParams.get('category')
-    const status = searchParams.get('status')
+    const type = searchParams.get('type')
+    const active = searchParams.get('active')
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
     
     interface SourceWhere {
-      category?: string
-      status?: string
+      type?: string
+      active?: boolean
     }
     const where: SourceWhere = {}
-    if (category) where.category = category
-    if (status) where.status = status
+    if (type) where.type = type
+    if (active !== null) where.active = active === 'true'
     
     const [sources, total] = await Promise.all([
       db.knowledgeSource.findMany({
@@ -43,8 +43,7 @@ export async function GET(request: NextRequest) {
         include: {
           _count: {
             select: {
-              versions: true,
-              patterns: true
+              updates: true
             }
           }
         }
@@ -81,12 +80,11 @@ export async function POST(request: NextRequest) {
       data: {
         name: data.name,
         url: data.url,
-        category: data.category || 'OTHER',
-        checkFrequency: data.checkFrequency || 'DAILY',
-        extractionRules: data.extractionRules || {},
-        authentication: data.authentication || null,
-        metadata: data.metadata || {},
-        status: 'ACTIVE'
+        type: data.type || 'DOCUMENTATION',
+        frequency: data.frequency || 'DAILY',
+        scrapeConfig: data.scrapeConfig || {},
+        active: true,
+        reliability: data.reliability || 0.8
       }
     })
     

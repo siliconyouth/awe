@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDatabase } from '../../../../../lib/database'
-import { AdvancedSmartScraper } from '@awe/ai'
+import { SmartScraper } from '@awe/ai'
 
 export async function GET(request: NextRequest) {
   // Verify this is called by Vercel Cron
@@ -38,18 +38,15 @@ export async function GET(request: NextRequest) {
     const results = []
     
     if (sources.length > 0) {
-      const scraper = new AdvancedSmartScraper({
+      const scraper = new SmartScraper({
         cacheEnabled: false,
-        maxRetries: 1,
+        maxConcurrency: 1,
         timeout: 15000,
       })
 
       for (const source of sources) {
         try {
-          const scrapedData = await scraper.scrape(source.url, {
-            extractContent: true,
-            extractMetadata: true,
-          })
+          const scrapedData = await scraper.scrape(source.url)
 
           // Save knowledge update
           await db.knowledgeUpdate.create({
