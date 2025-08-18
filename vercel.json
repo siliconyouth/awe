@@ -1,33 +1,6 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "apps/web/package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "apps/web/$1"
-    }
-  ],
-  "env": {
-    "DATABASE_URL": "@database-url",
-    "SUPABASE_URL": "@supabase-url",
-    "SUPABASE_ANON_KEY": "@supabase-anon-key",
-    "SUPABASE_SERVICE_KEY": "@supabase-service-key"
-  },
-  "build": {
-    "env": {
-      "TURBO_TEAM": "awe-team",
-      "TURBO_REMOTE_ONLY": "true"
-    }
-  },
-  "functions": {
-    "apps/web/**": {
-      "runtime": "nodejs22.x"
-    }
-  },
-  "outputDirectory": "apps/web/.next"
+  "buildCommand": "turbo run build",
+  "outputDirectory": "apps/web/.next",
+  "installCommand": "pnpm install",
+  "framework": "nextjs"
 }
