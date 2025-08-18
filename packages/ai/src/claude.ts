@@ -5,7 +5,7 @@ import type {
   AnalysisDepth,
   ProjectContext,
   TemplateRecommendation
-} from './types.js'
+} from './types'
 
 export class ClaudeAIService {
   private anthropic: Anthropic

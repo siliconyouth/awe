@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events'
 import chalk from 'chalk'
 import ora from 'ora'
-import type { AIAnalysisResult, AIRecommendation } from './types.js'
+import type { AIAnalysisResult, AIRecommendation } from './types'
 
 export interface StreamingOptions {
   wordsPerMinute?: number

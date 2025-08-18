@@ -8,8 +8,8 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { glob } from 'glob';
-import { PatternRecognitionEngine, PatternCategory } from './pattern-recognition.js';
-import type { CodePattern } from './pattern-recognition.js';
+import { PatternRecognitionEngine, PatternCategory } from './pattern-recognition';
+import type { CodePattern } from './pattern-recognition';
 
 // Configuration templates for different tools
 export interface ConfigTemplate {

@@ -5,12 +5,12 @@
  * to provide comprehensive development assistance
  */
 
-import { ClaudeAIService } from './claude.js';
-import { PatternRecognitionEngine, PatternCategory } from './pattern-recognition.js';
-import { IntelligentConfigGenerator } from './config-generator.js';
-import { HookManager, HookType } from './hook-manager.js';
-import { SmartScraper } from './smart-scraper.js';
-import { ProjectScanner } from './project-scanner.js';
+import { ClaudeAIService } from './claude';
+import { PatternRecognitionEngine, PatternCategory } from './pattern-recognition';
+import { IntelligentConfigGenerator } from './config-generator';
+import { HookManager, HookType } from './hook-manager';
+import { SmartScraper } from './smart-scraper';
+import { ProjectScanner } from './project-scanner';
 import chalk from 'chalk';
 import * as path from 'path';
 

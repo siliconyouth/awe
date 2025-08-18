@@ -361,51 +361,91 @@ export const DEFAULT_CONFIG: AWEConfig = {
       }
     },
     patterns: {
-      enabled: false,
-      extraction: {
-        useAI: false,
-        patterns: [],
-        confidence: 0.7
+      enabled: true,
+      types: ['api-endpoints', 'code-examples', 'configuration'],
+      ai: {
+        enabled: true,
+        model: 'claude-3-haiku',
+        confidence: 0.7,
+        maxTokens: 4000
       },
-      library: {
-        enabled: false,
-        categories: [],
-        autoTag: false
-      },
-      matching: {
-        fuzzy: true,
-        threshold: 0.6,
-        algorithm: 'levenshtein'
+      rules: [],
+      storage: {
+        format: 'database',
+        groupBy: 'type'
       }
     },
     processing: {
-      batchSize: 10,
-      maxConcurrent: 5,
-      retryAttempts: 3,
-      timeout: 30000,
-      deduplication: {
+      pipeline: ['clean', 'normalize', 'extract', 'classify'],
+      cleaning: {
+        removeScripts: true,
+        removeStyles: true,
+        removeComments: true,
+        removeEmptyElements: true,
+        normalizeWhitespace: true
+      },
+      enrichment: {
         enabled: true,
-        strategy: 'content-hash'
+        addMetadata: true,
+        generateEmbeddings: false,
+        extractKeywords: true,
+        detectLanguage: true,
+        calculateReadability: true
+      },
+      transformation: {
+        toMarkdown: true,
+        toPlainText: false,
+        toJson: true,
+        customTransforms: []
       }
     },
     scheduling: {
       enabled: true,
-      defaultCron: '0 0 * * *',
       timezone: 'UTC',
-      retryOnFailure: true,
-      maxRetries: 3
+      jobs: [],
+      concurrency: {
+        max: 5,
+        perSource: 2
+      },
+      priority: {
+        enabled: true,
+        levels: 3,
+        strategy: 'weighted'
+      }
     },
     versioning: {
       enabled: true,
-      maxVersions: 10,
-      diffStrategy: 'line-by-line',
-      compression: false
+      strategy: 'timestamp',
+      storage: {
+        type: 'database',
+        compression: true,
+        encryption: false
+      },
+      comparison: {
+        enabled: true,
+        algorithm: 'diff',
+        trackChanges: true
+      },
+      retention: {
+        maxVersions: 100,
+        maxAge: 7776000000,
+        keepMilestones: true
+      }
     },
     analytics: {
-      enabled: false,
-      trackUsage: false,
-      trackQuality: false,
-      reportingInterval: 86400000
+      enabled: true,
+      metrics: ['content-growth', 'update-frequency', 'quality-scores'],
+      reporting: {
+        enabled: true,
+        schedule: '0 9 * * MON',
+        recipients: [],
+        format: 'html'
+      },
+      dashboards: {
+        enabled: true,
+        refresh: 60000,
+        public: false
+      }
     },
     limits: {
       maxSources: 100,

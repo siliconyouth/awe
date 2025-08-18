@@ -1,11 +1,11 @@
-export { ClaudeAIService } from './claude.js'
-export { ProjectScanner } from './project-scanner.js'
-export { StreamingAIInterface, InteractivePrompt } from './streaming.js'
-export { SmartScraper } from './smart-scraper.js'
-export { AdvancedSmartScraper } from './smart-scraper-advanced.js'
-export { PatternRecognitionEngine, PatternCategory } from './pattern-recognition.js'
-export { IntelligentConfigGenerator } from './config-generator.js'
-export { HookManager, HookRegistry, HookExecutor, HookType, HookTrigger } from './hook-manager.js'
+export { ClaudeAIService } from './claude'
+export { ProjectScanner } from './project-scanner'
+export { StreamingAIInterface, InteractivePrompt } from './streaming'
+export { SmartScraper } from './smart-scraper'
+export { AdvancedSmartScraper } from './smart-scraper-advanced'
+export { PatternRecognitionEngine, PatternCategory } from './pattern-recognition'
+export { IntelligentConfigGenerator } from './config-generator'
+export { HookManager, HookRegistry, HookExecutor, HookType, HookTrigger } from './hook-manager'
 export { 
   AgentOrchestrator, 
   AgentType,
@@ -15,9 +15,9 @@ export {
   PerformanceOptimizerAgent,
   TestGeneratorAgent,
   DocumentationWriterAgent
-} from './agent-ecosystem.js'
-export type { StreamingOptions, ThinkingStep } from './streaming.js'
-export type { SmartScraperConfig, ScrapedPage, ScrapeOptions } from './smart-scraper.js'
+} from './agent-ecosystem'
+export type { StreamingOptions, ThinkingStep } from './streaming'
+export type { SmartScraperConfig, ScrapedPage, ScrapeOptions } from './smart-scraper'
 export type { 
   AdvancedScrapeOptions, 
   EnhancedScrapedPage, 
@@ -25,11 +25,11 @@ export type {
   ProxyConfig, 
   AuthConfig, 
   CloudBrowserConfig 
-} from './smart-scraper-advanced.js'
-export type { CodePattern, PatternOccurrence, PatternRule } from './pattern-recognition.js'
-export type { ConfigTemplate, GeneratedConfig, ConfigGeneratorOptions } from './config-generator.js'
-export type { HookConfig, HookResult, HookContext } from './hook-manager.js'
-export type { AgentCapability, AgentContext, AgentMessage, AgentResult, AgentAction } from './agent-ecosystem.js'
+} from './smart-scraper-advanced'
+export type { CodePattern, PatternOccurrence, PatternRule } from './pattern-recognition'
+export type { ConfigTemplate, GeneratedConfig, ConfigGeneratorOptions } from './config-generator'
+export type { HookConfig, HookResult, HookContext } from './hook-manager'
+export type { AgentCapability, AgentContext, AgentMessage, AgentResult, AgentAction } from './agent-ecosystem'
 export type {
   AIAnalysisResult,
   AIRecommendation,
@@ -38,7 +38,7 @@ export type {
   RecommendationType,
   ProjectContext,
   TemplateRecommendation
-} from './types.js'
+} from './types'
 export {
   AIAnalysisResultSchema,
   AIRecommendationSchema,
@@ -47,4 +47,4 @@ export {
   RecommendationTypeSchema,
   ProjectContextSchema,
   TemplateRecommendationSchema
-} from './types.js'
+} from './types'

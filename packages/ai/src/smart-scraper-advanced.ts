@@ -16,14 +16,15 @@ import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import ProxyChain from 'proxy-chain';
 import { JSONPath } from 'jsonpath-plus';
-import pdfParse from 'pdf-parse';
+// Dynamic import to avoid build-time issues with pdf-parse test files
+// import pdfParse from 'pdf-parse';
 import Tesseract from 'tesseract.js';
 import { Jimp } from 'jimp';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { z } from 'zod';
 import chalk from 'chalk';
-import { StreamingAIInterface } from './streaming.js';
+import { StreamingAIInterface } from './streaming';
 
 // Configuration schemas
 const ProxyConfigSchema = z.object({
@@ -549,7 +550,8 @@ export class AdvancedSmartScraper {
       httpsAgent: proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined,
     });
 
-    // Parse PDF
+    // Parse PDF - dynamic import to avoid build issues
+    const pdfParse = await import('pdf-parse').then(m => m.default);
     const pdfData = await pdfParse(response.data);
 
     const result: EnhancedScrapedPage = {

@@ -540,7 +540,7 @@ export class HookExecutor {
    */
   private async checkPattern(pattern: string, projectPath: string): Promise<boolean> {
     try {
-      const { PatternRecognitionEngine } = await import('./pattern-recognition.js');
+      const { PatternRecognitionEngine } = await import('./pattern-recognition');
       const engine = new PatternRecognitionEngine();
       const patterns = await engine.analyzeCodebase(projectPath, {
         patterns: [pattern]
