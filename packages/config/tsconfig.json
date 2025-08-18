@@ -5,6 +5,7 @@
     "rootDir": "./src",
     "lib": ["ES2022"],
     "types": ["node"],
+    "composite": false,
     "incremental": false,
     "tsBuildInfoFile": null
   },

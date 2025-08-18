@@ -6,16 +6,16 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
+// TODO: Fix type declarations in @awe/config package
 // import { createWebConfig } from '@awe/config'
 // import { z } from 'zod'
 import { checkPermission, protectApiRoute } from '../../../lib/auth/rbac'
 
-// Temporary mock until config package types are fixed
-const createWebConfig = () => ({ 
+// Temporary simplified mock - config package has type issues that need fixing
+const createWebConfig = () => ({
+  initialize: async () => {},
   get: (path?: string) => path ? {} : {},
-  set: async () => {},
-  getAll: () => ({}),
-  reset: () => {},
+  set: async (_path: string, _value: unknown) => {},
   getApp: () => ({}),
   getApi: () => ({}),
   getAuth: () => ({}),
@@ -23,9 +23,8 @@ const createWebConfig = () => ({
   getKnowledge: () => ({}),
   getFeatures: () => ({}),
   getEnvironment: () => 'development' as const,
-  import: async () => {},
-  initialized: false,
-  initialize: async () => {}
+  import: async (_data: unknown) => {},
+  reload: async () => {}
 })
 
 // Initialize configuration manager
@@ -57,10 +56,8 @@ export async function GET(request: NextRequest) {
     const path = searchParams.get('path') || undefined
     const section = searchParams.get('section') || undefined
 
-    // Initialize config if needed
-    if (!configManager['initialized']) {
-      await configManager.initialize()
-    }
+    // Initialize config
+    await configManager.initialize()
 
     // Get configuration
     let config: Record<string, unknown>
@@ -135,15 +132,13 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json()
-    const { path } = body
+    const { path, value } = body
 
-    // Initialize config if needed
-    if (!configManager['initialized']) {
-      await configManager.initialize()
-    }
+    // Initialize config
+    await configManager.initialize()
 
     // Update configuration
-    await configManager.set()
+    await configManager.set(path, value)
 
     return NextResponse.json({
       success: true,
@@ -179,15 +174,13 @@ export async function PUT(request: NextRequest) {
     }
 
     // Parse request body
-    await request.json()
+    const configData = await request.json()
 
-    // Initialize config if needed
-    if (!configManager['initialized']) {
-      await configManager.initialize()
-    }
+    // Initialize config
+    await configManager.initialize()
 
     // Import configuration
-    await configManager.import()
+    await configManager.import(configData)
 
     return NextResponse.json({
       success: true,
@@ -222,10 +215,8 @@ export async function DELETE(_request: NextRequest) {
       return unauthorizedResponse
     }
 
-    // Reset configuration manager
-    // const { resetConfigManager } = await import('@awe/config')
-    // resetConfigManager()
-    configManager.reset()
+    // Reload configuration to defaults
+    await configManager.reload()
 
     return NextResponse.json({
       success: true,

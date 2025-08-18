@@ -165,7 +165,7 @@ export class ConfigManager extends EventEmitter {
       return this.configCache.get(path)
     }
 
-    const value = lodash.get(this.config, path, defaultValue)
+    const value = lodash.get(this.config, path, defaultValue) as T
 
     // Cache the result
     if (this.options.cache) {

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDatabase } from '../../../../../lib/database'
-// import { SmartScraperAdvanced } from '@awe/ai'
-// Temporary mock until types are fixed
-class SmartScraperAdvanced {
-  constructor() {}
-  async scrape() {
+// TODO: Fix type declarations in @awe/ai package
+// import { AdvancedSmartScraper } from '@awe/ai'
+
+// Temporary mock - @awe/ai package has type issues
+class AdvancedSmartScraper {
+  constructor(_options?: unknown) {}
+  async scrape(_url: string, _options?: unknown) {
     return { content: {}, metadata: {} }
   }
   async close() {}
@@ -46,11 +48,18 @@ export async function GET(request: NextRequest) {
     const results = []
     
     if (sources.length > 0) {
-      const scraper = new SmartScraperAdvanced()
+      const scraper = new AdvancedSmartScraper({
+        cacheEnabled: false,
+        maxRetries: 1,
+        timeout: 15000,
+      })
 
       for (const source of sources) {
         try {
-          const scrapedData = await scraper.scrape()
+          const scrapedData = await scraper.scrape(source.url, {
+            extractContent: true,
+            extractMetadata: true,
+          })
 
           // Save knowledge update
           await db.knowledgeUpdate.create({

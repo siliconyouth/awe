@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-// import { SmartScraperAdvanced } from '@awe/ai';
-// Temporary mock until types are fixed
-class SmartScraperAdvanced {
-  constructor() {}
-  async scrape() {
+// TODO: Fix type declarations in @awe/ai package
+// import { AdvancedSmartScraper } from '@awe/ai';
+import { withRateLimit } from '../../../lib/rate-limit';
+
+// Temporary mock - @awe/ai package has type issues
+class AdvancedSmartScraper {
+  constructor(_options?: unknown) {}
+  async scrape(_url: string, _options?: unknown) {
     return { 
       content: 'Mocked content', 
       metadata: {},
@@ -15,15 +18,14 @@ class SmartScraperAdvanced {
       links: []
     }
   }
-  async screenshot() {
+  async screenshot(_url: string, _options?: unknown) {
     return { screenshot: '', metadata: {} }
   }
-  async pdf() {
+  async pdf(_url: string, _options?: unknown) {
     return { pdf: '', metadata: {} }
   }
   async close() {}
 }
-import { withRateLimit } from '../../../lib/rate-limit';
 
 /**
  * Protected API Route: Web Scraping with Browserless
@@ -81,7 +83,12 @@ async function handler(request: NextRequest) {
     }
 
     // Initialize SmartScraper
-    const scraper = new SmartScraperAdvanced();
+    const scraper = new AdvancedSmartScraper({
+      cacheEnabled: true,
+      cacheDir: '/tmp/scraper-cache',
+      maxRetries: 3,
+      timeout: 30000,
+    });
 
     // Perform scraping based on type
     let result;
@@ -89,7 +96,10 @@ async function handler(request: NextRequest) {
     try {
       switch (type) {
         case 'screenshot': {
-          const screenshotResult = await scraper.screenshot();
+          const screenshotResult = await scraper.screenshot(url, {
+            fullPage: true,
+            quality: 90,
+          });
           
           result = {
             type: 'screenshot',
@@ -101,7 +111,10 @@ async function handler(request: NextRequest) {
         }
 
         case 'pdf': {
-          const pdfResult = await scraper.pdf();
+          const pdfResult = await scraper.pdf(url, {
+            format: 'A4',
+            printBackground: true,
+          });
           
           result = {
             type: 'pdf',
@@ -114,7 +127,13 @@ async function handler(request: NextRequest) {
 
         case 'content':
         default: {
-          const contentResult = await scraper.scrape();
+          const contentResult = await scraper.scrape(url, {
+            extractContent: true,
+            extractMetadata: true,
+            extractStructuredData: true,
+            waitForSelector: undefined,
+            screenshot: false,
+          });
           
           result = {
             type: 'content',

@@ -18,7 +18,7 @@ import ProxyChain from 'proxy-chain';
 import { JSONPath } from 'jsonpath-plus';
 import pdfParse from 'pdf-parse';
 import Tesseract from 'tesseract.js';
-import Jimp from 'jimp';
+import { Jimp } from 'jimp';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { z } from 'zod';
@@ -310,18 +310,18 @@ export class AdvancedSmartScraper {
     
     await this.streamingInterface.streamThinking([
       { 
-        type: 'analyzing', 
-        content: `Analyzing target URL: ${options.url}`,
+        icon: '🔍', 
+        message: `Analyzing target URL: ${options.url}`,
         duration: 1000 
       },
       { 
-        type: 'planning', 
-        content: 'Determining optimal scraping strategy...',
+        icon: '📋', 
+        message: 'Determining optimal scraping strategy...',
         duration: 1500 
       },
       { 
-        type: 'optimizing', 
-        content: 'Configuring extraction parameters...',
+        icon: '⚙️', 
+        message: 'Configuring extraction parameters...',
         duration: 1000 
       },
     ]);
@@ -590,11 +590,11 @@ export class AdvancedSmartScraper {
         console.log(chalk.green('WebSocket connected'));
       });
 
-      ws.on('message', (data) => {
+      ws.on('message', (data: Buffer | ArrayBuffer | Buffer[]) => {
         messages.push(data.toString());
       });
 
-      ws.on('error', (error) => {
+      ws.on('error', (error: Error) => {
         reject(error);
       });
 
@@ -903,8 +903,9 @@ export class AdvancedSmartScraper {
    */
   private async extractImages(page: Page): Promise<Array<{ url: string; alt?: string }>> {
     return await page.evaluate(() => {
+      // @ts-ignore - document is available in browser context
       const images = Array.from(document.querySelectorAll('img'));
-      return images.map(img => ({
+      return images.map((img: any) => ({
         url: img.src,
         alt: img.alt,
       }));
