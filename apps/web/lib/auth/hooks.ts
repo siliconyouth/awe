@@ -79,10 +79,13 @@ const ROLE_PERMISSIONS: Record<Roles, string[]> = {
 export function useRole(): Roles {
   const { sessionClaims } = useAuth()
   // Check both possible locations for the role
-  const role = (sessionClaims?.metadata?.role || 
-                sessionClaims?.publicMetadata?.role || 
-                sessionClaims?.role) as Roles
-  return role || 'user'
+  // Using any to handle different possible structures from Clerk
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const claims = sessionClaims as any
+  const role = claims?.metadata?.role || 
+               claims?.publicMetadata?.role || 
+               claims?.role
+  return (role as Roles) || 'user'
 }
 
 /**
@@ -91,9 +94,12 @@ export function useRole(): Roles {
 export function useHasRole(requiredRole: Roles): boolean {
   const { sessionClaims } = useAuth()
   // Check both possible locations for the role
-  const userRole = (sessionClaims?.metadata?.role || 
-                    sessionClaims?.publicMetadata?.role || 
-                    sessionClaims?.role) as Roles || 'user'
+  // Using any to handle different possible structures from Clerk
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const claims = sessionClaims as any
+  const userRole = (claims?.metadata?.role || 
+                    claims?.publicMetadata?.role || 
+                    claims?.role) as Roles || 'user'
   
   const userLevel = ROLE_HIERARCHY[userRole] || 0
   const requiredLevel = ROLE_HIERARCHY[requiredRole] || 0
@@ -120,13 +126,16 @@ export function useHasAnyRole(roles: Roles[]): boolean {
 export function usePermissions(): string[] {
   const { sessionClaims } = useAuth()
   // Check both possible locations for the role
-  const userRole = (sessionClaims?.metadata?.role || 
-                    sessionClaims?.publicMetadata?.role || 
-                    sessionClaims?.role) as Roles || 'user'
+  // Using any to handle different possible structures from Clerk
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const claims = sessionClaims as any
+  const userRole = (claims?.metadata?.role || 
+                    claims?.publicMetadata?.role || 
+                    claims?.role) as Roles || 'user'
   
   const rolePermissions = ROLE_PERMISSIONS[userRole] || []
-  const customPermissions = sessionClaims?.metadata?.permissions || 
-                           sessionClaims?.publicMetadata?.permissions || []
+  const customPermissions = claims?.metadata?.permissions || 
+                           claims?.publicMetadata?.permissions || []
   
   return [...new Set([...rolePermissions, ...customPermissions])]
 }
