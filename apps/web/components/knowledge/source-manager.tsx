@@ -52,7 +52,7 @@ export function SourceManager() {
       const res = await fetch('/api/sources')
       const data = await res.json()
       setSources(data.sources)
-    } catch (_error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to fetch sources',
@@ -96,10 +96,10 @@ export function SourceManager() {
         const errorData = await res.json()
         throw new Error(errorData.error)
       }
-    } catch (_error) {
+    } catch {
       toast({
         title: 'Error',
-        description: _error instanceof Error ? _error.message : 'An error occurred',
+        description: 'An error occurred',
         variant: 'destructive'
       })
     } finally {
@@ -127,7 +127,7 @@ export function SourceManager() {
         })
         fetchSources()
       }
-    } catch (_error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to update source',
@@ -152,7 +152,7 @@ export function SourceManager() {
           : 'No changes detected'
       })
       fetchSources()
-    } catch (_error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to check source',

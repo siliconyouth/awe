@@ -34,7 +34,7 @@ export function ReviewDashboard() {
   const [selectedPattern, setSelectedPattern] = useState<ExtractedPattern | null>(null)
   const [refinement, setRefinement] = useState('')
   const [loading, setLoading] = useState(false)
-  const [filter, _setFilter] = useState({
+  const [filter, setFilter] = useState({
     status: 'PENDING',
     type: '',
     sourceId: ''
@@ -55,7 +55,7 @@ export function ReviewDashboard() {
       const res = await fetch(`/api/patterns?${params}`)
       const data = await res.json()
       setPatterns(data.patterns)
-    } catch (_error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to fetch patterns',
@@ -90,10 +90,10 @@ export function ReviewDashboard() {
       } else {
         throw new Error('Failed to review pattern')
       }
-    } catch (_error) {
+    } catch {
       toast({
         title: 'Error',
-        description: _error instanceof Error ? _error.message : 'Failed to review pattern',
+        description: 'Failed to review pattern',
         variant: 'destructive'
       })
     } finally {
@@ -126,10 +126,23 @@ export function ReviewDashboard() {
       <div className="space-y-4">
         <Card>
           <CardHeader>
-            <CardTitle>Review Queue</CardTitle>
-            <CardDescription>
-              Patterns pending approval or refinement
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Review Queue</CardTitle>
+                <CardDescription>
+                  Patterns pending approval or refinement
+                </CardDescription>
+              </div>
+              <select 
+                className="text-sm border rounded px-2 py-1"
+                value={filter.status}
+                onChange={(e) => setFilter({...filter, status: e.target.value})}
+              >
+                <option value="PENDING">Pending</option>
+                <option value="APPROVED">Approved</option>
+                <option value="REJECTED">Rejected</option>
+              </select>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

@@ -34,7 +34,7 @@ export function PatternExplorer() {
   const [selectedType, setSelectedType] = useState('all')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedPattern, setSelectedPattern] = useState<Pattern | null>(null)
-  const [_loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     fetchApprovedPatterns()
@@ -51,7 +51,7 @@ export function PatternExplorer() {
       const res = await fetch('/api/patterns?status=APPROVED&limit=100')
       const data = await res.json()
       setPatterns(data.patterns)
-    } catch (_error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to fetch patterns',
@@ -121,6 +121,17 @@ export function PatternExplorer() {
 
   const categories = Array.from(new Set(patterns.map(p => p.category)))
   const types = Array.from(new Set(patterns.map(p => p.type)))
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
+          <p className="text-muted-foreground">Loading patterns...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

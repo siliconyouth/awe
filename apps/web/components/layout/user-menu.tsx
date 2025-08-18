@@ -1,45 +1,9 @@
 'use client'
 
 import { UserButton, useUser } from '@clerk/nextjs'
-import { 
-  Building2, 
-  CreditCard, 
-  User,
-  Shield
-} from 'lucide-react'
-import { useHasRole } from '../../lib/auth/hooks'
 
 export function UserMenu() {
   const { user } = useUser()
-  const isAdmin = useHasRole('admin')
-  
-  // Custom menu items that will appear in the UserButton dropdown
-  const _customPages = [
-    {
-      label: "Profile",
-      url: "/profile",
-      icon: <User className="h-4 w-4" />
-    },
-    {
-      label: "Organizations",
-      url: "/organizations",
-      icon: <Building2 className="h-4 w-4" />
-    },
-    {
-      label: "Billing",
-      url: "/billing",
-      icon: <CreditCard className="h-4 w-4" />
-    }
-  ]
-
-  // Admin-only menu items
-  const _adminPages = isAdmin ? [
-    {
-      label: "Admin Panel",
-      url: "/admin/users",
-      icon: <Shield className="h-4 w-4" />
-    }
-  ] : []
 
   return (
     <div className="flex items-center gap-3">

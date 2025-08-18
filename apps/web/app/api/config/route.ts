@@ -227,6 +227,7 @@ export async function PUT(request: NextRequest) {
  * DELETE /api/config
  * Reset configuration to defaults
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function DELETE(_request: NextRequest) {
   try {
     // Authenticate user

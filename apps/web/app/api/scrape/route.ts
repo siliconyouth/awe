@@ -100,6 +100,7 @@ async function handler(request: NextRequest) {
 export const POST = handler;
 
 // Document the API endpoint
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(_request: NextRequest) {
   return NextResponse.json({
     endpoint: '/api/scrape',

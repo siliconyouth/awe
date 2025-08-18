@@ -4,6 +4,7 @@ import { getDatabase } from '../../../lib/database'
 // TODO: Implement KnowledgeMonitor
 
 // GET /api/monitor - Get monitoring status
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(_request: NextRequest) {
   try {
     const db = await getDatabase()
@@ -43,6 +44,7 @@ export async function GET(_request: NextRequest) {
 }
 
 // POST /api/monitor - Trigger monitoring for specific sources
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function POST(_request: NextRequest) {
   return NextResponse.json({ message: "Monitor API temporarily disabled" }, { status: 503 })
   /*

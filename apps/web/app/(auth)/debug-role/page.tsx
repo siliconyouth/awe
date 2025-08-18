@@ -14,7 +14,7 @@ export default function DebugRolePage() {
   const role = useRole()
   const permissions = usePermissions()
   const isAdmin = useHasRole('admin')
-  const [_refreshing, setRefreshing] = useState(false)
+  const [, setRefreshing] = useState(false)
 
   // Debug: Log everything to console
   if (typeof window !== 'undefined') {
