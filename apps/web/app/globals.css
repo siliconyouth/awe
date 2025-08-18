@@ -1,25 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: 0 0% 100%;
-  --color-foreground: 240 10% 3.9%;
-  --color-card: 0 0% 100%;
-  --color-card-foreground: 240 10% 3.9%;
-  --color-popover: 0 0% 100%;
-  --color-popover-foreground: 240 10% 3.9%;
-  --color-primary: 240 5.9% 10%;
-  --color-primary-foreground: 0 0% 98%;
-  --color-secondary: 240 4.8% 95.9%;
-  --color-secondary-foreground: 240 5.9% 10%;
-  --color-muted: 240 4.8% 95.9%;
-  --color-muted-foreground: 240 3.8% 46.1%;
-  --color-accent: 240 4.8% 95.9%;
-  --color-accent-foreground: 240 5.9% 10%;
-  --color-destructive: 0 84.2% 60.2%;
-  --color-destructive-foreground: 0 0% 98%;
-  --color-border: 240 5.9% 90%;
-  --color-input: 240 5.9% 90%;
-  --color-ring: 240 5.9% 10%;
+  /* Default theme colors (will be overridden by ThemeProvider) */
+  --color-background: var(--color-background, 0 0% 100%);
+  --color-foreground: var(--color-foreground, 240 10% 3.9%);
+  --color-card: var(--color-card, 0 0% 100%);
+  --color-card-foreground: var(--color-card-foreground, 240 10% 3.9%);
+  --color-popover: var(--color-popover, 0 0% 100%);
+  --color-popover-foreground: var(--color-popover-foreground, 240 10% 3.9%);
+  --color-primary: var(--color-primary, 240 5.9% 10%);
+  --color-primary-foreground: var(--color-primary-foreground, 0 0% 98%);
+  --color-secondary: var(--color-secondary, 240 4.8% 95.9%);
+  --color-secondary-foreground: var(--color-secondary-foreground, 240 5.9% 10%);
+  --color-muted: var(--color-muted, 240 4.8% 95.9%);
+  --color-muted-foreground: var(--color-muted-foreground, 240 3.8% 46.1%);
+  --color-accent: var(--color-accent, 240 4.8% 95.9%);
+  --color-accent-foreground: var(--color-accent-foreground, 240 5.9% 10%);
+  --color-destructive: var(--color-destructive, 0 84.2% 60.2%);
+  --color-destructive-foreground: var(--color-destructive-foreground, 0 0% 98%);
+  --color-border: var(--color-border, 240 5.9% 90%);
+  --color-input: var(--color-input, 240 5.9% 90%);
+  --color-ring: var(--color-ring, 240 5.9% 10%);
   
   --radius-sm: 0.125rem;
   --radius-md: 0.375rem;
@@ -36,6 +37,27 @@
     /* AWE Brand Colors */
     --awe-primary: 252 71 108;
     --awe-primary-foreground: 255 255 255;
+    
+    /* Light theme defaults */
+    --color-background: 0 0% 100%;
+    --color-foreground: 240 10% 3.9%;
+    --color-card: 0 0% 100%;
+    --color-card-foreground: 240 10% 3.9%;
+    --color-popover: 0 0% 100%;
+    --color-popover-foreground: 240 10% 3.9%;
+    --color-primary: 240 5.9% 10%;
+    --color-primary-foreground: 0 0% 98%;
+    --color-secondary: 240 4.8% 95.9%;
+    --color-secondary-foreground: 240 5.9% 10%;
+    --color-muted: 240 4.8% 95.9%;
+    --color-muted-foreground: 240 3.8% 46.1%;
+    --color-accent: 240 4.8% 95.9%;
+    --color-accent-foreground: 240 5.9% 10%;
+    --color-destructive: 0 84.2% 60.2%;
+    --color-destructive-foreground: 0 0% 98%;
+    --color-border: 240 5.9% 90%;
+    --color-input: 240 5.9% 90%;
+    --color-ring: 240 5.9% 10%;
   }
 
   .dark {
@@ -61,11 +83,41 @@
   }
 
   * {
-    border-color: theme(colors.border);
+    border-color: hsl(var(--color-border));
   }
   
   body {
+    background-color: hsl(var(--color-background));
+    color: hsl(var(--color-foreground));
     font-family: theme(fontFamily.sans);
     font-feature-settings: "rlig" 1, "calt" 1;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
+  
+  /* Ensure proper colors for all theme-aware components */
+  .bg-background { background-color: hsl(var(--color-background)); }
+  .bg-foreground { background-color: hsl(var(--color-foreground)); }
+  .bg-card { background-color: hsl(var(--color-card)); }
+  .bg-popover { background-color: hsl(var(--color-popover)); }
+  .bg-primary { background-color: hsl(var(--color-primary)); }
+  .bg-secondary { background-color: hsl(var(--color-secondary)); }
+  .bg-muted { background-color: hsl(var(--color-muted)); }
+  .bg-accent { background-color: hsl(var(--color-accent)); }
+  .bg-destructive { background-color: hsl(var(--color-destructive)); }
+  .bg-border { background-color: hsl(var(--color-border)); }
+  .bg-input { background-color: hsl(var(--color-input)); }
+  .bg-ring { background-color: hsl(var(--color-ring)); }
+  
+  .text-foreground { color: hsl(var(--color-foreground)); }
+  .text-card-foreground { color: hsl(var(--color-card-foreground)); }
+  .text-popover-foreground { color: hsl(var(--color-popover-foreground)); }
+  .text-primary-foreground { color: hsl(var(--color-primary-foreground)); }
+  .text-secondary-foreground { color: hsl(var(--color-secondary-foreground)); }
+  .text-muted-foreground { color: hsl(var(--color-muted-foreground)); }
+  .text-accent-foreground { color: hsl(var(--color-accent-foreground)); }
+  .text-destructive-foreground { color: hsl(var(--color-destructive-foreground)); }
+  
+  .border-border { border-color: hsl(var(--color-border)); }
+  .border-input { border-color: hsl(var(--color-input)); }
+  .border-ring { border-color: hsl(var(--color-ring)); }
 }
