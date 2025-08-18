@@ -60,7 +60,7 @@ export function UserMenu() {
         appearance={{
           elements: {
             avatarBox: "h-10 w-10 ring-2 ring-primary/10 ring-offset-2 ring-offset-background hover:ring-primary/20 transition-all",
-            userButtonPopoverCard: "shadow-xl border-border",
+            userButtonPopoverCard: "shadow-xl",
             userButtonPopoverActionButton: "hover:bg-accent",
             userButtonPopoverActionButtonText: "text-foreground",
             userButtonPopoverActionButtonIcon: "text-muted-foreground",

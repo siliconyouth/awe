@@ -9,7 +9,7 @@ export default function ProfilePage() {
         appearance={{
           elements: {
             rootBox: "w-full",
-            card: "shadow-xl border-border",
+            card: "shadow-xl",
             navbar: "hidden", // Hide default nav, we'll use our own
             pageScrollBox: "px-4",
             formButtonPrimary: "bg-primary hover:bg-primary/90",

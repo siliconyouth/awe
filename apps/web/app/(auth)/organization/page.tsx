@@ -19,7 +19,7 @@ export default function OrganizationProfilePage() {
         appearance={{
           elements: {
             rootBox: "w-full",
-            card: "shadow-xl border-border",
+            card: "shadow-xl",
             navbar: "bg-muted/50",
             pageScrollBox: "px-4",
             formButtonPrimary: "bg-primary hover:bg-primary/90",
