@@ -122,8 +122,8 @@ export function useHasRole(requiredRole: Roles): boolean {
                claims?.role
   }
   
-  userRole = (userRole as Roles) || 'user'
-  const userLevel = ROLE_HIERARCHY[userRole] || 0
+  const finalRole = (userRole as Roles) || 'user'
+  const userLevel = ROLE_HIERARCHY[finalRole] || 0
   const requiredLevel = ROLE_HIERARCHY[requiredRole] || 0
   
   return userLevel >= requiredLevel
