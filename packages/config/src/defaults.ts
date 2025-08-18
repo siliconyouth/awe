@@ -198,61 +198,106 @@ export const DEFAULT_CONFIG: AWEConfig = {
       recycleAfter: 100
     },
     extraction: {
-      strategies: ['css-selectors', 'json-ld'],
-      fallbackToText: true,
-      customRules: [],
-      ai: {
-        enabled: false,
-        model: 'claude-3-sonnet',
-        maxTokens: 4096
+      selectors: {
+        title: ['title', 'h1', 'meta[property="og:title"]'],
+        description: ['meta[name="description"]', 'meta[property="og:description"]'],
+        content: ['main', 'article', '[role="main"]', '#content', '.content'],
+        author: ['meta[name="author"]', '[rel="author"]', '.author'],
+        date: ['time', 'meta[property="article:published_time"]', '.date'],
+        images: ['img', 'picture img']
+      },
+      rules: [],
+      readability: {
+        enabled: true,
+        minScore: 0.5
+      },
+      markdown: {
+        enabled: true,
+        includeImages: true,
+        includeLinks: true
       }
     },
     pdf: {
-      enabled: false,
-      ocrEnabled: false,
-      ocrLanguage: 'eng',
+      enabled: true,
+      ocr: {
+        enabled: false,
+        languages: ['eng'],
+        confidence: 0.6
+      },
+      maxPages: 100,
       extractImages: false,
-      maxPages: 100
+      extractMetadata: true
     },
     crawling: {
       maxDepth: 3,
       maxPages: 100,
-      followExternalLinks: false,
+      concurrency: 5,
+      delay: 1000,
       respectRobotsTxt: true,
-      patterns: {
-        include: ['**/*'],
-        exclude: ['*.pdf', '*.zip', '*.exe']
+      followRedirects: true,
+      maxRedirects: 5,
+      urlFilters: {
+        allowed: [],
+        blocked: [],
+        allowedDomains: [],
+        blockedDomains: []
+      },
+      queueStrategy: 'fifo',
+      deduplication: {
+        enabled: true,
+        strategy: 'url'
       }
     },
     distributed: {
       enabled: false,
-      workerCount: 4,
-      queueType: 'bull',
       redis: {
         host: 'localhost',
         port: 6379,
-        db: 1
+        db: 2
+      },
+      queue: {
+        name: 'scraper-queue',
+        workers: 4,
+        stallInterval: 30000,
+        maxStalledCount: 1
+      },
+      coordination: {
+        heartbeatInterval: 5000,
+        lockTimeout: 30000
       }
     },
     cloudBrowser: {
       enabled: false,
       provider: 'browserless',
-      apiUrl: 'https://chrome.browserless.io',
-      apiKey: undefined,
-      timeout: 30000
+      browserless: {
+        endpoint: 'wss://chrome.browserless.io',
+        apiKey: undefined,
+        timeout: 30000
+      },
+      fallbackToLocal: true
     },
     rateLimit: {
       enabled: true,
-      maxConcurrent: 5,
-      maxPerSecond: 10,
-      retryDelay: 1000
+      default: {
+        requests: 10,
+        window: 60000
+      },
+      perDomain: {},
+      backoff: {
+        enabled: true,
+        initialDelay: 1000,
+        maxDelay: 60000,
+        factor: 2
+      }
     },
     cache: {
       enabled: true,
-      ttl: 3600,
-      strategy: 'memory',
-      redis: undefined,
-      maxSize: 100
+      ttl: 3600000,
+      maxSize: 100,
+      strategy: 'lru',
+      storage: 'memory',
+      diskPath: './cache/scraper',
+      keyStrategy: 'url-hash'
     },
     monitoring: {
       enabled: true,
@@ -270,24 +315,68 @@ export const DEFAULT_CONFIG: AWEConfig = {
     sources: [],
     monitoring: {
       enabled: true,
-      interval: 3600000,
-      alerts: {
-        enabled: false,
-        channels: []
+      intervals: {
+        realtime: 60000,
+        hourly: 3600000,
+        daily: 86400000,
+        weekly: 604800000
       },
-      metrics: ['total-sources', 'update-frequency']
+      changeDetection: {
+        enabled: true,
+        algorithm: 'hybrid',
+        threshold: 0.1,
+        ignoreMinorChanges: true
+      },
+      alerts: {
+        enabled: true,
+        channels: ['database'],
+        conditions: []
+      },
+      retention: {
+        versions: 30,
+        days: 90,
+        compressOld: true
+      }
     },
     moderation: {
-      enabled: false,
-      autoApprove: false,
-      reviewers: [],
-      rules: []
+      enabled: true,
+      provider: 'anthropic',
+      models: {
+        classification: 'claude-3-haiku',
+        summarization: 'claude-3-sonnet',
+        extraction: 'claude-3-haiku',
+        quality: 'claude-3-opus'
+      },
+      rules: [],
+      autoApproval: {
+        enabled: false,
+        minScore: 0.8,
+        requireAllRules: true
+      },
+      humanReview: {
+        enabled: true,
+        queue: 'moderation-queue',
+        timeout: 86400000,
+        autoAction: 'escalate'
+      }
     },
     patterns: {
       enabled: false,
-      aiExtraction: false,
-      templates: [],
-      customRules: []
+      extraction: {
+        useAI: false,
+        patterns: [],
+        confidence: 0.7
+      },
+      library: {
+        enabled: false,
+        categories: [],
+        autoTag: false
+      },
+      matching: {
+        fuzzy: true,
+        threshold: 0.6,
+        algorithm: 'levenshtein'
+      }
     },
     processing: {
       batchSize: 10,
