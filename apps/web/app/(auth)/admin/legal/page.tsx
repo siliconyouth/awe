@@ -36,10 +36,9 @@ import {
   Eye,
   Copy
 } from 'lucide-react'
-// import { format } from 'date-fns' // TODO: Install date-fns
+// import { format } from 'date-fns'
 
-// Rich text editor (simplified for now)
-// import { Editor } from '@/components/ui/editor' // TODO: Create editor component
+// import { Editor } from '../../../../components/ui/editor'
 
 interface LegalDocument {
   id: string

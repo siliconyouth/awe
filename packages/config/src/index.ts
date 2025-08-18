@@ -14,11 +14,24 @@ export {
   type AWEConfig 
 } from './manager'
 
+// Export factory functions
+export { 
+  createWebConfig,
+  createCliConfig,
+  createApiConfig
+} from './factory'
+
 // Export providers
 export { BaseConfigProvider, type IConfigProvider, type ConfigChangeEvent } from './providers/base'
 export { EnvProvider, type EnvProviderOptions } from './providers/env'
 export { FileProvider, type FileProviderOptions } from './providers/file'
 export { DatabaseProvider, type DatabaseProviderOptions } from './providers/database'
+
+// Import for internal use
+import { ConfigManager, type ConfigManagerOptions, type AWEConfig, getConfigManager } from './manager'
+import { EnvProvider } from './providers/env'
+import { FileProvider } from './providers/file'
+import { DatabaseProvider } from './providers/database'
 
 // Export base schemas and types
 export {
@@ -123,29 +136,6 @@ export function createCLIConfig(options: Partial<ConfigManagerOptions> = {}): Co
     ],
     validation: true,
     watch: false,
-    cache: true,
-    ...options
-  })
-}
-
-/**
- * Create a pre-configured manager for web app usage
- */
-export function createWebConfig(options: Partial<ConfigManagerOptions> = {}): ConfigManager {
-  return new ConfigManager({
-    providers: [
-      new EnvProvider({ 
-        prefix: 'NEXT_PUBLIC_AWE_',
-        files: ['.env', '.env.local', '.env.production']
-      }),
-      new DatabaseProvider({ 
-        table: 'configurations',
-        watch: true,
-        pollInterval: 30000 
-      }),
-    ],
-    validation: true,
-    watch: true,
     cache: true,
     ...options
   })
