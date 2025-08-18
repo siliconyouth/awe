@@ -66,3 +66,12 @@ awe.db
 /cli/logs/
 */logs/
 **/logs/
+
+# Cleanup - accidental nested directories
+apps/web/apps/
+apps/web/packages/
+apps/web/apps.old/
+*.backup
+*.backup-*
+.env.local.backup*
+.env.local.old
