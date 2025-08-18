@@ -5,7 +5,7 @@
  * Following Clerk's basic RBAC pattern
  */
 
-import { auth, currentUser, clerkClient } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import type { Roles } from '../../types/globals'
 

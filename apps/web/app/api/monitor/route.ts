@@ -4,7 +4,7 @@ import { getDatabase } from '../../../lib/database'
 // TODO: Implement KnowledgeMonitor
 
 // GET /api/monitor - Get monitoring status
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const db = await getDatabase()
     if (!db) {
@@ -16,20 +16,20 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         url: true,
-        status: true,
-        lastChecked: true,
-        lastChanged: true,
-        checkFrequency: true,
-        errorCount: true
+        active: true,
+        lastScraped: true,
+        frequency: true,
+        reliability: true,
+        updatedAt: true
       },
       orderBy: { updatedAt: 'desc' }
     })
     
     const stats = {
       total: sources.length,
-      active: sources.filter((s: any) => s.status === 'ACTIVE').length,
-      error: sources.filter((s: any) => s.status === 'ERROR').length,
-      paused: sources.filter((s: any) => s.status === 'PAUSED').length
+      active: sources.filter(s => s.active).length,
+      inactive: sources.filter(s => !s.active).length,
+      reliable: sources.filter(s => s.reliability >= 0.8).length
     }
     
     return NextResponse.json({ sources, stats })
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/monitor - Trigger monitoring for specific sources
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   return NextResponse.json({ message: "Monitor API temporarily disabled" }, { status: 503 })
   /*
   try {

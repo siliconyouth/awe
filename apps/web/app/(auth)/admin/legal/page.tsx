@@ -6,8 +6,8 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { protectRoute } from '../../../../lib/auth/rbac'
+import { useState, useEffect, useCallback } from 'react'
+// import { protectRoute } from '../../../../lib/auth/rbac' // Not used - page already protected by middleware
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
 import { Button } from '../../../../components/ui/button'
 import { Badge } from '../../../../components/ui/badge'
@@ -25,19 +25,16 @@ import {
   Shield, 
   Cookie, 
   Scale, 
-  Globe, 
-  Calendar,
+  Globe,
   Edit, 
   Save, 
   Plus, 
   History,
   Check,
-  X,
   AlertTriangle,
   Loader2,
   Eye,
-  Copy,
-  Download
+  Copy
 } from 'lucide-react'
 // import { format } from 'date-fns' // TODO: Install date-fns
 
@@ -112,11 +109,7 @@ export default function LegalDocumentsPage() {
   const [versions, setVersions] = useState<DocumentVersion[]>([])
   const { toast } = useToast()
 
-  useEffect(() => {
-    loadDocuments()
-  }, [])
-
-  const loadDocuments = async () => {
+  const loadDocuments = useCallback(async () => {
     try {
       // In production, fetch from API
       // const response = await fetch('/api/admin/legal/documents')
@@ -161,7 +154,11 @@ export default function LegalDocumentsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    loadDocuments()
+  }, [loadDocuments])
 
   const saveDocument = async () => {
     if (!editingDocument) return
@@ -256,16 +253,17 @@ export default function LegalDocumentsPage() {
     }
   }
 
-  const exportDocument = (document: LegalDocument, format: 'md' | 'html' | 'pdf') => {
-    // In production, generate export
-    const blob = new Blob([document.content], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = window.document.createElement('a')
-    a.href = url
-    a.download = `${document.type}-${document.version}.${format}`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+  // Currently unused - will implement when export functionality is needed
+  // const exportDocument = (document: LegalDocument, format: 'md' | 'html' | 'pdf') => {
+  //   // In production, generate export
+  //   const blob = new Blob([document.content], { type: 'text/plain' })
+  //   const url = URL.createObjectURL(blob)
+  //   const a = window.document.createElement('a')
+  //   a.href = url
+  //   a.download = `${document.type}-${document.version}.${format}`
+  //   a.click()
+  //   URL.revokeObjectURL(url)
+  // }
 
   const getDocumentsByType = (type: string) => {
     return documents.filter(doc => doc.type === type)
@@ -344,7 +342,7 @@ export default function LegalDocumentsPage() {
                   <Button onClick={() => {
                     setEditingDocument({
                       id: '',
-                      type: type as any,
+                      type: type as 'terms' | 'privacy' | 'cookie' | 'gdpr' | 'ai-policy',
                       version: '1.0.0',
                       title: DOCUMENT_TYPES[type as keyof typeof DOCUMENT_TYPES].label,
                       content: '',

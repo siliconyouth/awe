@@ -58,7 +58,7 @@ export function AdminOnlySection({
 }
 
 // Role-specific wrapper components
-export function ModeratorOnlySection({ children, title, description }: AdminOnlySectionProps) {
+export function ModeratorOnlySection({ children }: AdminOnlySectionProps) {
   return (
     <Protect
       role="moderator"
@@ -76,7 +76,7 @@ export function ModeratorOnlySection({ children, title, description }: AdminOnly
   )
 }
 
-export function DeveloperOnlySection({ children, title, description }: AdminOnlySectionProps) {
+export function DeveloperOnlySection({ children }: AdminOnlySectionProps) {
   return (
     <Protect
       role="developer"

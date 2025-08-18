@@ -21,10 +21,10 @@ export function ApiTestButton({ endpoint, label, method }: {
             toast.success(label, {
               description: `Response: ${JSON.stringify(data, null, 2).substring(0, 100)}...`
             })
-          } catch (error: any) {
+          } catch (error) {
             console.error(`Error calling ${endpoint}:`, error)
             toast.error("API Error", {
-              description: error.message
+              description: error instanceof Error ? error.message : 'Unknown error'
             })
           }
         }}

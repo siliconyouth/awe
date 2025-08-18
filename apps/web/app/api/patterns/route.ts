@@ -27,7 +27,12 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20')
     const offset = parseInt(searchParams.get('offset') || '0')
     
-    const where: any = { status }
+    interface PatternWhere {
+      status: string
+      type?: string
+      sourceId?: string
+    }
+    const where: PatternWhere = { status }
     if (type) where.type = type
     if (sourceId) where.sourceId = sourceId
     
@@ -95,7 +100,13 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    let updateData: any = {}
+    interface PatternUpdateData {
+      status: string
+      approvedAt?: Date
+      approvedBy?: string
+      refinements?: Record<string, unknown>
+    }
+    let updateData: PatternUpdateData = { status: 'PENDING' }
     
     switch (action) {
       case 'approve':

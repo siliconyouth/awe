@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
     // Get sources scheduled for daily checks
     const sources = await db.knowledgeSource.findMany({
       where: {
-        checkFrequency: 'DAILY',
-        status: 'ACTIVE'
+        frequency: 'DAILY',
+        active: true
       }
     })
 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Daily cron job failed:', error)
     return NextResponse.json(
-      { error: 'Cron job failed', details: (error as any).message },
+      { error: 'Cron job failed', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }

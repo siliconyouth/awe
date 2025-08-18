@@ -37,7 +37,7 @@ export async function updateUserProfile(formData: FormData) {
  */
 export async function updateUserMetadata(
   targetUserId: string,
-  metadata: Record<string, any>
+  metadata: Record<string, unknown>
 ) {
   // Require admin role
   await requireRole('admin');

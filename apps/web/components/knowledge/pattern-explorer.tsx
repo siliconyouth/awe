@@ -13,7 +13,7 @@ interface Pattern {
   id: string
   type: string
   name: string
-  content: any
+  content: Record<string, unknown>
   category: string
   tags: string[]
   useCases: string[]
@@ -83,7 +83,7 @@ export function PatternExplorer() {
     setFilteredPatterns(filtered)
   }
 
-  const copyToClipboard = (content: any) => {
+  const copyToClipboard = (content: Record<string, unknown>) => {
     const text = typeof content === 'string' ? content : JSON.stringify(content, null, 2)
     navigator.clipboard.writeText(text)
     toast({

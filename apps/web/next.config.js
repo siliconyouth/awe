@@ -9,8 +9,8 @@ const nextConfig = {
     },
   },
   eslint: {
-    // Temporarily ignore ESLint errors during production builds
-    ignoreDuringBuilds: true,
+    // ESLint enabled during builds
+    ignoreDuringBuilds: false,
   },
   transpilePackages: ['@awe/shared', '@awe/database'],
   images: {

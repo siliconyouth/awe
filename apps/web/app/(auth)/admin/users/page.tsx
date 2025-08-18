@@ -6,7 +6,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { UserRoleManager } from '../../../../components/admin/user-role-manager'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
@@ -53,7 +53,7 @@ export default function AdminUsersPage() {
   const { toast } = useToast()
   const { user: currentUser } = useUser()
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams({
@@ -79,11 +79,11 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentPage, roleFilter, searchQuery, toast])
 
   useEffect(() => {
     fetchUsers()
-  }, [currentPage, roleFilter])
+  }, [currentPage, roleFilter, fetchUsers])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,32 +91,33 @@ export default function AdminUsersPage() {
     fetchUsers()
   }
 
-  const handleRoleUpdate = async (userId: string, newRole: string) => {
-    try {
-      const response = await fetch(`/api/admin/users/${userId}/role`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: newRole })
-      })
+  // Currently unused - functionality handled by UserRoleManager component
+  // const handleRoleUpdate = async (userId: string, newRole: string) => {
+  //   try {
+  //     const response = await fetch(`/api/admin/users/${userId}/role`, {
+  //       method: 'PUT',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ role: newRole })
+  //     })
 
-      if (!response.ok) throw new Error('Failed to update role')
+  //     if (!response.ok) throw new Error('Failed to update role')
 
-      toast({
-        title: 'Success',
-        description: 'User role updated successfully'
-      })
+  //     toast({
+  //       title: 'Success',
+  //       description: 'User role updated successfully'
+  //     })
       
-      // Refresh the user list
-      fetchUsers()
-      setSelectedUser(null)
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to update user role',
-        variant: 'destructive'
-      })
-    }
-  }
+  //     // Refresh the user list
+  //     fetchUsers()
+  //     setSelectedUser(null)
+  //   } catch {
+  //     toast({
+  //       title: 'Error',
+  //       description: 'Failed to update user role',
+  //       variant: 'destructive'
+  //     })
+  //   }
+  // }
 
   const getRoleColor = (role: string) => {
     switch (role) {

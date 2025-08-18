@@ -6,7 +6,6 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { setUserRole, setUserPermissions, protectApiRoute } from '../../../../../../lib/auth/rbac'
-import type { Roles } from '../../../../../../types/globals'
 import { z } from 'zod'
 
 // Validation schema
@@ -110,7 +109,7 @@ export async function GET(
     const client = await clerkClient()
     const user = await client.users.getUser(userId)
     const role = await getUserRoleById(userId)
-    const metadata = user.publicMetadata as any
+    const metadata = user.publicMetadata as Record<string, unknown>
     
     return NextResponse.json({
       success: true,

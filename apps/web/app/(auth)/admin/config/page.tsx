@@ -6,7 +6,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
 import { Button } from '../../../../components/ui/button'
@@ -19,13 +19,16 @@ import { Textarea } from '../../../../components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/ui/select'
 import { useToast } from '../../../../components/ui/use-toast'
 import { Loader2, Save, Download, Upload, RefreshCw, Settings, Database, Globe, Shield, Brain, AlertTriangle } from 'lucide-react'
-
-interface ConfigSection {
-  id: string
-  title: string
-  icon: any
-  description: string
-}
+import type { 
+  ConfigSection, 
+  SystemConfig,
+  AppConfigSectionProps,
+  ScraperConfigSectionProps,
+  KnowledgeConfigSectionProps,
+  ApiConfigSectionProps,
+  AuthConfigSectionProps,
+  FeaturesConfigSectionProps
+} from '../../../../types/config'
 
 const configSections: ConfigSection[] = [
   {
@@ -67,7 +70,7 @@ const configSections: ConfigSection[] = [
 ]
 
 export default function ConfigPage() {
-  const [config, setConfig] = useState<any>(null)
+  const [config, setConfig] = useState<SystemConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [activeSection, setActiveSection] = useState('app')
@@ -75,12 +78,7 @@ export default function ConfigPage() {
   const [unsavedChanges, setUnsavedChanges] = useState(false)
   const { toast } = useToast()
 
-  // Load configuration
-  useEffect(() => {
-    loadConfig()
-  }, [])
-
-  const loadConfig = async () => {
+  const loadConfig = useCallback(async () => {
     try {
       const response = await fetch('/api/config')
       const data = await response.json()
@@ -100,7 +98,12 @@ export default function ConfigPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast])
+
+  // Load configuration
+  useEffect(() => {
+    loadConfig()
+  }, [loadConfig])
 
   const saveConfig = async () => {
     setSaving(true)
@@ -133,10 +136,11 @@ export default function ConfigPage() {
     }
   }
 
-  const updateConfigValue = (path: string, value: any) => {
+  const updateConfigValue = (path: string, value: unknown) => {
     const newConfig = { ...config }
     const keys = path.split('.')
-    let obj = newConfig
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let obj: any = newConfig
     
     for (let i = 0; i < keys.length - 1; i++) {
       if (!(keys[i] in obj)) {
@@ -166,7 +170,7 @@ export default function ConfigPage() {
     
     try {
       const text = await file.text()
-      const imported = JSON.parse(text)
+      const imported = JSON.parse(text) as SystemConfig
       setConfig(imported)
       setUnsavedChanges(true)
       
@@ -174,7 +178,7 @@ export default function ConfigPage() {
         title: 'Configuration imported',
         description: 'Review and save changes to apply'
       })
-    } catch (error) {
+    } catch {
       toast({
         title: 'Import failed',
         description: 'Invalid configuration file',
@@ -291,7 +295,7 @@ export default function ConfigPage() {
 }
 
 // App Configuration Section
-function AppConfigSection({ config, onChange }: any) {
+function AppConfigSection({ config, onChange }: AppConfigSectionProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4">
@@ -365,7 +369,7 @@ function AppConfigSection({ config, onChange }: any) {
 }
 
 // Scraper Configuration Section
-function ScraperConfigSection({ config, onChange }: any) {
+function ScraperConfigSection({ config, onChange }: ScraperConfigSectionProps) {
   return (
     <div className="space-y-6">
       <div>
@@ -477,7 +481,7 @@ function ScraperConfigSection({ config, onChange }: any) {
 }
 
 // Knowledge Configuration Section
-function KnowledgeConfigSection({ config, onChange }: any) {
+function KnowledgeConfigSection({ config, onChange }: KnowledgeConfigSectionProps) {
   return (
     <div className="space-y-6">
       <div>
@@ -565,7 +569,7 @@ function KnowledgeConfigSection({ config, onChange }: any) {
 }
 
 // API Configuration Section
-function ApiConfigSection({ config, onChange }: any) {
+function ApiConfigSection({ config, onChange }: ApiConfigSectionProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4">
@@ -650,7 +654,7 @@ function ApiConfigSection({ config, onChange }: any) {
 }
 
 // Auth Configuration Section
-function AuthConfigSection({ config, onChange }: any) {
+function AuthConfigSection({ config, onChange }: AuthConfigSectionProps) {
   return (
     <div className="space-y-6">
       <div>
@@ -762,7 +766,7 @@ function AuthConfigSection({ config, onChange }: any) {
 }
 
 // Features Configuration Section
-function FeaturesConfigSection({ config, onChange }: any) {
+function FeaturesConfigSection({ config, onChange }: FeaturesConfigSectionProps) {
   const features = config?.flags || {}
   const featureList = [
     { key: 'advanced-scraping', label: 'Advanced Scraping', description: 'Enable PDF, OCR, and WebSocket scraping' },

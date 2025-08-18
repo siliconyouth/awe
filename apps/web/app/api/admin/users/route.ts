@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || ''
     
     // Build query params for Clerk
-    const queryParams: any = {
+    const queryParams: Record<string, unknown> = {
       limit,
       offset,
     }
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     const users = await Promise.all(
       clerkUsers.map(async (user) => {
         const userRole = await getUserRoleById(user.id)
-        const metadata = user.publicMetadata as any
+        const metadata = user.publicMetadata as Record<string, unknown>
         
         // Filter by role if specified
         if (role && userRole !== role) {
@@ -69,7 +69,8 @@ export async function GET(request: NextRequest) {
           createdAt: user.createdAt,
           lastSignInAt: user.lastSignInAt,
           banned: user.banned,
-          organizationMemberships: (user as any).organizationMemberships?.map((org: any) => ({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          organizationMemberships: (user as unknown as Record<string, any>).organizationMemberships?.map((org: any) => ({
             id: org.id,
             role: org.role,
             organizationId: org.organization?.id,
@@ -105,7 +106,8 @@ export async function GET(request: NextRequest) {
  * Internal helper function to get user statistics by role
  * Not exported as a route handler
  */
-async function getUserStats() {
+// Currently unused - will be implemented when statistics are needed
+/* async function getUserStats() {
   // Require admin role
   const unauthorizedResponse = await protectApiRoute('admin')
   if (unauthorizedResponse) {
@@ -163,4 +165,4 @@ async function getUserStats() {
       { status: 500 }
     )
   }
-}
+} */

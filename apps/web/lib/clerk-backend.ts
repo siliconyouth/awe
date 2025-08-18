@@ -33,7 +33,7 @@ export async function authenticatedFetch(
 /**
  * Helper to make authenticated GET requests
  */
-export async function authenticatedGet<T = any>(url: string): Promise<T> {
+export async function authenticatedGet<T = unknown>(url: string): Promise<T> {
   const response = await authenticatedFetch(url, {
     method: 'GET',
   });
@@ -48,9 +48,9 @@ export async function authenticatedGet<T = any>(url: string): Promise<T> {
 /**
  * Helper to make authenticated POST requests
  */
-export async function authenticatedPost<T = any>(
+export async function authenticatedPost<T = unknown>(
   url: string,
-  body: any
+  body: unknown
 ): Promise<T> {
   const response = await authenticatedFetch(url, {
     method: 'POST',
@@ -67,7 +67,7 @@ export async function authenticatedPost<T = any>(
 /**
  * Verify a Clerk session token (for use in API routes)
  */
-export async function verifyToken(token: string) {
+export async function verifyToken() {
   const { userId, sessionClaims } = await auth();
   
   if (!userId) {

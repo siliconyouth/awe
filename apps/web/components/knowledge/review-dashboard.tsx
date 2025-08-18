@@ -13,8 +13,8 @@ interface ExtractedPattern {
   id: string
   type: string
   name: string
-  content: any
-  aiAnalysis?: any
+  content: Record<string, unknown>
+  aiAnalysis?: Record<string, unknown>
   confidence: number
   status: string
   category: string
@@ -115,7 +115,7 @@ export function ReviewDashboard() {
     return colors[type] || 'bg-gray-400'
   }
 
-  const formatContent = (content: any) => {
+  const formatContent = (content: Record<string, unknown>) => {
     if (typeof content === 'string') return content
     return JSON.stringify(content, null, 2)
   }

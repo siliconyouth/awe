@@ -6,12 +6,11 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
 import { Button } from '../../../../components/ui/button'
 import { Input } from '../../../../components/ui/input'
 import { Badge } from '../../../../components/ui/badge'
-import { Alert, AlertDescription } from '../../../../components/ui/alert'
 import {
   Dialog,
   DialogContent,
@@ -38,10 +37,8 @@ import {
 } from '../../../../components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
 import { Label } from '../../../../components/ui/label'
-import { Textarea } from '../../../../components/ui/textarea'
 import { ChangeAnalytics } from '../../../../components/knowledge/change-analytics'
 import { 
-  Globe, 
   Plus, 
   RefreshCw, 
   AlertCircle, 
@@ -50,11 +47,7 @@ import {
   Edit,
   Trash,
   Eye,
-  FileText,
-  TrendingUp,
-  Database,
-  Search,
-  Filter
+  Database
 } from 'lucide-react'
 import { useToast } from '../../../../components/ui/use-toast'
 
@@ -96,7 +89,7 @@ export default function KnowledgeAdmin() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('sources')
   const [showAddSourceDialog, setShowAddSourceDialog] = useState(false)
-  const [selectedSource, setSelectedSource] = useState<KnowledgeSource | null>(null)
+  // const [selectedSource, setSelectedSource] = useState<KnowledgeSource | null>(null) // Currently unused
   const [filterStatus, setFilterStatus] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const { toast } = useToast()
@@ -109,7 +102,7 @@ export default function KnowledgeAdmin() {
     checkFrequency: 'DAILY'
   })
 
-  const fetchSources = async () => {
+  const fetchSources = useCallback(async () => {
     try {
       const params = new URLSearchParams()
       if (filterStatus !== 'all') params.append('status', filterStatus)
@@ -127,9 +120,9 @@ export default function KnowledgeAdmin() {
         variant: 'destructive'
       })
     }
-  }
+  }, [filterStatus, toast])
 
-  const fetchPatterns = async () => {
+  const fetchPatterns = useCallback(async () => {
     try {
       const response = await fetch('/api/patterns?status=PENDING')
       if (!response.ok) throw new Error('Failed to fetch patterns')
@@ -144,7 +137,7 @@ export default function KnowledgeAdmin() {
         variant: 'destructive'
       })
     }
-  }
+  }, [toast])
 
   useEffect(() => {
     const loadData = async () => {
@@ -153,7 +146,7 @@ export default function KnowledgeAdmin() {
       setLoading(false)
     }
     loadData()
-  }, [filterStatus])
+  }, [filterStatus, fetchSources, fetchPatterns])
 
   const handleAddSource = async () => {
     try {
@@ -178,7 +171,7 @@ export default function KnowledgeAdmin() {
         checkFrequency: 'DAILY'
       })
       fetchSources()
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to add knowledge source',
@@ -201,7 +194,7 @@ export default function KnowledgeAdmin() {
       })
       
       fetchSources()
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to delete knowledge source',
@@ -230,7 +223,7 @@ export default function KnowledgeAdmin() {
       })
       
       fetchPatterns()
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to review pattern',
@@ -253,7 +246,7 @@ export default function KnowledgeAdmin() {
         title: 'Success',
         description: 'Monitoring triggered successfully'
       })
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to trigger monitoring',

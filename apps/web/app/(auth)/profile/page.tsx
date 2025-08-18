@@ -1,5 +1,4 @@
 import { UserProfile } from "@clerk/nextjs"
-import { Key, CreditCard, Webhook, Shield } from "lucide-react"
 
 export default function ProfilePage() {
   return (

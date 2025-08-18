@@ -163,8 +163,8 @@ class BrowserlessService {
   async scrape(url: string, options: {
     selector?: string;
     waitForSelector?: string;
-    evaluate?: string | ((element: any) => any);
-  } = {}): Promise<any> {
+    evaluate?: string | ((element: Element) => unknown);
+  } = {}): Promise<unknown> {
     return this.execute(async (page) => {
       // Navigate to URL
       await page.goto(url, { 
@@ -183,7 +183,7 @@ class BrowserlessService {
       if (options.selector) {
         return await page.$eval(
           options.selector,
-          options.evaluate || ((el: any) => el.textContent)
+          options.evaluate || ((el: Element) => el.textContent)
         );
       }
 
@@ -226,10 +226,10 @@ class BrowserlessService {
         if (options.waitForNavigation) {
           await Promise.all([
             page.waitForNavigation(),
-            page.$eval(options.formSelector, (form: any) => form.submit()),
+            page.$eval(options.formSelector, (form) => (form as HTMLFormElement).submit()),
           ]);
         } else {
-          await page.$eval(options.formSelector, (form: any) => form.submit());
+          await page.$eval(options.formSelector, (form) => (form as HTMLFormElement).submit());
         }
       }
     });

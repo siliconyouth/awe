@@ -3,7 +3,9 @@
  * Uses dynamic imports to avoid build-time resolution issues
  */
 
-let cachedDb: any = null
+import type { CachedDatabase } from '../types/database'
+
+let cachedDb: CachedDatabase = null
 
 export async function getDatabase() {
   if (cachedDb) return cachedDb

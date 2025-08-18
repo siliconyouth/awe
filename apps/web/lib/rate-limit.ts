@@ -17,8 +17,17 @@ export interface RateLimitResult {
 /**
  * Check rate limit for a given identifier
  */
+interface RateLimiter {
+  limit(identifier: string): Promise<{
+    success: boolean;
+    limit: number;
+    remaining: number;
+    reset: number;
+  }>;
+}
+
 async function checkRateLimit(
-  limiter: any,
+  limiter: RateLimiter | null,
   identifier: string
 ): Promise<RateLimitResult> {
   if (!limiter) {
@@ -108,7 +117,7 @@ export async function withRateLimit(
     }
     
     // Store headers for later use in the route handler
-    (request as any).rateLimitHeaders = headers;
+    (request as NextRequest & { rateLimitHeaders?: Headers }).rateLimitHeaders = headers;
   }
 
   return null;
@@ -132,7 +141,7 @@ export function rateLimited(
     const response = await handler(request);
 
     // Add rate limit headers if available
-    const rateLimitHeaders = (request as any).rateLimitHeaders;
+    const rateLimitHeaders = (request as NextRequest & { rateLimitHeaders?: Headers }).rateLimitHeaders;
     if (rateLimitHeaders) {
       rateLimitHeaders.forEach((value: string, key: string) => {
         response.headers.set(key, value);

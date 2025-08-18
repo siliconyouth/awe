@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Badge } from '../ui/badge'
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { TrendingUpIcon, TrendingDownIcon, ActivityIcon, ClockIcon, LayersIcon, AlertCircleIcon } from 'lucide-react'
+import { TrendingUpIcon, TrendingDownIcon, ClockIcon, LayersIcon, AlertCircleIcon } from 'lucide-react'
 
 interface AnalyticsData {
   overview: {

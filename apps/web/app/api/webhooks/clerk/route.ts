@@ -74,8 +74,8 @@ export async function POST(request: NextRequest) {
         break
         
       default:
-        // Handle organization events as well (cast to any to handle extended types)
-        const eventType = event.type as any
+        // Handle organization events as well (using string type for extended events)
+        const eventType = event.type as string
         if (eventType === 'organization.member.created') {
           await handleOrganizationMemberCreated(event)
         } else if (eventType === 'organization.member.updated') {
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 async function handleUserCreated(event: WebhookEvent) {
   if (event.type !== 'user.created') return
 
-  const { id, email_addresses, first_name, last_name, public_metadata } = event.data
+  const { id, email_addresses, first_name, last_name } = event.data
 
   console.log(`New user created: ${id}`)
 
@@ -207,7 +207,7 @@ async function updateUserInDatabase(userData: {
   email?: string
   firstName?: string | null
   lastName?: string | null
-  metadata?: any
+  metadata?: Record<string, unknown>
 }) {
   try {
     // Import your database client
@@ -237,10 +237,20 @@ async function updateUserInDatabase(userData: {
  * Handle organization.member.created event
  * Set organization-specific roles
  */
-async function handleOrganizationMemberCreated(event: WebhookEvent) {
-  if ((event.type as any) !== 'organization.member.created') return
+interface OrganizationMemberEvent {
+  type: string
+  data: {
+    organization: { id: string }
+    public_user_data?: { user_id: string }
+    role: string
+  }
+}
 
-  const eventData = event.data as any // Using any for now as types may vary
+async function handleOrganizationMemberCreated(event: WebhookEvent) {
+  if ((event.type as string) !== 'organization.member.created') return
+
+  const orgEvent = event as unknown as OrganizationMemberEvent
+  const eventData = orgEvent.data
   const { organization, public_user_data, role } = eventData
 
   console.log(`User ${public_user_data?.user_id} joined organization ${organization.id} as ${role}`)
@@ -268,9 +278,10 @@ async function handleOrganizationMemberCreated(event: WebhookEvent) {
  * Handle organization.member.updated event
  */
 async function handleOrganizationMemberUpdated(event: WebhookEvent) {
-  if ((event.type as any) !== 'organization.member.updated') return
+  if ((event.type as string) !== 'organization.member.updated') return
 
-  const eventData = event.data as any // Using any for now as types may vary
+  const orgEvent = event as unknown as OrganizationMemberEvent
+  const eventData = orgEvent.data
   const { organization, public_user_data, role } = eventData
 
   console.log(`User ${public_user_data?.user_id} role updated in organization ${organization.id} to ${role}`)

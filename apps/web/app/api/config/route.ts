@@ -12,10 +12,26 @@ import { checkPermission, protectApiRoute } from '../../../lib/auth/rbac'
 
 // Initialize configuration manager
 // const configManager = createWebConfig() // TODO: Fix package build
-const configManager = null as any // Temporary placeholder
+interface ConfigManager {
+  initialized: boolean
+  initialize(): Promise<void>
+  get(path?: string): Record<string, unknown>
+  getApp(): Record<string, unknown>
+  getApi(): Record<string, unknown>
+  getAuth(): Record<string, unknown>
+  getScraper(): Record<string, unknown>
+  getKnowledge(): Record<string, unknown>
+  getFeatures(): Record<string, unknown>
+  getEnvironment(): string
+  set(path: string, value: unknown): Promise<void>
+  import(config: Record<string, unknown>): Promise<void>
+}
+
+const configManager = null as unknown as ConfigManager // Temporary placeholder
 
 // Request validation schemas
-const GetConfigSchema = z.object({
+// Request validation schemas - GetConfigSchema is not used but kept for future use
+const _GetConfigSchema = z.object({
   path: z.string().optional(),
   section: z.enum(['app', 'api', 'auth', 'scraper', 'knowledge', 'features']).optional(),
 })
@@ -57,7 +73,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get configuration
-    let config: any
+    let config: Record<string, unknown>
 
     if (section) {
       // Get specific section
@@ -210,7 +226,7 @@ export async function PUT(request: NextRequest) {
  * DELETE /api/config
  * Reset configuration to defaults
  */
-export async function DELETE(request: NextRequest) {
+export async function DELETE(_request: NextRequest) {
   try {
     // Authenticate user
     const { userId } = await auth()
@@ -246,7 +262,7 @@ export async function DELETE(request: NextRequest) {
  * Sanitize configuration for client
  * Remove sensitive values
  */
-function sanitizeConfig(config: any): any {
+function sanitizeConfig(config: Record<string, unknown>): Record<string, unknown> {
   const sanitized = JSON.parse(JSON.stringify(config))
 
   // Remove sensitive fields
@@ -282,7 +298,7 @@ function sanitizeConfig(config: any): any {
           }
         } else if (typeof obj === 'object' && obj !== null) {
           for (const item of Object.values(obj)) {
-            deleteNestedField(item, path.slice(i + 1))
+            deleteNestedField(item as Record<string, unknown>, path.slice(i + 1))
           }
         }
         break
@@ -303,10 +319,10 @@ function sanitizeConfig(config: any): any {
   return sanitized
 }
 
-function deleteNestedField(obj: any, path: string[]): void {
+function deleteNestedField(obj: Record<string, unknown>, path: string[]): void {
   for (let i = 0; i < path.length - 1; i++) {
     if (obj && typeof obj === 'object' && path[i] in obj) {
-      obj = obj[path[i]]
+      obj = obj[path[i]] as Record<string, unknown>
     } else {
       return
     }

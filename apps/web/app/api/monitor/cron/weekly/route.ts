@@ -22,22 +22,22 @@ export async function GET(request: NextRequest) {
     // Get sources scheduled for weekly checks
     const sources = await db.knowledgeSource.findMany({
       where: {
-        checkFrequency: 'WEEKLY',
-        status: 'ACTIVE'
+        frequency: 'WEEKLY',
+        active: true
       }
     })
 
     // Generate weekly analytics report
-    const weeklyStats = await db.knowledgeVersion.count({
+    const weeklyStats = await db.knowledgeUpdate.count({
       where: {
-        timestamp: {
+        scrapedAt: {
           gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
         }
       }
     })
 
-    const pendingPatterns = await db.extractedPattern.count({
-      where: { status: 'PENDING' }
+    const pendingPatterns = await db.knowledgePattern.count({
+      where: { verified: false }
     })
 
     // TODO: Implement actual monitoring logic
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Weekly cron job failed:', error)
     return NextResponse.json(
-      { error: 'Cron job failed', details: (error as any).message },
+      { error: 'Cron job failed', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }

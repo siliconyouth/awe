@@ -62,7 +62,7 @@ export function UserRoleManager({
       
       // Trigger parent refresh if possible
       window.location.reload()
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to update user role',

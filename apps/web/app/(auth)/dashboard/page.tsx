@@ -32,7 +32,7 @@ export default async function DashboardPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <Badge variant={(roleColors as any)[userRole] || "outline"} className="text-sm">
+        <Badge variant={(roleColors as Record<string, 'destructive' | 'default' | 'secondary' | 'outline'>)[userRole] || "outline"} className="text-sm">
           <Shield className="mr-1 h-3 w-3" />
           {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
         </Badge>
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
             <div className="space-y-1">
               <CardTitle>Welcome back, {user?.firstName}!</CardTitle>
               <CardDescription>
-                Here's an overview of your account and recent activity
+                Here&apos;s an overview of your account and recent activity
               </CardDescription>
             </div>
           </div>

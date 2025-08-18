@@ -83,7 +83,7 @@ export class Cache {
   /**
    * Get a value from cache
    */
-  async get<T = any>(key: string): Promise<T | null> {
+  async get<T = unknown>(key: string): Promise<T | null> {
     if (!this.redis) return null;
     
     try {
@@ -98,7 +98,7 @@ export class Cache {
   /**
    * Set a value in cache
    */
-  async set(key: string, value: any, ttl?: number): Promise<boolean> {
+  async set(key: string, value: unknown, ttl?: number): Promise<boolean> {
     if (!this.redis) return false;
     
     try {
@@ -145,14 +145,14 @@ export class Cache {
   /**
    * Set value with expiration
    */
-  async setex(key: string, seconds: number, value: any): Promise<boolean> {
+  async setex(key: string, seconds: number, value: unknown): Promise<boolean> {
     return this.set(key, value, seconds);
   }
 
   /**
    * Get and delete (pop) a value
    */
-  async pop<T = any>(key: string): Promise<T | null> {
+  async pop<T = unknown>(key: string): Promise<T | null> {
     if (!this.redis) return null;
     
     try {
@@ -198,7 +198,7 @@ export class Cache {
   /**
    * Get multiple values
    */
-  async mget<T = any>(...keys: string[]): Promise<(T | null)[]> {
+  async mget<T = unknown>(...keys: string[]): Promise<(T | null)[]> {
     if (!this.redis) return keys.map(() => null);
     
     try {
@@ -264,7 +264,7 @@ export class SessionStore {
     this.redis = getRedisClient();
   }
 
-  async get(sessionId: string): Promise<any> {
+  async get(sessionId: string): Promise<unknown> {
     if (!this.redis) return null;
     
     try {
@@ -275,7 +275,7 @@ export class SessionStore {
     }
   }
 
-  async set(sessionId: string, data: any, ttl?: number): Promise<boolean> {
+  async set(sessionId: string, data: unknown, ttl?: number): Promise<boolean> {
     if (!this.redis) return false;
     
     try {
@@ -319,7 +319,7 @@ export const sessionStore = new SessionStore();
 /**
  * Queue Implementation
  */
-export class Queue<T = any> {
+export class Queue<T = unknown> {
   private redis: Redis | null;
   private name: string;
 

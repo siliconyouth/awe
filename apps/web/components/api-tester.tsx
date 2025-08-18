@@ -5,7 +5,7 @@ import { useAuth } from '@clerk/nextjs';
 
 export function ApiTester() {
   const { getToken, isSignedIn } = useAuth();
-  const [response, setResponse] = useState<any>(null);
+  const [response, setResponse] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,7 +13,7 @@ export function ApiTester() {
   const makeAuthenticatedRequest = async (
     endpoint: string,
     method: string = 'GET',
-    body?: any
+    body?: unknown
   ) => {
     if (!isSignedIn) {
       setError('You must be signed in to make authenticated requests');
@@ -42,10 +42,10 @@ export function ApiTester() {
         body: body ? JSON.stringify(body) : undefined,
       });
 
-      const data = await res.json();
+      const data = await res.json() as Record<string, unknown>;
       
       if (!res.ok) {
-        throw new Error(data.error || `Request failed: ${res.status}`);
+        throw new Error((data as { error?: string }).error || `Request failed: ${res.status}`);
       }
 
       setResponse(data);

@@ -51,7 +51,7 @@ export default function OrganizationProfilePage() {
           </CardHeader>
           <CardContent>
             <CardDescription>
-              Invite team members, manage roles, and control access to your organization's resources
+              Invite team members, manage roles, and control access to your organization&apos;s resources
             </CardDescription>
           </CardContent>
         </Card>
