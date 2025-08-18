@@ -34,7 +34,7 @@ export function PatternExplorer() {
   const [selectedType, setSelectedType] = useState('all')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedPattern, setSelectedPattern] = useState<Pattern | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [_loading, setLoading] = useState(false)
 
   useEffect(() => {
     fetchApprovedPatterns()
@@ -42,6 +42,7 @@ export function PatternExplorer() {
 
   useEffect(() => {
     filterPatterns()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patterns, searchQuery, selectedType, selectedCategory])
 
   const fetchApprovedPatterns = async () => {
@@ -50,7 +51,7 @@ export function PatternExplorer() {
       const res = await fetch('/api/patterns?status=APPROVED&limit=100')
       const data = await res.json()
       setPatterns(data.patterns)
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Failed to fetch patterns',

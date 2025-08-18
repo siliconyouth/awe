@@ -7,7 +7,7 @@ import { Textarea } from '../ui/textarea'
 import { Badge } from '../ui/badge'
 import { Label } from '../ui/label'
 import { toast } from '../ui/use-toast'
-import { CheckIcon, XIcon, RefreshCwIcon, SparklesIcon } from 'lucide-react'
+import { CheckIcon, XIcon, SparklesIcon } from 'lucide-react'
 
 interface ExtractedPattern {
   id: string
@@ -34,7 +34,7 @@ export function ReviewDashboard() {
   const [selectedPattern, setSelectedPattern] = useState<ExtractedPattern | null>(null)
   const [refinement, setRefinement] = useState('')
   const [loading, setLoading] = useState(false)
-  const [filter, setFilter] = useState({
+  const [filter, _setFilter] = useState({
     status: 'PENDING',
     type: '',
     sourceId: ''
@@ -42,6 +42,7 @@ export function ReviewDashboard() {
 
   useEffect(() => {
     fetchPatterns()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter])
 
   const fetchPatterns = async () => {
@@ -54,7 +55,7 @@ export function ReviewDashboard() {
       const res = await fetch(`/api/patterns?${params}`)
       const data = await res.json()
       setPatterns(data.patterns)
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Failed to fetch patterns',
@@ -89,10 +90,10 @@ export function ReviewDashboard() {
       } else {
         throw new Error('Failed to review pattern')
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to review pattern',
+        description: _error instanceof Error ? _error.message : 'Failed to review pattern',
         variant: 'destructive'
       })
     } finally {

@@ -9,8 +9,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card'
 import { Badge } from '../../../components/ui/badge'
-import { Separator } from '../../../components/ui/separator'
-import { CalendarDays, FileText, Globe, Shield, Lock, Eye } from 'lucide-react'
+import { CalendarDays, FileText, Shield, Lock, Eye } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | AWE',

@@ -8,7 +8,7 @@ import { Textarea } from '../ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Badge } from '../ui/badge'
 import { toast } from '../ui/use-toast'
-import { PlayIcon, PauseIcon, TrashIcon, RefreshCwIcon, AlertCircleIcon } from 'lucide-react'
+import { PlayIcon, PauseIcon, RefreshCwIcon, AlertCircleIcon } from 'lucide-react'
 
 interface KnowledgeSource {
   id: string
@@ -52,7 +52,7 @@ export function SourceManager() {
       const res = await fetch('/api/sources')
       const data = await res.json()
       setSources(data.sources)
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Failed to fetch sources',
@@ -93,13 +93,13 @@ export function SourceManager() {
         })
         fetchSources()
       } else {
-        const error = await res.json()
-        throw new Error(error.error)
+        const errorData = await res.json()
+        throw new Error(errorData.error)
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'An error occurred',
+        description: _error instanceof Error ? _error.message : 'An error occurred',
         variant: 'destructive'
       })
     } finally {
@@ -127,7 +127,7 @@ export function SourceManager() {
         })
         fetchSources()
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Failed to update source',
@@ -152,7 +152,7 @@ export function SourceManager() {
           : 'No changes detected'
       })
       fetchSources()
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Failed to check source',

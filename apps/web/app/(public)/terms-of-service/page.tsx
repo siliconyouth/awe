@@ -9,7 +9,6 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card'
 import { Badge } from '../../../components/ui/badge'
-import { Separator } from '../../../components/ui/separator'
 import { CalendarDays, FileText, Globe, Scale } from 'lucide-react'
 
 export const metadata: Metadata = {

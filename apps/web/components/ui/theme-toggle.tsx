@@ -32,7 +32,7 @@ export function ThemeToggle() {
     )
   }
 
-  const currentTheme = themes.find(t => t.value === theme) || themes[0]
+  // const currentTheme = themes.find(t => t.value === theme) || themes[0]
 
   return (
     <DropdownMenu>

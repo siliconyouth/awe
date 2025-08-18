@@ -24,7 +24,7 @@ async function handler(request: NextRequest) {
   try {
     // Parse request body
     const body = await request.json();
-    const { url, type = 'content', options = {} } = body;
+    const { url, type = 'content' } = body;
 
     // Validate URL
     if (!url || typeof url !== 'string') {
@@ -35,7 +35,7 @@ async function handler(request: NextRequest) {
     }
 
     // Check cache first (TODO: Implement caching)
-    const cacheKey = `scrape:${userId}:${url}:${type}`;
+    // const cacheKey = `scrape:${userId}:${url}:${type}`;
     // const cached = await cache.get(cacheKey);
     const cached = null;
     
@@ -100,7 +100,7 @@ async function handler(request: NextRequest) {
 export const POST = handler;
 
 // Document the API endpoint
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   return NextResponse.json({
     endpoint: '/api/scrape',
     method: 'POST',

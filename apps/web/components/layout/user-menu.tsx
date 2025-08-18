@@ -4,12 +4,8 @@ import { UserButton, useUser } from '@clerk/nextjs'
 import { 
   Building2, 
   CreditCard, 
-  LogOut, 
-  Settings, 
   User,
-  Shield,
-  Sparkles,
-  HelpCircle
+  Shield
 } from 'lucide-react'
 import { useHasRole } from '../../lib/auth/hooks'
 
@@ -18,7 +14,7 @@ export function UserMenu() {
   const isAdmin = useHasRole('admin')
   
   // Custom menu items that will appear in the UserButton dropdown
-  const customPages = [
+  const _customPages = [
     {
       label: "Profile",
       url: "/profile",
@@ -37,7 +33,7 @@ export function UserMenu() {
   ]
 
   // Admin-only menu items
-  const adminPages = isAdmin ? [
+  const _adminPages = isAdmin ? [
     {
       label: "Admin Panel",
       url: "/admin/users",

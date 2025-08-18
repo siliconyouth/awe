@@ -30,7 +30,8 @@ interface ConfigManager {
 const configManager = null as unknown as ConfigManager // Temporary placeholder
 
 // Request validation schemas
-// Request validation schemas - GetConfigSchema is not used but kept for future use
+// Request validation schemas - Kept for future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _GetConfigSchema = z.object({
   path: z.string().optional(),
   section: z.enum(['app', 'api', 'auth', 'scraper', 'knowledge', 'features']).optional(),

@@ -154,7 +154,7 @@ export default function LegalDocumentsPage() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [toast])
 
   useEffect(() => {
     loadDocuments()

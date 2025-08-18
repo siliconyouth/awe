@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from "next-themes"
 import { themes } from "../../lib/themes"
 
 export function ThemeProvider({ 
@@ -24,7 +24,7 @@ export function ThemeProvider({
 }
 
 function ThemeColorApplier() {
-  const { theme } = require("next-themes").useTheme()
+  const { theme } = useNextTheme()
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
