@@ -107,8 +107,8 @@ export async function checkRole(role: Roles): Promise<boolean> {
     return false
   }
   
-  userRole = userRole as Roles
-  const userLevel = ROLE_HIERARCHY[userRole] || 0
+  const finalRole = (userRole as Roles) || 'user'
+  const userLevel = ROLE_HIERARCHY[finalRole] || 0
   const requiredLevel = ROLE_HIERARCHY[role] || 0
   
   return userLevel >= requiredLevel
