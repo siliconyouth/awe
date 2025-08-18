@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDatabase } from '../../../../../lib/database'
-// TODO: Fix type declarations in @awe/ai package
-// import { AdvancedSmartScraper } from '@awe/ai'
-
-// Temporary mock - @awe/ai package has type issues
-class AdvancedSmartScraper {
-  constructor(_options?: unknown) {}
-  async scrape(_url: string, _options?: unknown) {
-    return { content: {}, metadata: {} }
-  }
-  async close() {}
-}
+import { AdvancedSmartScraper } from '@awe/ai'
 
 export async function GET(request: NextRequest) {
   // Verify this is called by Vercel Cron

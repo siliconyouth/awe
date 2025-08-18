@@ -19,7 +19,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@awe/ai": ["../../packages/ai/src/index.ts"],
+      "@awe/config": ["../../packages/config/src/index.ts"],
+      "@awe/shared": ["../../packages/shared/src/index.ts"],
+      "@awe/database": ["../../packages/database/src/index.ts"],
+      "@awe/auth": ["../../packages/auth/src/index.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

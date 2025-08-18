@@ -1,31 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-// TODO: Fix type declarations in @awe/ai package
-// import { AdvancedSmartScraper } from '@awe/ai';
+import { AdvancedSmartScraper } from '@awe/ai';
 import { withRateLimit } from '../../../lib/rate-limit';
-
-// Temporary mock - @awe/ai package has type issues
-class AdvancedSmartScraper {
-  constructor(_options?: unknown) {}
-  async scrape(_url: string, _options?: unknown) {
-    return { 
-      content: 'Mocked content', 
-      metadata: {},
-      structuredData: {},
-      title: 'Mocked Title',
-      description: 'Mocked Description',
-      images: [],
-      links: []
-    }
-  }
-  async screenshot(_url: string, _options?: unknown) {
-    return { screenshot: '', metadata: {} }
-  }
-  async pdf(_url: string, _options?: unknown) {
-    return { pdf: '', metadata: {} }
-  }
-  async close() {}
-}
 
 /**
  * Protected API Route: Web Scraping with Browserless

@@ -6,26 +6,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-// TODO: Fix type declarations in @awe/config package
-// import { createWebConfig } from '@awe/config'
+import { createWebConfig } from '@awe/config'
 // import { z } from 'zod'
 import { checkPermission, protectApiRoute } from '../../../lib/auth/rbac'
-
-// Temporary simplified mock - config package has type issues that need fixing
-const createWebConfig = () => ({
-  initialize: async () => {},
-  get: (path?: string) => path ? {} : {},
-  set: async (_path: string, _value: unknown) => {},
-  getApp: () => ({}),
-  getApi: () => ({}),
-  getAuth: () => ({}),
-  getScraper: () => ({}),
-  getKnowledge: () => ({}),
-  getFeatures: () => ({}),
-  getEnvironment: () => 'development' as const,
-  import: async (_data: unknown) => {},
-  reload: async () => {}
-})
 
 // Initialize configuration manager
 const configManager = createWebConfig()
