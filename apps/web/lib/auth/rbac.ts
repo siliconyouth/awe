@@ -80,13 +80,34 @@ export const ROLE_PERMISSIONS: Record<Roles, string[]> = {
  * @returns True if user has the role or a higher role
  */
 export async function checkRole(role: Roles): Promise<boolean> {
-  const { sessionClaims } = await auth()
+  const { sessionClaims, userId } = await auth()
   
-  if (!sessionClaims?.metadata?.role) {
+  // Check session claims first (multiple locations)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const claims = sessionClaims as any
+  let userRole = claims?.metadata?.role || 
+                 claims?.publicMetadata?.role || 
+                 claims?.unsafeMetadata?.role ||
+                 claims?.role
+  
+  // If not in session, try to get from user object
+  if (!userRole && userId) {
+    try {
+      const client = await clerkClient()
+      const user = await client.users.getUser(userId)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const metadata = user.publicMetadata as any
+      userRole = metadata?.role
+    } catch (error) {
+      console.error('Failed to fetch user for role check:', error)
+    }
+  }
+  
+  if (!userRole) {
     return false
   }
   
-  const userRole = sessionClaims.metadata.role as Roles
+  userRole = userRole as Roles
   const userLevel = ROLE_HIERARCHY[userRole] || 0
   const requiredLevel = ROLE_HIERARCHY[role] || 0
   

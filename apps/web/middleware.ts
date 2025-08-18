@@ -57,7 +57,14 @@ export default clerkMiddleware(async (auth, req) => {
   }
   
   const { sessionClaims, orgRole } = await auth();
-  const userRole = (sessionClaims?.metadata?.role as Roles) || 'user';
+  
+  // Check multiple locations for the role
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const claims = sessionClaims as any;
+  const userRole = (claims?.metadata?.role || 
+                    claims?.publicMetadata?.role || 
+                    claims?.unsafeMetadata?.role ||
+                    claims?.role) as Roles || 'user';
   const userLevel = ROLE_HIERARCHY[userRole] || 0;
   
   // Check admin routes
