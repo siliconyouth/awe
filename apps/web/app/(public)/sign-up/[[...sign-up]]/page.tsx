@@ -1,6 +1,16 @@
-import { RedirectToSignUp } from '@clerk/nextjs'
+import { SignUp } from '@clerk/nextjs'
 
 export default function SignUpPage() {
-  // This will automatically redirect to the Clerk Account Portal sign-up page
-  return <RedirectToSignUp />
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <SignUp 
+        appearance={{
+          elements: {
+            rootBox: "mx-auto",
+            card: "shadow-xl"
+          }
+        }}
+      />
+    </div>
+  )
 }
