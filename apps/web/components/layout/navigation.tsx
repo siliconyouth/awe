@@ -87,80 +87,59 @@ export function Navigation() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        {/* Logo and Desktop Navigation */}
-        <div className="flex items-center gap-6">
+        {/* Logo only */}
+        <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
             </div>
             <span className="font-bold text-xl hidden sm:inline">AWE</span>
           </Link>
-          
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
-            <SignedIn>
-              {navigationItems.map((item) => {
-                // Skip admin items for non-admin users
-                if (item.requiresRole === "admin" && !isAdmin) {
-                  return null
-                }
-                
-                const Icon = item.icon
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors",
-                      "hover:bg-accent hover:text-accent-foreground",
-                      "h-9 px-4 py-2",
-                      pathname === item.href && "bg-accent text-accent-foreground"
-                    )}
-                  >
-                    <Icon className="mr-2 h-4 w-4" />
-                    {item.title}
-                  </Link>
-                )
-              })}
-            </SignedIn>
-          </nav>
         </div>
 
         {/* Right side - Auth and Theme */}
         <div className="flex items-center gap-2">
           <ThemeToggle />
           
-          {/* Mobile Menu - Only show when signed in on mobile */}
+          {/* Navigation Dropdown - Show when signed in */}
           <SignedIn>
-            <div className="md:hidden">
-              <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Navigation</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {navigationItems.map((item) => {
-                    if (item.requiresRole === "admin" && !isAdmin) {
-                      return null
-                    }
-                    
-                    const Icon = item.icon
-                    return (
-                      <DropdownMenuItem key={item.href} asChild>
-                        <Link href={item.href} onClick={() => setIsMenuOpen(false)}>
-                          <Icon className="mr-2 h-4 w-4" />
+            <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Navigation menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Navigation</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {navigationItems.map((item) => {
+                  if (item.requiresRole === "admin" && !isAdmin) {
+                    return null
+                  }
+                  
+                  const Icon = item.icon
+                  const isActive = pathname === item.href
+                  return (
+                    <DropdownMenuItem key={item.href} asChild>
+                      <Link 
+                        href={item.href} 
+                        onClick={() => setIsMenuOpen(false)}
+                        className={cn(
+                          "flex items-center",
+                          isActive && "bg-accent"
+                        )}
+                      >
+                        <Icon className="mr-2 h-4 w-4" />
+                        <span className={cn(isActive && "font-semibold")}>
                           {item.title}
-                        </Link>
-                      </DropdownMenuItem>
-                    )
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                        </span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SignedIn>
 
           {/* Sign In/Up Buttons - Only show when signed out */}
