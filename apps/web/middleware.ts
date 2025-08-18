@@ -1,4 +1,4 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher, clerkClient } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import type { Roles } from './types/globals';
 
@@ -56,16 +56,24 @@ export default clerkMiddleware(async (auth, req) => {
     await auth.protect();
   }
   
-  const { sessionClaims, orgRole } = await auth();
+  const { sessionClaims, orgRole, userId } = await auth();
   
-  // Check multiple locations for the role
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const claims = sessionClaims as any;
-  const userRole = (claims?.metadata?.role || 
-                    claims?.publicMetadata?.role || 
-                    claims?.unsafeMetadata?.role ||
-                    claims?.role) as Roles || 'user';
-  const userLevel = ROLE_HIERARCHY[userRole] || 0;
+  // Get user role from Clerk directly
+  let userRole: Roles = 'user';
+  let userLevel = ROLE_HIERARCHY.user;
+  
+  if (userId) {
+    try {
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const metadata = user.publicMetadata as any;
+      userRole = metadata?.role || 'user';
+      userLevel = ROLE_HIERARCHY[userRole] || 0;
+    } catch (error) {
+      console.error('Failed to fetch user in middleware:', error);
+    }
+  }
   
   // Check admin routes
   if (isAdminRoute(req)) {
