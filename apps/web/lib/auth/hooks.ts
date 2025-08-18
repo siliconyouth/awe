@@ -78,7 +78,11 @@ const ROLE_PERMISSIONS: Record<Roles, string[]> = {
  */
 export function useRole(): Roles {
   const { sessionClaims } = useAuth()
-  return (sessionClaims?.metadata?.role as Roles) || 'user'
+  // Check both possible locations for the role
+  const role = (sessionClaims?.metadata?.role || 
+                sessionClaims?.publicMetadata?.role || 
+                sessionClaims?.role) as Roles
+  return role || 'user'
 }
 
 /**
@@ -86,7 +90,10 @@ export function useRole(): Roles {
  */
 export function useHasRole(requiredRole: Roles): boolean {
   const { sessionClaims } = useAuth()
-  const userRole = (sessionClaims?.metadata?.role as Roles) || 'user'
+  // Check both possible locations for the role
+  const userRole = (sessionClaims?.metadata?.role || 
+                    sessionClaims?.publicMetadata?.role || 
+                    sessionClaims?.role) as Roles || 'user'
   
   const userLevel = ROLE_HIERARCHY[userRole] || 0
   const requiredLevel = ROLE_HIERARCHY[requiredRole] || 0
@@ -112,10 +119,14 @@ export function useHasAnyRole(roles: Roles[]): boolean {
  */
 export function usePermissions(): string[] {
   const { sessionClaims } = useAuth()
-  const userRole = (sessionClaims?.metadata?.role as Roles) || 'user'
+  // Check both possible locations for the role
+  const userRole = (sessionClaims?.metadata?.role || 
+                    sessionClaims?.publicMetadata?.role || 
+                    sessionClaims?.role) as Roles || 'user'
   
   const rolePermissions = ROLE_PERMISSIONS[userRole] || []
-  const customPermissions = sessionClaims?.metadata?.permissions || []
+  const customPermissions = sessionClaims?.metadata?.permissions || 
+                           sessionClaims?.publicMetadata?.permissions || []
   
   return [...new Set([...rolePermissions, ...customPermissions])]
 }

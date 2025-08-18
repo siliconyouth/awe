@@ -84,6 +84,11 @@ export function Navigation() {
   const isAdmin = useHasRole("admin")
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
 
+  // Debug logging
+  React.useEffect(() => {
+    console.log('Navigation - isAdmin:', isAdmin)
+  }, [isAdmin])
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
