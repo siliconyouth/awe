@@ -6,7 +6,7 @@
 
 'use client'
 
-import { useAuth } from '@clerk/nextjs'
+import { useAuth, useUser } from '@clerk/nextjs'
 import type { Roles } from '../../types/globals'
 
 /**
@@ -78,12 +78,24 @@ const ROLE_PERMISSIONS: Record<Roles, string[]> = {
  */
 export function useRole(): Roles {
   const { sessionClaims } = useAuth()
-  // Check both possible locations for the role
-  // Using any to handle different possible structures from Clerk
+  const { user } = useUser()
+  
+  // Check all possible locations for the role
+  // First check user object, then session claims
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userMetadata = user?.publicMetadata as any
+  const userRole = userMetadata?.role
+  
+  if (userRole) {
+    return userRole as Roles
+  }
+  
+  // Fallback to session claims
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const claims = sessionClaims as any
   const role = claims?.metadata?.role || 
                claims?.publicMetadata?.role || 
+               claims?.unsafeMetadata?.role ||
                claims?.role
   return (role as Roles) || 'user'
 }
@@ -92,15 +104,25 @@ export function useRole(): Roles {
  * Hook to check if user has a specific role or higher
  */
 export function useHasRole(requiredRole: Roles): boolean {
+  const { user } = useUser()
   const { sessionClaims } = useAuth()
-  // Check both possible locations for the role
-  // Using any to handle different possible structures from Clerk
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const claims = sessionClaims as any
-  const userRole = (claims?.metadata?.role || 
-                    claims?.publicMetadata?.role || 
-                    claims?.role) as Roles || 'user'
   
+  // First check user object directly
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userMetadata = user?.publicMetadata as any
+  let userRole = userMetadata?.role
+  
+  // If not in user object, check session claims
+  if (!userRole) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const claims = sessionClaims as any
+    userRole = claims?.metadata?.role || 
+               claims?.publicMetadata?.role || 
+               claims?.unsafeMetadata?.role ||
+               claims?.role
+  }
+  
+  userRole = (userRole as Roles) || 'user'
   const userLevel = ROLE_HIERARCHY[userRole] || 0
   const requiredLevel = ROLE_HIERARCHY[requiredRole] || 0
   
@@ -125,12 +147,13 @@ export function useHasAnyRole(roles: Roles[]): boolean {
  */
 export function usePermissions(): string[] {
   const { sessionClaims } = useAuth()
-  // Check both possible locations for the role
+  // Check all possible locations for the role in Clerk session
   // Using any to handle different possible structures from Clerk
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const claims = sessionClaims as any
   const userRole = (claims?.metadata?.role || 
                     claims?.publicMetadata?.role || 
+                    claims?.unsafeMetadata?.role ||
                     claims?.role) as Roles || 'user'
   
   const rolePermissions = ROLE_PERMISSIONS[userRole] || []
