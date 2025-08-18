@@ -45,10 +45,10 @@ export function UserRoleManager({
 
     setIsLoading(true)
     try {
-      const response = await fetch('/api/admin/update-role', {
-        method: 'POST',
+      const response = await fetch(`/api/admin/users/${userId}/role`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, role })
+        body: JSON.stringify({ role })
       })
 
       if (!response.ok) {
@@ -59,6 +59,9 @@ export function UserRoleManager({
         title: 'Role Updated',
         description: `Successfully updated role to ${role}`,
       })
+      
+      // Trigger parent refresh if possible
+      window.location.reload()
     } catch (error) {
       toast({
         title: 'Error',

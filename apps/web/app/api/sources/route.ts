@@ -1,12 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import { getPrisma } from '@awe/database' // TODO: Fix database import
+
+// Dynamic import to avoid build-time resolution issues
+async function getDatabase() {
+  try {
+    const db = await import('@awe/database')
+    return db.getPrisma()
+  } catch (error) {
+    console.error('Database import failed:', error)
+    return null
+  }
+}
 
 // GET /api/sources - List all knowledge sources
 export async function GET(request: NextRequest) {
-  return NextResponse.json({ message: "Sources API temporarily disabled" }, { status: 503 })
-  /*
   try {
-    const db = getPrisma()
+    const db = await getDatabase()
+    if (!db) {
+      return NextResponse.json({ message: "Database not available" }, { status: 503 })
+    }
+
     const { searchParams } = new URL(request.url)
     
     const category = searchParams.get('category')
@@ -49,15 +61,16 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-  */
 }
 
 // POST /api/sources - Create a new knowledge source
 export async function POST(request: NextRequest) {
-  return NextResponse.json({ message: "Sources API temporarily disabled" }, { status: 503 })
-  /*
   try {
-    const db = getPrisma()
+    const db = await getDatabase()
+    if (!db) {
+      return NextResponse.json({ message: "Database not available" }, { status: 503 })
+    }
+
     const data = await request.json()
     
     const source = await db.knowledgeSource.create({
@@ -81,15 +94,16 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-  */
 }
 
 // PUT /api/sources/:id - Update a knowledge source
 export async function PUT(request: NextRequest) {
-  return NextResponse.json({ message: "Sources API temporarily disabled" }, { status: 503 })
-  /*
   try {
-    const db = getPrisma()
+    const db = await getDatabase()
+    if (!db) {
+      return NextResponse.json({ message: "Database not available" }, { status: 503 })
+    }
+
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
     
@@ -114,15 +128,16 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     )
   }
-  */
 }
 
 // DELETE /api/sources/:id - Delete a knowledge source
 export async function DELETE(request: NextRequest) {
-  return NextResponse.json({ message: "Sources API temporarily disabled" }, { status: 503 })
-  /*
   try {
-    const db = getPrisma()
+    const db = await getDatabase()
+    if (!db) {
+      return NextResponse.json({ message: "Database not available" }, { status: 503 })
+    }
+
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
     
@@ -145,5 +160,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     )
   }
-  */
 }

@@ -1,12 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import { getPrisma } from '@awe/database' // TODO: Fix database import
+
+// Dynamic import to avoid build-time resolution issues
+async function getDatabase() {
+  try {
+    const db = await import('@awe/database')
+    return db.getPrisma()
+  } catch (error) {
+    console.error('Database import failed:', error)
+    return null
+  }
+}
 
 // GET /api/patterns - List patterns for review
 export async function GET(request: NextRequest) {
-  return NextResponse.json({ message: "Patterns API temporarily disabled" }, { status: 503 })
-  /*
   try {
-    const db = getPrisma()
+    const db = await getDatabase()
+    if (!db) {
+      return NextResponse.json({ message: "Database not available" }, { status: 503 })
+    }
+
     const { searchParams } = new URL(request.url)
     
     const status = searchParams.get('status') || 'PENDING'
@@ -53,15 +65,16 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-  */
 }
 
 // POST /api/patterns/review - Review a pattern
 export async function POST(request: NextRequest) {
-  return NextResponse.json({ message: "Patterns API temporarily disabled" }, { status: 503 })
-  /*
   try {
-    const db = getPrisma()
+    const db = await getDatabase()
+    if (!db) {
+      return NextResponse.json({ message: "Database not available" }, { status: 503 })
+    }
+
     const { patternId, action, refinements, feedback } = await request.json()
     
     if (!patternId || !action) {
@@ -135,15 +148,16 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-  */
 }
 
 // DELETE /api/patterns/:id - Delete a pattern
 export async function DELETE(request: NextRequest) {
-  return NextResponse.json({ message: "Patterns API temporarily disabled" }, { status: 503 })
-  /*
   try {
-    const db = getPrisma()
+    const db = await getDatabase()
+    if (!db) {
+      return NextResponse.json({ message: "Database not available" }, { status: 503 })
+    }
+
     const { searchParams } = new URL(request.url)
     const patternId = searchParams.get('id')
     
@@ -166,5 +180,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     )
   }
-  */
 }

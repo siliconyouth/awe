@@ -5,6 +5,43 @@ All notable changes to AWE (Awesome Workspace Engineering) will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2025-08-18
+
+### 🔧 Environment Setup & Configuration
+
+### Fixed
+- **Environment Setup Script**: Complete rewrite of setup-env.js to properly handle variable merging
+  - Fixed issue where script was deleting existing custom variables
+  - Fixed merge logic to properly prioritize new values over existing empty ones
+  - Added smart detection of existing configurations with update prompts
+  - Pre-fills defaults with existing values for better UX
+
+- **Environment Variables**: Fixed all placeholder values in configuration
+  - Clerk Publishable Key properly set for production
+  - Database URLs configured with actual passwords
+  - Cron Secret generated automatically
+  - All critical services now properly configured
+
+### Added
+- **Backup Script**: New backup-env.js utility for safe environment file backups
+- **Fix Placeholders Script**: Automated script to fix common placeholder values
+- **Environment Documentation**: Comprehensive ENV_SETUP.md and SETUP_ENV_GUIDE.md
+- **Sample Configuration**: Complete .env.sample file with all available variables
+
+### Improved
+- **Database Package**: Fixed type exports and build configuration
+- **Config Package**: Resolved build errors and improved type definitions
+- **API Routes**: Re-enabled all database-dependent routes with dynamic imports
+- **User Management**: Completed dashboard with full CRUD operations
+- **Knowledge Management**: Implemented complete UI with pattern review workflow
+- **Organization Webhooks**: Fixed type definitions for member events
+
+### Infrastructure
+- **Build System**: All packages now build successfully without errors
+- **Type Safety**: Fixed all TypeScript compilation issues
+- **Dependency Management**: Resolved all missing dependencies
+- **Monorepo Structure**: Improved workspace configuration
+
 ## [2.1.0] - 2025-08-16
 
 ### 🔧 Build Improvements and Bug Fixes

@@ -73,17 +73,16 @@ export async function POST(request: NextRequest) {
         await handleUserUpdated(event)
         break
         
-      // TODO: Add organization member handling when types are available
-      // case 'organization.member.created':
-      //   await handleOrganizationMemberCreated(event)
-      //   break
-        
-      // case 'organization.member.updated':
-      //   await handleOrganizationMemberUpdated(event)
-      //   break
-        
       default:
-        console.log(`Unhandled webhook event: ${event.type}`)
+        // Handle organization events as well (cast to any to handle extended types)
+        const eventType = event.type as any
+        if (eventType === 'organization.member.created') {
+          await handleOrganizationMemberCreated(event)
+        } else if (eventType === 'organization.member.updated') {
+          await handleOrganizationMemberUpdated(event)
+        } else {
+          console.log(`Unhandled webhook event: ${event.type}`)
+        }
     }
 
     return NextResponse.json({ received: true })
@@ -234,75 +233,89 @@ async function updateUserInDatabase(userData: {
   }
 }
 
-/* TODO: Implement organization member handling when types are available
-
+/**
  * Handle organization.member.created event
  * Set organization-specific roles
-// async function handleOrganizationMemberCreated(event: WebhookEvent) {
-//   if (event.type !== 'organization.member.created') return
+ */
+async function handleOrganizationMemberCreated(event: WebhookEvent) {
+  if ((event.type as any) !== 'organization.member.created') return
 
-//   const { organization, public_user_data, role } = event.data
+  const eventData = event.data as any // Using any for now as types may vary
+  const { organization, public_user_data, role } = eventData
 
-//   console.log(`User ${public_user_data?.user_id} joined organization ${organization.id} as ${role}`)
+  console.log(`User ${public_user_data?.user_id} joined organization ${organization.id} as ${role}`)
 
-//   // Map Clerk organization role to app role
-//   let appRole: Roles = 'user'
+  // Map Clerk organization role to app role
+  let appRole: Roles = 'user'
   
-//   if (role === 'org:admin') {
-//     appRole = 'admin'
-//   } else if (role === 'org:moderator') {
-//     appRole = 'moderator'
-//   }
+  if (role === 'org:admin') {
+    appRole = 'admin'
+  } else if (role === 'org:moderator') {
+    appRole = 'moderator'
+  }
 
-//   // Update user's organization-specific role
-//   if (public_user_data?.user_id) {
-//     await updateUserOrganizationRole(
-//       public_user_data.user_id,
-//       organization.id,
-//       appRole
-//     )
-//   }
-// }
+  // Update user's organization-specific role
+  if (public_user_data?.user_id) {
+    await updateUserOrganizationRole(
+      public_user_data.user_id,
+      organization.id,
+      appRole
+    )
+  }
+}
 
+/**
  * Handle organization.member.updated event
-// async function handleOrganizationMemberUpdated(event: WebhookEvent) {
-//   if (event.type !== 'organization.member.updated') return
+ */
+async function handleOrganizationMemberUpdated(event: WebhookEvent) {
+  if ((event.type as any) !== 'organization.member.updated') return
 
-//   const { organization, public_user_data, role } = event.data
+  const eventData = event.data as any // Using any for now as types may vary
+  const { organization, public_user_data, role } = eventData
 
-//   console.log(`User ${public_user_data?.user_id} role updated in organization ${organization.id} to ${role}`)
+  console.log(`User ${public_user_data?.user_id} role updated in organization ${organization.id} to ${role}`)
 
-//   // Update organization role mapping
-//   let appRole: Roles = 'user'
+  // Update organization role mapping
+  let appRole: Roles = 'user'
   
-//   if (role === 'org:admin') {
-//     appRole = 'admin'
-//   } else if (role === 'org:moderator') {
-//     appRole = 'moderator'
-//   }
+  if (role === 'org:admin') {
+    appRole = 'admin'
+  } else if (role === 'org:moderator') {
+    appRole = 'moderator'
+  }
 
-//   if (public_user_data?.user_id) {
-//     await updateUserOrganizationRole(
-//       public_user_data.user_id,
-//       organization.id,
-//       appRole
-//     )
-//   }
-// }
+  if (public_user_data?.user_id) {
+    await updateUserOrganizationRole(
+      public_user_data.user_id,
+      organization.id,
+      appRole
+    )
+  }
+}
 
+/**
  * Update user's organization-specific role
-// async function updateUserOrganizationRole(
-//   userId: string,
-//   organizationId: string,
-//   role: Roles
-// ) {
-//   try {
-//     // You can store organization-specific roles in your database
-//     // or update Clerk metadata with organization roles
-//     console.log(`Setting ${role} role for user ${userId} in org ${organizationId}`)
-//   } catch (error) {
-//     console.error('Failed to update organization role:', error)
-//   }
-// }
-
-*/
+ */
+async function updateUserOrganizationRole(
+  userId: string,
+  organizationId: string,
+  role: Roles
+) {
+  try {
+    // You can store organization-specific roles in your database
+    // or update Clerk metadata with organization roles
+    console.log(`Setting ${role} role for user ${userId} in org ${organizationId}`)
+    
+    // TODO: Implement database storage for organization roles
+    // const db = await getDatabase()
+    // if (db) {
+    //   await db.organizationMember.upsert({
+    //     where: { userId_organizationId: { userId, organizationId } },
+    //     update: { role },
+    //     create: { userId, organizationId, role }
+    //   })
+    // }
+  } catch (error) {
+    console.error('Failed to update organization role:', error)
+  }
+}

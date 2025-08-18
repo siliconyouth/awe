@@ -6,12 +6,126 @@
 
 'use client'
 
+import { useState, useEffect } from 'react'
+import { useUser } from '@clerk/nextjs'
 import { UserRoleManager } from '../../../../components/admin/user-role-manager'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../../components/ui/card'
 import { Alert, AlertDescription } from '../../../../components/ui/alert'
-import { Shield, Users, AlertTriangle } from 'lucide-react'
+import { Button } from '../../../../components/ui/button'
+import { Input } from '../../../../components/ui/input'
+import { Badge } from '../../../../components/ui/badge'
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../../../../components/ui/table'
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue 
+} from '../../../../components/ui/select'
+import { Shield, Users, AlertTriangle, Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useToast } from '../../../../components/ui/use-toast'
+
+interface User {
+  id: string
+  email: string
+  firstName?: string
+  lastName?: string
+  role: string
+  createdAt: string
+  lastSignInAt?: string
+}
 
 export default function AdminUsersPage() {
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [roleFilter, setRoleFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [selectedUser, setSelectedUser] = useState<string | null>(null)
+  const { toast } = useToast()
+  const { user: currentUser } = useUser()
+
+  const fetchUsers = async () => {
+    setLoading(true)
+    try {
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: '10',
+        ...(searchQuery && { search: searchQuery }),
+        ...(roleFilter !== 'all' && { role: roleFilter })
+      })
+      
+      const response = await fetch(`/api/admin/users?${params}`)
+      if (!response.ok) throw new Error('Failed to fetch users')
+      
+      const data = await response.json()
+      setUsers(data.users || [])
+      setTotalPages(data.totalPages || 1)
+    } catch (error) {
+      console.error('Error fetching users:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to load users',
+        variant: 'destructive'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [currentPage, roleFilter])
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    setCurrentPage(1)
+    fetchUsers()
+  }
+
+  const handleRoleUpdate = async (userId: string, newRole: string) => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/role`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: newRole })
+      })
+
+      if (!response.ok) throw new Error('Failed to update role')
+
+      toast({
+        title: 'Success',
+        description: 'User role updated successfully'
+      })
+      
+      // Refresh the user list
+      fetchUsers()
+      setSelectedUser(null)
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update user role',
+        variant: 'destructive'
+      })
+    }
+  }
+
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case 'admin': return 'destructive'
+      case 'moderator': return 'default' 
+      case 'developer': return 'secondary'
+      default: return 'outline'
+    }
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -33,7 +147,157 @@ export default function AdminUsersPage() {
         </AlertDescription>
       </Alert>
 
-      {/* <UserRoleManager userId="placeholder" /> */}
+      {/* User List Section */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>All Users</CardTitle>
+          <CardDescription>
+            Search and manage user accounts and their roles
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {/* Search and Filter Bar */}
+          <div className="flex gap-4 mb-6">
+            <form onSubmit={handleSearch} className="flex gap-2 flex-1">
+              <Input
+                placeholder="Search by name or email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1"
+              />
+              <Button type="submit" size="icon" variant="secondary">
+                <Search className="h-4 w-4" />
+              </Button>
+            </form>
+            
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Filter by role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="moderator">Moderator</SelectItem>
+                <SelectItem value="developer">Developer</SelectItem>
+                <SelectItem value="user">User</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button onClick={fetchUsers} size="icon" variant="outline">
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Users Table */}
+          <div className="border rounded-lg">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Joined</TableHead>
+                  <TableHead>Last Active</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8">
+                      Loading users...
+                    </TableCell>
+                  </TableRow>
+                ) : users.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8">
+                      No users found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  users.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">
+                        {user.firstName || user.lastName 
+                          ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
+                          : 'Unknown User'}
+                      </TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        <Badge variant={getRoleColor(user.role)}>
+                          {user.role}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(user.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {user.lastSignInAt 
+                          ? new Date(user.lastSignInAt).toLocaleDateString()
+                          : 'Never'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedUser(user.id)}
+                          disabled={user.id === currentUser?.id}
+                        >
+                          Manage
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <div className="text-sm text-muted-foreground">
+                Page {currentPage} of {totalPages}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Selected User Management */}
+      {selectedUser && (
+        <div className="mb-6">
+          {users.map(user => user.id === selectedUser && (
+            <UserRoleManager
+              key={user.id}
+              userId={user.id}
+              currentRole={user.role}
+              userName={`${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User'}
+              userEmail={user.email}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>

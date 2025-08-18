@@ -25,15 +25,25 @@ export async function GET(request: NextRequest) {
     
     // Get search params
     const { searchParams } = new URL(request.url)
-    const limit = parseInt(searchParams.get('limit') || '100')
-    const offset = parseInt(searchParams.get('offset') || '0')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const offset = (page - 1) * limit
     const role = searchParams.get('role') as Roles | null
+    const search = searchParams.get('search') || ''
     
-    // Fetch users from Clerk
-    const { data: clerkUsers, totalCount } = await client.users.getUserList({
+    // Build query params for Clerk
+    const queryParams: any = {
       limit,
       offset,
-    })
+    }
+    
+    // Add search if provided
+    if (search) {
+      queryParams.query = search
+    }
+    
+    // Fetch users from Clerk
+    const { data: clerkUsers, totalCount } = await client.users.getUserList(queryParams)
     
     // Map users with their roles
     const users = await Promise.all(
@@ -72,12 +82,15 @@ export async function GET(request: NextRequest) {
     // Filter out nulls from role filtering
     const filteredUsers = users.filter(Boolean)
     
+    const totalPages = Math.ceil((role ? filteredUsers.length : totalCount) / limit)
+    
     return NextResponse.json({
       success: true,
       users: filteredUsers,
       totalCount: role ? filteredUsers.length : totalCount,
+      totalPages,
+      currentPage: page,
       limit,
-      offset,
     })
   } catch (error) {
     console.error('Failed to fetch users:', error)
