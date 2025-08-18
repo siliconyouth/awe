@@ -17,7 +17,8 @@ import {
   TestTube, 
   Menu,
   User,
-  Building2
+  Building2,
+  BarChart3
 } from "lucide-react"
 import { cn } from "../../lib/utils"
 import { Button } from "../ui/button"
@@ -55,6 +56,12 @@ const navigationItems = [
     title: "Organizations",
     href: "/organizations",
     icon: Building2,
+    requiresAuth: true
+  },
+  {
+    title: "Analytics",
+    href: "/analytics",
+    icon: BarChart3,
     requiresAuth: true
   },
   { 

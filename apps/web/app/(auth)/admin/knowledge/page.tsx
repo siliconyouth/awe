@@ -39,6 +39,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs'
 import { Label } from '../../../../components/ui/label'
 import { Textarea } from '../../../../components/ui/textarea'
+import { ChangeAnalytics } from '../../../../components/knowledge/change-analytics'
 import { 
   Globe, 
   Plus, 
@@ -621,22 +622,7 @@ export default function KnowledgeAdmin() {
         </TabsContent>
 
         <TabsContent value="analytics">
-          <Card>
-            <CardHeader>
-              <CardTitle>Knowledge Analytics</CardTitle>
-              <CardDescription>
-                Track changes and pattern extraction performance
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Alert>
-                <TrendingUp className="h-4 w-4" />
-                <AlertDescription>
-                  Analytics dashboard coming soon. Will show change frequency, pattern quality metrics, and source reliability scores.
-                </AlertDescription>
-              </Alert>
-            </CardContent>
-          </Card>
+          <ChangeAnalytics />
         </TabsContent>
       </Tabs>
     </div>
