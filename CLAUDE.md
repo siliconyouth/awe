@@ -1,23 +1,11 @@
 # CLAUDE.md - AWE Workspace Engineering v2.2
 
-## ⚠️ CRITICAL: Branch Development Rules
+## Development Guidelines
 
-### UI Development is on `ui` Branch
-**DO NOT make UI/frontend changes on the `main` branch!**
-
-- **UI Branch**: All user interface, styling, and frontend UX improvements
-- **Main Branch**: Backend, API, database, and infrastructure only
-- **Merge Readiness**: All code must be written to minimize merge conflicts
-- **API Stability**: Keep all API endpoints backward-compatible
-- **No Breaking Changes**: Don't modify existing API response structures
-- **Documentation**: Document any changes that affect the UI branch
-
-### When Working on Main Branch:
-1. Focus on backend functionality only
-2. Maintain existing API contracts
-3. Add new endpoints rather than modifying existing ones
-4. Use feature flags for UI-dependent features
-5. Test that changes won't break existing UI
+### Branch Strategy
+- **Main Branch Only**: All development (UI, backend, infrastructure) happens on `main`
+- **No Separate UI Branch**: UI and backend changes are developed together
+- **Unified Development**: Full-stack changes in single commits when appropriate
 
 ## Project Overview
 AWE (Awesome Workspace Engineering) is an intelligent AI-powered development companion specifically designed to enhance Claude Code workflows. Built with Claude Opus 4.1 and ultrathinking capabilities, AWE provides project-centric organization, deep project analysis, pattern management, optimization recommendations, authentication, web scraping, and intelligent automation for modern development teams.
