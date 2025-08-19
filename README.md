@@ -16,18 +16,27 @@
 
 ### 🎯 Core Capabilities
 
-- **📁 Project-Centric Architecture**: Organize all resources by projects with seamless switching
-- **🧠 Claude Opus 4.1 Integration**: Advanced AI analysis with ultrathinking methodology
-- **📈 Deep Project Analysis**: Intelligent codebase scanning with performance insights
-- **📝 Smart Context Generation**: Automated CLAUDE.md creation tailored to your project
-- **🔍 Pattern Management**: Extract, review, and export coding patterns with AI analysis
-- **🏗️ AI-Powered Scaffolding**: Intelligent template recommendations and generation
-- **📊 Optimization Engine**: Performance, security, and architecture recommendations
-- **🌐 Web Scraping**: SmartScraper with Playwright/Cheerio for knowledge extraction
+#### Platform Level (Admin/System)
+- **🌐 Global Knowledge Base**: Platform-wide repository of documentation and resources
+- **🔍 Pattern Extraction**: AI analyzes global sources to extract best practices
+- **📚 Pattern Library**: Centralized repository of approved coding patterns
+- **🌊 Web Scraping**: SmartScraper continuously builds knowledge base
+- **🤖 AI Analysis**: Claude Opus 4.1 with ultrathinking methodology
+
+#### User Level (Projects)
+- **📁 Project Organization**: Users organize their work into distinct projects
+- **📝 CLAUDE.md Generation**: Custom context files tailored to each project
+- **📈 Project Analysis**: Deep codebase scanning with performance insights
+- **🎯 Smart Recommendations**: AI suggestions based on project context
+- **📊 Pattern Usage**: Track how patterns are applied to projects
+- **🏗️ Template Engine**: AI-driven scaffolding for new projects
+- **📉 Telemetry**: Project-specific analytics and metrics
+
+#### System Features
 - **🔐 Authentication**: Complete user management with Clerk integration
 - **⚡ Lightning Performance**: Sub-2s response times with advanced caching
+- **🔒 Enterprise Ready**: Role-based access control, audit logging
 - **🌐 Offline Support**: Graceful degradation when services unavailable
-- **🔒 Enterprise Ready**: Role-based access control, audit logging, multi-tenant support
 
 ## 🏗️ Architecture
 

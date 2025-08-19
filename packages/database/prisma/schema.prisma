@@ -34,9 +34,7 @@ model Project {
   dependencies         ProjectDependency[]
   templates            ProjectTemplate[]
   recommendations      Recommendation[]
-  knowledgeSources     KnowledgeSource[]     // Project-specific sources
-  patterns             ExtractedPattern[]     // Project-specific patterns
-  patternUsage         PatternUsage[]        // Track usage per project
+  patternUsage         PatternUsage[]        // Track pattern usage per project
   telemetryEvents      TelemetryEvent[]      // Project-specific events
 
   @@unique([userId, name])
@@ -223,7 +221,7 @@ model ProjectConfiguration {
 
 model KnowledgeSource {
   id           String            @id @default(cuid())
-  projectId    String?           // Optional for global sources
+  userId       String?           // Admin who created it (optional for system sources)
   name         String            
   type         String
   url          String
@@ -234,12 +232,11 @@ model KnowledgeSource {
   reliability  Float             @default(0.8)
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
-  project      Project?          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   updates      KnowledgeUpdate[]
   patterns     ExtractedPattern[]
 
-  @@unique([projectId, name])
-  @@index([projectId])
+  @@unique([name])
+  @@index([userId])
   @@map("knowledge_sources")
 }
 
@@ -332,10 +329,9 @@ enum PatternCategory {
   OTHER
 }
 
-// Pattern extracted from knowledge sources
+// Pattern extracted from knowledge sources (global resource)
 model ExtractedPattern {
   id          String          @id @default(cuid())
-  projectId   String?         // Optional for global patterns
   sourceId    String
   updateId    String?         // Reference to specific KnowledgeUpdate
   pattern     String          @db.Text
@@ -345,19 +341,17 @@ model ExtractedPattern {
   relevance   Float           @default(0.5)
   metadata    Json?           // Examples, tags, additional info
   status      PatternStatus   @default(PENDING)
-  extractedBy String          // User ID who triggered extraction
+  extractedBy String?         // Admin ID who triggered extraction (optional for system)
   extractedAt DateTime        @default(now())
   approvedAt  DateTime?
-  approvedBy  String?
+  approvedBy  String?         // Admin ID who approved
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   
-  project     Project?        @relation(fields: [projectId], references: [id], onDelete: Cascade)
   source      KnowledgeSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
   reviews     PatternReview[]
   usage       PatternUsage[]
   
-  @@index([projectId, status])
   @@index([sourceId, status])
   @@index([category, status])
   @@index([extractedAt])

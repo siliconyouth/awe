@@ -7,14 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.2.0] - 2025-08-19
 
-### 🎯 Project-Centric Architecture
+### 🎯 Platform & Project Architecture
 
 ### Added
-- **Project Management System**: Complete project-centric architecture transformation
-  - Projects are now the core organizational unit for all resources
-  - Users must select a project before accessing most features
-  - All resources (knowledge sources, patterns, telemetry) are scoped to projects
-  - Project selector always visible in navbar for quick switching
+- **Two-Tier Architecture**: Clear separation between platform and user resources
+  - Platform Level: Global knowledge base, pattern library, web scraping (admin/system)
+  - User Level: Projects for organizing work and tracking usage
+  
+- **Global Knowledge System**:
+  - Platform-wide knowledge base built by admins
+  - SmartScraper continuously updates documentation
+  - AI extracts patterns from global sources
+  - Centralized pattern library for all users
   
 - **Project Features**:
   - Create, edit, and delete projects with metadata

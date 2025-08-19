@@ -57,13 +57,23 @@ awe-workspace/
 - **🏗️ Template Engine**: AI-driven project scaffolding
 - **📊 Analytics**: Usage tracking and performance metrics per project
 
-### Project-Centric Architecture (v2.2)
-- **Project Management**: Core organizational unit for all resources
+### Platform Architecture (v2.2)
+
+#### Global Resources (Admin/Platform Level)
+- **Knowledge Base**: Global repository of documentation and resources
+- **Web Scraping**: SmartScraper builds knowledge base for all users
+- **Pattern Extraction**: AI analyzes and extracts patterns from global sources
+- **Pattern Library**: Centralized repository of approved patterns
+- **Hook & Agent Store**: Shared configurations and automations
+
+#### User Projects (User Level)
+- **Project Management**: Users organize their work into projects
 - **Project Context Provider**: React Context for state management
 - **Project Selector**: Always visible in navbar for quick switching
-- **Project Enforcement**: Middleware ensures project selection before access
-- **Project Migration**: Automated scripts for existing data migration
-- **Default Projects**: Automatic default project creation for new users
+- **Pattern Usage**: Track how users apply patterns to their projects
+- **Telemetry**: Project-specific analytics and metrics
+- **Recommendations**: AI suggestions based on project context
+- **CLAUDE.md Generation**: Custom context files per project
 
 ## Technical Stack
 
