@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { getDatabase } from '../../../../lib/database'
 import { SmartScraper } from '@awe/ai'
-import { checkRole } from '../../../lib/auth/rbac'
+import { checkRole } from '../../../../lib/auth/rbac'
 
 // POST /api/monitor/run - Manually trigger monitoring for sources
 export async function POST(request: NextRequest) {

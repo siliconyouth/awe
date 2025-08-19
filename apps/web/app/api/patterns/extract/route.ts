@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { getDatabase } from '../../../../lib/database'
 import { ClaudeAIService } from '@awe/ai'
-import { checkRole } from '../../../lib/auth/rbac'
+import { checkRole } from '../../../../lib/auth/rbac'
 
 // POST /api/patterns/extract - Extract patterns from scraped content using Claude AI
 export async function POST(request: NextRequest) {

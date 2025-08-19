@@ -15,8 +15,8 @@ import { headers } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { Webhook } from 'svix'
 import { WebhookEvent } from '@clerk/nextjs/server'
-import { initializeUserRole } from '../../../lib/auth/rbac'
-import type { Roles } from '../../../types/globals'
+import { initializeUserRole } from '../../../../lib/auth/rbac'
+import type { Roles } from '../../../../types/globals'
 
 // Get the webhook secret from environment
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET
