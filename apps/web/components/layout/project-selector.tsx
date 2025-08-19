@@ -112,19 +112,19 @@ export function ProjectSelector() {
           value={currentProject?.id || ''}
           onValueChange={handleProjectChange}
         >
-          <SelectTrigger className="w-[200px] h-9 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 hover:opacity-90 [&>svg]:hidden">
+          <SelectTrigger className="w-[160px] h-8 border border-border hover:border-muted-foreground/30 transition-colors [&>svg]:hidden">
             <div className="flex items-center gap-2">
               {currentProject ? (
                 <>
-                  <FolderOpen className="h-4 w-4 text-white/90" />
-                  <span className="truncate text-white font-medium">{currentProject.name}</span>
-                  <ChevronsUpDown className="h-3.5 w-3.5 text-white/70 ml-auto" />
+                  <FolderOpen className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="truncate text-sm">{currentProject.name}</span>
+                  <ChevronsUpDown className="h-3 w-3 text-muted-foreground ml-auto" />
                 </>
               ) : (
                 <>
-                  <FolderOpen className="h-4 w-4 text-white/70" />
-                  <span className="text-white/70">Select Project</span>
-                  <ChevronsUpDown className="h-3.5 w-3.5 text-white/70 ml-auto" />
+                  <FolderOpen className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-muted-foreground text-sm">Select Project</span>
+                  <ChevronsUpDown className="h-3 w-3 text-muted-foreground ml-auto" />
                 </>
               )}
             </div>
