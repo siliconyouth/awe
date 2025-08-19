@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/popover'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Tag, TagCategory } from '@awe/shared/types/resources'
+import { Tag, TagCategory } from '@awe/shared'
 
 interface TagSelectorProps {
   tags: Tag[]

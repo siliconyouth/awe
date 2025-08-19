@@ -40,7 +40,7 @@ import {
   ResourceSearchParams,
   ResourceSearchResult,
   ResourceRecommendation
-} from '@awe/shared/types/resources'
+} from '@awe/shared'
 
 interface ResourceBrowserProps {
   projectId?: string

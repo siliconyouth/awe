@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@awe/database'
-import { ResourceProcessor } from '@awe/ai/services/resource-processor'
+import { ResourceProcessor } from '@awe/ai'
 
 // POST /api/resources/import - Import resources from a knowledge source
 export async function POST(request: NextRequest) {

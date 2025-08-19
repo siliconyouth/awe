@@ -5,8 +5,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { ResourceManager } from '@awe/ai/services/resource-manager'
-import { TagType } from '@awe/shared/types/resources'
+import { ResourceManager } from '@awe/ai'
+import { TagType } from '@awe/shared'
 import { z } from 'zod'
 
 const resourceManager = new ResourceManager()

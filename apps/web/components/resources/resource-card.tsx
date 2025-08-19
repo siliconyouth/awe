@@ -35,7 +35,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Progress } from '@/components/ui/progress'
-import { Resource, ResourceType, TagCategory } from '@awe/shared/types/resources'
+import { Resource, ResourceType, TagCategory } from '@awe/shared'
 
 interface ResourceCardProps {
   resource: Resource
