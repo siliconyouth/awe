@@ -168,7 +168,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Format patterns for response
-    const formattedPatterns = patterns.map(pattern => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formattedPatterns = patterns.map((pattern: any) => ({
       sourceId: sourceInfo?.id || sourceId,
       updateId: updateToProcess?.id,
       pattern: pattern.pattern || 'Unnamed Pattern',
