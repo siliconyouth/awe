@@ -65,6 +65,13 @@ const navigationItems = [
     requiresAuth: false
   },
   {
+    title: "Admin",
+    href: "/admin",
+    icon: Shield,
+    requiresAuth: true,
+    requiresRole: "admin"
+  },
+  {
     title: "Profile",
     href: "/profile",
     icon: User,
