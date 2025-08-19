@@ -19,13 +19,13 @@ export const metadata: Metadata = {
 // Default Privacy Policy content for AWE
 const DEFAULT_POLICY = {
   version: '1.0.0',
-  effectiveDate: '2025-01-16',
-  lastUpdated: '2025-01-16',
+  effectiveDate: '2025-08-19',
+  lastUpdated: '2025-08-19',
   jurisdiction: 'GDPR and CCPA Compliant',
   content: `
 # Privacy Policy
 
-**Effective Date: January 16, 2025**  
+**Effective Date: August 19, 2025**  
 **Version: 1.0.0**
 
 ## 1. Introduction
@@ -336,8 +336,8 @@ When using our scraping services, you must:
 
 **By using AWE, you acknowledge that you have read and understood this Privacy Policy.**
 
-**Last Updated**: January 16, 2025  
-**Effective Date**: January 16, 2025
+**Last Updated**: August 19, 2025  
+**Effective Date**: August 19, 2025
   `.trim()
 }
 

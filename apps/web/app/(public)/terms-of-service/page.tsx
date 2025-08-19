@@ -19,13 +19,13 @@ export const metadata: Metadata = {
 // Default Terms of Service content for AWE
 const DEFAULT_TERMS = {
   version: '1.0.0',
-  effectiveDate: '2025-01-16',
-  lastUpdated: '2025-01-16',
+  effectiveDate: '2025-08-19',
+  lastUpdated: '2025-08-19',
   jurisdiction: 'United States and European Union',
   content: `
 # Terms of Service
 
-**Effective Date: January 16, 2025**  
+**Effective Date: August 19, 2025**  
 **Version: 1.0.0**
 
 ## 1. Agreement to Terms
