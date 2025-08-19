@@ -17,6 +17,10 @@ export async function GET() {
     const client = await clerkClient()
     const user = await client.users.getUser(userId)
     
+    // Cast metadata to any for flexible access
+    const sessionMetadata = sessionClaims?.metadata as any
+    const publicMetadata = user.publicMetadata as any
+    
     // Check configuration
     const config = {
       '✅ Authentication': {
@@ -26,22 +30,22 @@ export async function GET() {
         lastName: user.lastName,
       },
       '🔐 Session Claims': {
-        hasMetadata: !!sessionClaims?.metadata,
-        role: sessionClaims?.metadata?.role || '❌ NOT IN SESSION - Configure session claims!',
-        permissions: sessionClaims?.metadata?.permissions,
-        tier: sessionClaims?.metadata?.tier,
+        hasMetadata: !!sessionMetadata,
+        role: sessionMetadata?.role || '❌ NOT IN SESSION - Configure session claims!',
+        permissions: sessionMetadata?.permissions,
+        tier: sessionMetadata?.tier,
       },
       '👤 Public Metadata': {
-        role: user.publicMetadata?.role || '❌ NOT SET - Set in Clerk Dashboard',
-        tier: user.publicMetadata?.tier,
-        onboardingCompleted: user.publicMetadata?.onboardingCompleted,
+        role: publicMetadata?.role || '❌ NOT SET - Set in Clerk Dashboard',
+        tier: publicMetadata?.tier,
+        onboardingCompleted: publicMetadata?.onboardingCompleted,
       },
       '🏢 Organization': {
         orgRole: orgRole || 'Not in organization',
       },
       '⚙️ Configuration Status': {
-        sessionClaimsConfigured: !!sessionClaims?.metadata?.role,
-        publicMetadataSet: !!user.publicMetadata?.role,
+        sessionClaimsConfigured: !!sessionMetadata?.role,
+        publicMetadataSet: !!publicMetadata?.role,
         webhookSecret: !!process.env.CLERK_WEBHOOK_SECRET,
         publishableKey: !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
       },
@@ -51,11 +55,11 @@ export async function GET() {
     // Add recommendations
     const nextSteps = config['🔧 Next Steps'] as string[]
     
-    if (!sessionClaims?.metadata?.role) {
+    if (!sessionMetadata?.role) {
       nextSteps.push('1. Configure session token claims in Clerk Dashboard → Sessions → Edit session token')
     }
     
-    if (!user.publicMetadata?.role) {
+    if (!publicMetadata?.role) {
       nextSteps.push('2. Set user role in Clerk Dashboard → Users → [Your User] → Metadata → Public')
     }
     
