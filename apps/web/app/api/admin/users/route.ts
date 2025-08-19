@@ -6,8 +6,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { clerkClient } from '@clerk/nextjs/server'
-import { protectApiRoute, getUserRoleById } from '../../../../lib/auth/rbac'
-import type { Roles } from '../../../../types/globals'
+import { protectApiRoute, getUserRoleById } from '../../../lib/auth/rbac'
+import type { Roles } from '../../../types/globals'
 
 /**
  * GET /api/admin/users

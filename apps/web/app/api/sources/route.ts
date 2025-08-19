@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { checkRole } from '../../../../lib/auth/rbac'
+import { checkRole } from '../../../lib/auth/rbac'
 
 // Dynamic import to avoid build-time resolution issues
 async function getDatabase() {
