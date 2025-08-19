@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { checkRole } from '../../../../lib/auth/rbac'
 
 // Dynamic import to avoid build-time resolution issues
 async function getDatabase() {
@@ -69,6 +71,24 @@ export async function GET(request: NextRequest) {
 // POST /api/sources - Create a new knowledge source
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    // Check if user has appropriate role
+    const hasPermission = await checkRole('moderator')
+    if (!hasPermission) {
+      return NextResponse.json(
+        { error: 'Forbidden', message: 'Moderator role or higher required' },
+        { status: 403 }
+      )
+    }
+
     const db = await getDatabase()
     if (!db) {
       return NextResponse.json({ message: "Database not available" }, { status: 503 })
@@ -111,6 +131,24 @@ export async function POST(request: NextRequest) {
 // PUT /api/sources/:id - Update a knowledge source
 export async function PUT(request: NextRequest) {
   try {
+    // Check authentication
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    // Check if user has appropriate role
+    const hasPermission = await checkRole('moderator')
+    if (!hasPermission) {
+      return NextResponse.json(
+        { error: 'Forbidden', message: 'Moderator role or higher required' },
+        { status: 403 }
+      )
+    }
+
     const db = await getDatabase()
     if (!db) {
       return NextResponse.json({ message: "Database not available" }, { status: 503 })
@@ -145,6 +183,24 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/sources/:id - Delete a knowledge source
 export async function DELETE(request: NextRequest) {
   try {
+    // Check authentication
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    // Check if user has appropriate role
+    const hasPermission = await checkRole('admin')
+    if (!hasPermission) {
+      return NextResponse.json(
+        { error: 'Forbidden', message: 'Admin role required' },
+        { status: 403 }
+      )
+    }
+
     const db = await getDatabase()
     if (!db) {
       return NextResponse.json({ message: "Database not available" }, { status: 503 })
