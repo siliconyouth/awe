@@ -212,7 +212,7 @@ export function ThemeToggle() {
                     <div className="h-4 w-4 rounded-full flex items-center justify-center"
                       style={{ backgroundColor: `hsl(${t.colors.primary})` }}
                     >
-                      <span className="text-xs" style={{ color: `hsl(${t.colors.primary-foreground || t.colors.background})` }}>✓</span>
+                      <span className="text-xs" style={{ color: `hsl(${t.colors.primaryForeground || t.colors.background})` }}>✓</span>
                     </div>
                   )}
                 </div>
