@@ -494,16 +494,49 @@ model Resource {
   slug        String   @unique
   title       String
   description String   @db.Text
-  content     String   @db.Text
-  type        String   // template, command, pattern, guide, hook
-  tags        String[] // Simple array of tags for now
+  
+  // Content storage - supports different formats
+  content     String   @db.Text  // Main content (markdown, code, etc.)
+  rawContent  String?  @db.Text  // Original file content if different
+  fileType    String   @default("markdown") // markdown, json, yaml, js, ts, etc.
+  
+  // Resource categorization
+  type        String   // template, command, pattern, guide, hook, workflow, config
+  category    String?  // More specific category within type
+  
+  // Flexible tagging system
+  tags        String[] // Simple array for MVP
+  keywords    String[] // Auto-extracted keywords
+  
+  // Metadata
   author      String   @default("community")
+  authorGithub String?
   sourceUrl   String?
+  sourceRepo  String?  // GitHub repo if applicable
+  sourceId    String?  // Link to KnowledgeSource
+  license     String?
+  
+  // Usage metrics
   downloads   Int      @default(0)
+  views       Int      @default(0)
+  stars       Int      @default(0)
+  
+  // Quality indicators
+  verified    Boolean  @default(false)
+  official    Boolean  @default(false)
+  
+  // Timestamps
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  publishedAt DateTime?
+  
+  // JSON metadata for flexibility
+  metadata    Json?    // Store any additional data
   
   @@index([type])
+  @@index([category])
+  @@index([fileType])
+  @@index([verified])
   @@index([createdAt])
   @@map("resources")
 }
