@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "turbo build",
+    "build:fast": "turbo build --filter=web --no-cache",
     "dev": "turbo dev",
     "test": "turbo test",
     "lint": "turbo lint",
@@ -18,7 +19,8 @@
     "db:push": "turbo db:push",
     "db:migrate": "turbo db:migrate",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "setup": "pnpm install && turbo build"
+    "setup": "pnpm install && turbo build",
+    "vercel-build": "turbo build --filter=web..."
   },
   "devDependencies": {
     "@clerk/clerk-sdk-node": "^5.1.6",

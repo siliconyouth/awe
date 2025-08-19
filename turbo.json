@@ -3,6 +3,10 @@
   "ui": "tui",
   "globalEnv": [
     "NODE_ENV",
+    "VERCEL",
+    "VERCEL_ENV",
+    "VERCEL_URL",
+    "VERCEL_GIT_COMMIT_REF",
     "DATABASE_URL",
     "DATABASE_DIRECT_URL",
     "DIRECT_URL",

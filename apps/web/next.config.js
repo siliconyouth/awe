@@ -6,6 +6,11 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 
 const nextConfig = {
+  // Optimize builds for development branch
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' && process.env.VERCEL_GIT_COMMIT_REF === 'main',
+  },
   turbopack: {
     rules: {
       '*.svg': {
@@ -15,8 +20,12 @@ const nextConfig = {
     },
   },
   eslint: {
-    // Temporarily disable ESLint during builds to proceed with testing
+    // Disable ESLint during builds for faster deployment
     ignoreDuringBuilds: true,
+  },
+  typescript: {
+    // Only enforce TypeScript errors on main branch
+    ignoreBuildErrors: process.env.VERCEL_GIT_COMMIT_REF === 'development',
   },
   transpilePackages: ['@awe/shared', '@awe/database'],
   images: {

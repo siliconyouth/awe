@@ -1,4 +1,19 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm build",
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- apps/web packages",
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "development": true
+    }
+  },
+  "env": {
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "TURBO_TELEMETRY_DISABLED": "1"
+  },
   "crons": [
     {
       "path": "/api/monitor/cron/hourly",
@@ -28,6 +43,9 @@
     },
     "apps/web/app/api/scrape/route.ts": {
       "maxDuration": 30
+    },
+    "apps/web/app/api/**/*.ts": {
+      "maxDuration": 10
     }
   }
 }
