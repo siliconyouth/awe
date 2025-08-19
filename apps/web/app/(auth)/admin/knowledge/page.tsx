@@ -280,21 +280,6 @@ export default function KnowledgeAdmin() {
     }
   }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-      case 'APPROVED':
-        return <CheckCircle className="h-4 w-4" />
-      case 'ERROR':
-      case 'REJECTED':
-        return <AlertCircle className="h-4 w-4" />
-      case 'PAUSED':
-      case 'PENDING':
-        return <Clock className="h-4 w-4" />
-      default:
-        return null
-    }
-  }
 
   return (
     <div className="container mx-auto p-6">
