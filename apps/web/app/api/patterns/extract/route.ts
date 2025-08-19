@@ -35,7 +35,9 @@ export async function POST(request: NextRequest) {
     const { updateId, sourceId, content, forceExtract = false } = body
 
     // Get the update or source to process
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let updateToProcess: any = null
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let sourceInfo: any = null
 
     if (updateId) {
