@@ -117,11 +117,6 @@ export function ProjectSelector() {
                 <>
                   <FolderOpen className="h-4 w-4 text-white/90" />
                   <span className="truncate text-white font-medium">{currentProject.name}</span>
-                  {currentProject.isDefault && (
-                    <Badge variant="secondary" className="ml-auto text-xs px-1 py-0 bg-white/20 text-white border-white/30">
-                      Default
-                    </Badge>
-                  )}
                 </>
               ) : (
                 <>
