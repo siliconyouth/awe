@@ -271,24 +271,77 @@ export default function ConfigPage() {
           ))}
         </TabsList>
 
-        {configSections.map(section => (
-          <TabsContent key={section.id} value={section.id}>
-            <Card>
-              <CardHeader>
-                <CardTitle>{section.title} Configuration</CardTitle>
-                <CardDescription>{section.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {section.id === 'app' && <AppConfigSection config={config?.app} onChange={updateConfigValue} />}
-                {section.id === 'scraper' && <ScraperConfigSection config={config?.scraper} onChange={updateConfigValue} />}
-                {section.id === 'knowledge' && <KnowledgeConfigSection config={config?.knowledge} onChange={updateConfigValue} />}
-                {section.id === 'api' && <ApiConfigSection config={config?.api} onChange={updateConfigValue} />}
-                {section.id === 'auth' && <AuthConfigSection config={config?.auth} onChange={updateConfigValue} />}
-                {section.id === 'features' && <FeaturesConfigSection config={config?.features} onChange={updateConfigValue} />}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        ))}
+        <TabsContent value="app">
+          <Card>
+            <CardHeader>
+              <CardTitle>Application Configuration</CardTitle>
+              <CardDescription>Core application settings and environment configuration</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AppConfigSection config={config?.app} onChange={updateConfigValue} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="scraper">
+          <Card>
+            <CardHeader>
+              <CardTitle>Scraper Configuration</CardTitle>
+              <CardDescription>Web scraping engine, proxy, and extraction settings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScraperConfigSection config={config?.scraper} onChange={updateConfigValue} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="knowledge">
+          <Card>
+            <CardHeader>
+              <CardTitle>Knowledge Base Configuration</CardTitle>
+              <CardDescription>Content sources, monitoring, and moderation settings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <KnowledgeConfigSection config={config?.knowledge} onChange={updateConfigValue} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="api">
+          <Card>
+            <CardHeader>
+              <CardTitle>API Configuration</CardTitle>
+              <CardDescription>API endpoints, rate limiting, and CORS configuration</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ApiConfigSection config={config?.api} onChange={updateConfigValue} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="auth">
+          <Card>
+            <CardHeader>
+              <CardTitle>Authentication Configuration</CardTitle>
+              <CardDescription>Authentication providers and security settings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AuthConfigSection config={config?.auth} onChange={updateConfigValue} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="features">
+          <Card>
+            <CardHeader>
+              <CardTitle>Feature Flags Configuration</CardTitle>
+              <CardDescription>Enable or disable features across the application</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FeaturesConfigSection config={config?.features} onChange={updateConfigValue} />
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   )
