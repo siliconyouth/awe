@@ -80,40 +80,46 @@ export const ROLE_PERMISSIONS: Record<Roles, string[]> = {
  * @returns True if user has the role or a higher role
  */
 export async function checkRole(role: Roles): Promise<boolean> {
-  const { userId } = await auth()
+  const { sessionClaims, userId } = await auth()
   
   if (!userId) {
     return false
   }
   
-  // Always fetch user from Clerk to get the latest publicMetadata
-  try {
-    const client = await clerkClient()
-    const user = await client.users.getUser(userId)
-    
-    // Check publicMetadata for role
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const metadata = user.publicMetadata as any
-    const userRole = metadata?.role as Roles
-    
-    if (!userRole) {
-      console.log(`No role found for user ${userId}`)
+  // First try to get role from session claims (if custom claims are configured)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const claims = sessionClaims as any
+  let userRole = claims?.metadata?.role || 
+                 claims?.publicMetadata?.role
+  
+  // If not in session, fetch user from Clerk (fallback)
+  if (!userRole) {
+    try {
+      const client = await clerkClient()
+      const user = await client.users.getUser(userId)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const metadata = user.publicMetadata as any
+      userRole = metadata?.role
+      
+      if (!userRole) {
+        console.log(`No role found for user ${userId}`)
+        return false
+      }
+    } catch (error) {
+      console.error('Failed to fetch user for role check:', error)
       return false
     }
-    
-    console.log(`User ${userId} has role: ${userRole}`)
-    
-    const userLevel = ROLE_HIERARCHY[userRole] || 0
-    const requiredLevel = ROLE_HIERARCHY[role] || 0
-    
-    const hasAccess = userLevel >= requiredLevel
-    console.log(`Role check: ${userRole} (${userLevel}) >= ${role} (${requiredLevel}) = ${hasAccess}`)
-    
-    return hasAccess
-  } catch (error) {
-    console.error('Failed to fetch user for role check:', error)
-    return false
   }
+  
+  console.log(`User ${userId} has role: ${userRole}`)
+  
+  const userLevel = ROLE_HIERARCHY[userRole as Roles] || 0
+  const requiredLevel = ROLE_HIERARCHY[role] || 0
+  
+  const hasAccess = userLevel >= requiredLevel
+  console.log(`Role check: ${userRole} (${userLevel}) >= ${role} (${requiredLevel}) = ${hasAccess}`)
+  
+  return hasAccess
 }
 
 /**
@@ -140,13 +146,24 @@ export async function checkPermission(permission: string): Promise<boolean> {
  * @returns The user's role or 'user' as default
  */
 export async function getUserRole(): Promise<Roles> {
-  const { userId } = await auth()
+  const { sessionClaims, userId } = await auth()
   
+  // First try to get role from session claims (if custom claims are configured)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const claims = sessionClaims as any
+  let userRole = claims?.metadata?.role || 
+                 claims?.publicMetadata?.role
+  
+  // If we have role in session, return it
+  if (userRole) {
+    return userRole as Roles
+  }
+  
+  // Otherwise, fetch from user (fallback)
   if (!userId) {
     return 'user'
   }
   
-  // Fetch user from Clerk to get the latest publicMetadata
   try {
     const client = await clerkClient()
     const user = await client.users.getUser(userId)
@@ -154,7 +171,7 @@ export async function getUserRole(): Promise<Roles> {
     // Check publicMetadata for role
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const metadata = user.publicMetadata as any
-    const userRole = metadata?.role as Roles
+    userRole = metadata?.role as Roles
     
     return userRole || 'user'
   } catch (error) {

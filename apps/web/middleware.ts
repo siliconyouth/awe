@@ -58,22 +58,29 @@ export default clerkMiddleware(async (auth, req) => {
   
   const { sessionClaims, orgRole, userId } = await auth();
   
-  // Get user role from Clerk directly
+  // Get user role - first from session, then fallback to fetching
   let userRole: Roles = 'user';
   let userLevel = ROLE_HIERARCHY.user;
   
-  if (userId) {
+  // First try session claims (if custom claims are configured)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const claims = sessionClaims as any;
+  userRole = claims?.metadata?.role || claims?.publicMetadata?.role || 'user';
+  
+  // If no role in session and we have userId, fetch from Clerk (fallback)
+  if (userRole === 'user' && userId) {
     try {
       const client = await clerkClient();
       const user = await client.users.getUser(userId);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const metadata = user.publicMetadata as any;
       userRole = metadata?.role || 'user';
-      userLevel = ROLE_HIERARCHY[userRole] || 0;
     } catch (error) {
       console.error('Failed to fetch user in middleware:', error);
     }
   }
+  
+  userLevel = ROLE_HIERARCHY[userRole] || 0;
   
   // Check admin routes
   if (isAdminRoute(req)) {
