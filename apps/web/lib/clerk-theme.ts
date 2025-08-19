@@ -26,9 +26,7 @@ export const clerkAppearance: Appearance = {
     },
     // UserButton specific styling
     userButtonPopoverCard: {
-      backgroundColor: 'hsl(var(--color-background) / 0.95)',
-      backdropFilter: 'blur(12px)',
-      WebkitBackdropFilter: 'blur(12px)',
+      backgroundColor: 'hsl(var(--color-popover))',
       border: '1px solid hsl(var(--color-border))',
       boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
     },
