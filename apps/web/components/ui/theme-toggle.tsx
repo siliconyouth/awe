@@ -61,7 +61,7 @@ export function ThemeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-96 p-4">
+      <DropdownMenuContent align="end" className="w-96 p-4 bg-white dark:bg-gray-950 border-gray-200 dark:border-gray-800">
         <DropdownMenuLabel className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2">
           Choose Theme
         </DropdownMenuLabel>
