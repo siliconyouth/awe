@@ -13,11 +13,11 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Logo on the left */}
           <div className="flex items-center gap-4">
-            <Link href="/" aria-label="AWE Home">
+            <Link href="/" aria-label="AWE - Awesome Workspace Engineering Home">
               <Logo size="sm" variant="default" />
             </Link>
             <span className="text-sm text-muted-foreground">
-              © {currentYear} AWE
+              © {currentYear} AWE - Awesome Workspace Engineering
             </span>
           </div>
 

@@ -144,7 +144,7 @@ export function ModernHeader() {
             <Link
               href="/"
               className="flex items-center gap-2 font-semibold transition-opacity hover:opacity-80"
-              aria-label="AWE Home"
+              aria-label="AWE - Awesome Workspace Engineering Home"
             >
               <Logo size="sm" />
             </Link>

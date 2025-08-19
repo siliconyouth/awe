@@ -67,7 +67,7 @@ export function PublicHeader() {
             <Link 
               href="/" 
               className="mr-6 flex items-center space-x-2"
-              aria-label="AWE Home"
+              aria-label="AWE - Awesome Workspace Engineering Home"
             >
               <Logo size="sm" />
             </Link>

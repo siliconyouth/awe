@@ -28,7 +28,7 @@ export function Logo({ className, size = 'md', variant = 'default' }: LogoProps)
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn(sizes[size], colors[variant], className)}
-      aria-label="AWE Logo"
+      aria-label="AWE - Awesome Workspace Engineering Logo"
     >
       {/* Letter 'a' with modern, geometric design */}
       <path
@@ -81,7 +81,7 @@ export function LogoWithText({ className, size = 'md', variant = 'default' }: Lo
     <div className={cn('flex items-center gap-2', className)}>
       <Logo size={size} variant={variant} />
       <span className={cn('font-bold', textSizes[size], colors[variant])}>
-        AWE
+        AWE - Awesome Workspace Engineering
       </span>
     </div>
   )

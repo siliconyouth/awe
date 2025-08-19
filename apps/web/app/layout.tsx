@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'AWE - Awesome Workspace Engineering',
-  description: 'AI-powered workspace engineering platform',
+  description: 'AI-powered intelligent development companion for Claude Code workflows. AWE - Awesome Workspace Engineering provides deep project analysis, optimization recommendations, and intelligent automation.',
   icons: {
     icon: '/favicon.ico',
   },
