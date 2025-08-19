@@ -1,4 +1,10 @@
 /** @type {import('next').NextConfig} */
+
+// Bundle analyzer setup
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
 const nextConfig = {
   turbopack: {
     rules: {
@@ -46,6 +52,14 @@ const nextConfig = {
     
     return config;
   },
+  // Performance optimizations
+  poweredByHeader: false,
+  compress: true,
+  productionBrowserSourceMaps: false,
+  // Experimental features for better performance
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+  },
 }
 
-module.exports = nextConfig
+module.exports = withBundleAnalyzer(nextConfig)

@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import { currentUser } from "@clerk/nextjs/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card"
 import { Badge } from "../../../components/ui/badge"
@@ -14,6 +15,16 @@ import {
   Users,
   FileText
 } from "lucide-react"
+
+export const metadata: Metadata = {
+  title: 'Dashboard | AWE - Workspace Engineering',
+  description: 'Monitor your projects, view analytics, and manage your AI-powered workspace with AWE dashboard',
+  openGraph: {
+    title: 'AWE Dashboard',
+    description: 'AI-powered workspace engineering platform dashboard',
+    type: 'website',
+  },
+}
 
 // No need for auth check - handled by layout
 export default async function DashboardPage() {

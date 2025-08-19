@@ -27,6 +27,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../../../components/ui/alert-dialog'
+import { PageContainer } from '../../../components/layout/page-container'
+import { PageHeader } from '../../../components/layout/page-header'
+import { EmptyState } from '../../../components/ui/empty-state'
+import { designSystem, cn } from '../../../lib/design-system'
 import {
   FolderOpen,
   Plus,
@@ -40,7 +44,11 @@ import {
   Sparkles,
   Clock,
   FolderPlus,
-  Check
+  Check,
+  ArrowRight,
+  Zap,
+  GitBranch,
+  Database
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -165,99 +173,164 @@ export default function ProjectsPage() {
   }
 
   const getProjectIcon = (project: any) => {
-    if (project.hasClaudeMd) return <FileText className="h-5 w-5" />
-    if (project.optimizationLevel > 0.5) return <Sparkles className="h-5 w-5" />
-    return <Code className="h-5 w-5" />
+    if (project.hasClaudeMd) return FileText
+    if (project.optimizationLevel > 0.5) return Sparkles
+    return Code
+  }
+
+  const getProjectStats = (project: any) => {
+    const stats = []
+    if (project.hasClaudeMd) stats.push({ icon: FileText, label: 'CLAUDE.md' })
+    if (project.optimizationLevel > 0.7) stats.push({ icon: Zap, label: 'Optimized' })
+    if (project.type === 'monorepo') stats.push({ icon: GitBranch, label: 'Monorepo' })
+    if (project.patterns?.length > 0) stats.push({ icon: Database, label: `${project.patterns.length} patterns` })
+    return stats
   }
 
   if (loading) {
     return (
-      <div className="container max-w-6xl mx-auto py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
+      <PageContainer>
+        <div className={cn(designSystem.animations.fadeIn, 'flex items-center justify-center min-h-[400px]')}>
           <div className="text-center space-y-4">
-            <FolderOpen className="h-12 w-12 mx-auto text-muted-foreground animate-pulse" />
-            <p className="text-muted-foreground">Loading projects...</p>
+            <div className={cn(
+              'h-16 w-16 mx-auto rounded-full bg-muted flex items-center justify-center',
+              designSystem.animations.pulse
+            )}>
+              <FolderOpen className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className={cn(designSystem.typography.muted)}>Loading projects...</p>
           </div>
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
   return (
-    <div className="container max-w-6xl mx-auto py-8">
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Projects</h1>
-            <p className="text-muted-foreground mt-2">
-              {isSelecting 
-                ? 'Select a project to continue'
-                : 'Manage your projects and their settings'
-              }
-            </p>
-          </div>
-          <Button onClick={() => setShowCreateDialog(true)}>
+    <PageContainer>
+      <PageHeader
+        title="Projects"
+        description={isSelecting 
+          ? 'Select a project to continue working'
+          : 'Manage your projects and their configurations'
+        }
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Projects' }
+        ]}
+        actions={
+          <Button 
+            onClick={() => setShowCreateDialog(true)}
+            className={cn(designSystem.patterns.gradientButton)}
+          >
             <Plus className="h-4 w-4 mr-2" />
             New Project
           </Button>
-        </div>
+        }
+      />
 
-        {/* Projects Grid */}
-        {projects.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <FolderPlus className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No projects yet</h3>
-              <p className="text-muted-foreground text-center mb-6 max-w-md">
-                Create your first project to start organizing your work
-              </p>
-              <Button onClick={() => setShowCreateDialog(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create First Project
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {projects.map(project => (
+      {/* Projects Grid */}
+      {projects.length === 0 ? (
+        <Card className={cn(designSystem.patterns.card, designSystem.animations.fadeIn)}>
+          <CardContent className="py-16">
+            <EmptyState
+              icon={FolderPlus}
+              title="No projects yet"
+              description="Create your first project to start organizing your work and tracking optimizations"
+              action={{
+                label: 'Create First Project',
+                onClick: () => setShowCreateDialog(true)
+              }}
+            />
+          </CardContent>
+        </Card>
+      ) : (
+        <div className={cn(
+          'grid gap-6 md:grid-cols-2 lg:grid-cols-3',
+          designSystem.animations.stagger
+        )}>
+          {projects.map((project, index) => {
+            const Icon = getProjectIcon(project)
+            const stats = getProjectStats(project)
+            const isActive = currentProject?.id === project.id
+            
+            return (
               <Card 
-                key={project.id} 
-                className={`relative transition-all hover:shadow-lg ${
-                  currentProject?.id === project.id ? 'ring-2 ring-primary' : ''
-                }`}
+                key={project.id}
+                className={cn(
+                  'group relative overflow-hidden',
+                  designSystem.animations.hover.lift,
+                  designSystem.animations.fadeIn,
+                  isActive && 'ring-2 ring-primary shadow-lg'
+                )}
+                style={{ animationDelay: `${index * 50}ms` }}
               >
+                {/* Gradient Background Effect */}
+                {isActive && (
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 pointer-events-none" />
+                )}
+                
                 <CardHeader>
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                      {getProjectIcon(project)}
-                      <CardTitle className="text-lg">{project.name}</CardTitle>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {project.isDefault && (
-                        <Badge variant="secondary" className="text-xs">
-                          Default
-                        </Badge>
-                      )}
-                      {currentProject?.id === project.id && (
-                        <Badge className="text-xs">
-                          Active
-                        </Badge>
-                      )}
+                    <div className="flex items-start gap-3">
+                      <div className={cn(
+                        'h-10 w-10 rounded-lg flex items-center justify-center',
+                        isActive ? 'bg-primary/10' : 'bg-muted',
+                        'group-hover:scale-110 transition-transform'
+                      )}>
+                        <Icon className={cn(
+                          'h-5 w-5',
+                          isActive ? 'text-primary' : 'text-muted-foreground'
+                        )} />
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className={cn(designSystem.typography.heading[4])}>
+                          {project.name}
+                        </CardTitle>
+                        {project.description && (
+                          <CardDescription className="mt-1 line-clamp-2">
+                            {project.description}
+                          </CardDescription>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  {project.description && (
-                    <CardDescription className="mt-2 line-clamp-2">
-                      {project.description}
-                    </CardDescription>
-                  )}
+                  
+                  {/* Badges */}
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {project.isDefault && (
+                      <Badge variant="secondary" className="text-xs">
+                        <Star className="h-3 w-3 mr-1" />
+                        Default
+                      </Badge>
+                    )}
+                    {isActive && (
+                      <Badge className="text-xs">
+                        <Check className="h-3 w-3 mr-1" />
+                        Active
+                      </Badge>
+                    )}
+                  </div>
                 </CardHeader>
+                
                 <CardContent>
+                  {/* Stats */}
+                  {stats.length > 0 && (
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      {stats.map((stat, i) => (
+                        <div key={i} className="flex items-center gap-1.5">
+                          <stat.icon className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">{stat.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Metadata */}
                   <div className="space-y-2 text-sm text-muted-foreground">
                     {project.path && (
                       <div className="flex items-center gap-2">
                         <FolderOpen className="h-3 w-3" />
-                        <span className="truncate">{project.path}</span>
+                        <span className="truncate font-mono text-xs">{project.path}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-2">
@@ -265,16 +338,28 @@ export default function ProjectsPage() {
                       <span>Updated {new Date(project.updatedAt).toLocaleDateString()}</span>
                     </div>
                     {project.optimizationLevel > 0 && (
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="h-3 w-3" />
-                        <span>{(project.optimizationLevel * 100).toFixed(0)}% optimized</span>
+                      <div className="w-full space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-1">
+                            <Sparkles className="h-3 w-3" />
+                            Optimization
+                          </span>
+                          <span className="font-medium">{(project.optimizationLevel * 100).toFixed(0)}%</span>
+                        </div>
+                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all"
+                            style={{ width: `${project.optimizationLevel * 100}%` }}
+                          />
+                        </div>
                       </div>
                     )}
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
+                
+                <CardFooter className="flex justify-between pt-4 border-t">
                   <div className="flex gap-2">
-                    {currentProject?.id === project.id ? (
+                    {isActive ? (
                       <Button size="sm" variant="secondary" disabled>
                         <Check className="h-4 w-4 mr-2" />
                         Active
@@ -284,8 +369,10 @@ export default function ProjectsPage() {
                         size="sm" 
                         variant="outline"
                         onClick={() => handleSelectProject(project)}
+                        className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                       >
                         Select
+                        <ArrowRight className="h-3 w-3 ml-1.5" />
                       </Button>
                     )}
                   </div>
@@ -295,9 +382,10 @@ export default function ProjectsPage() {
                       variant="ghost"
                       onClick={() => handleSetDefault(project)}
                       disabled={project.isDefault}
+                      className="h-8 w-8"
                     >
                       {project.isDefault ? (
-                        <Star className="h-4 w-4 fill-current" />
+                        <Star className="h-4 w-4 fill-current text-yellow-500" />
                       ) : (
                         <StarOff className="h-4 w-4" />
                       )}
@@ -306,6 +394,7 @@ export default function ProjectsPage() {
                       size="icon"
                       variant="ghost"
                       onClick={() => openEditDialog(project)}
+                      className="h-8 w-8"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -314,16 +403,17 @@ export default function ProjectsPage() {
                       variant="ghost"
                       onClick={() => setDeletingProject(project)}
                       disabled={projects.length === 1}
+                      className="h-8 w-8"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </CardFooter>
               </Card>
-            ))}
-          </div>
-        )}
-      </div>
+            )
+          })}
+        </div>
+      )}
 
       {/* Create/Edit Project Dialog */}
       <Dialog 
@@ -336,20 +426,20 @@ export default function ProjectsPage() {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className={designSystem.typography.heading[3]}>
               {editingProject ? 'Edit Project' : 'Create New Project'}
             </DialogTitle>
             <DialogDescription>
               {editingProject 
-                ? 'Update your project details'
-                : 'Create a new project to organize your work'
+                ? 'Update your project details and configuration'
+                : 'Set up a new project to track your development work'
               }
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
               <Label htmlFor="name">Project Name</Label>
               <Input
                 id="name"
@@ -359,9 +449,10 @@ export default function ProjectsPage() {
                   name: e.target.value
                 }))}
                 placeholder="My Awesome Project"
+                className="font-medium"
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="description">Description (Optional)</Label>
               <Textarea
                 id="description"
@@ -374,7 +465,7 @@ export default function ProjectsPage() {
                 rows={3}
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="path">Project Path (Optional)</Label>
               <Input
                 id="path"
@@ -384,9 +475,10 @@ export default function ProjectsPage() {
                   path: e.target.value
                 }))}
                 placeholder="/path/to/project"
+                className="font-mono text-sm"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                Leave empty to use default path
+              <p className="text-xs text-muted-foreground">
+                Leave empty to use default path structure
               </p>
             </div>
           </div>
@@ -405,6 +497,7 @@ export default function ProjectsPage() {
             <Button
               onClick={editingProject ? handleUpdateProject : handleCreateProject}
               disabled={!projectData.name || saving}
+              className={cn(!projectData.name || saving ? '' : designSystem.patterns.gradientButton)}
             >
               {saving ? (
                 <>Saving...</>
@@ -442,6 +535,6 @@ export default function ProjectsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageContainer>
   )
 }

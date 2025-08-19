@@ -11,18 +11,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../..
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select'
 import { Badge } from '../../../components/ui/badge'
-// import { Button } from '../../../components/ui/button' // Currently unused
 import { Alert, AlertDescription } from '../../../components/ui/alert'
+import { PageContainer } from '../../../components/layout/page-container'
+import { PageHeader } from '../../../components/layout/page-header'
+import { designSystem, cn } from '../../../lib/design-system'
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, 
-  AreaChart, Area, // RadarChart, Radar, PolarGrid, PolarAngleAxis, // Currently unused
+  AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
 import {
   TrendingUpIcon, ActivityIcon, 
   UsersIcon, BrainIcon, ShieldIcon,
   CheckCircleIcon, AlertCircleIcon,
-  CpuIcon, DatabaseIcon
+  CpuIcon, DatabaseIcon, BarChart3Icon
 } from 'lucide-react'
 
 interface AnalyticsData {
@@ -172,58 +174,101 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
+      <PageContainer>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className={cn(
+            'animate-spin rounded-full h-12 w-12 border-b-2 border-primary',
+            designSystem.animations.fadeIn
+          )}></div>
+        </div>
+      </PageContainer>
     )
   }
 
   if (!data) {
     return (
-      <Alert>
-        <AlertCircleIcon className="h-4 w-4" />
-        <AlertDescription>
-          Failed to load analytics data. Please try again later.
-        </AlertDescription>
-      </Alert>
+      <PageContainer>
+        <Alert className={cn(designSystem.components.card.default, designSystem.animations.fadeIn)}>
+          <AlertCircleIcon className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load analytics data. Please try again later.
+          </AlertDescription>
+        </Alert>
+      </PageContainer>
     )
   }
 
   const COLORS = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#6366F1']
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Monitor platform performance and usage metrics
-          </p>
-        </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="24h">Last 24 hours</SelectItem>
-            <SelectItem value="7d">Last 7 days</SelectItem>
-            <SelectItem value="30d">Last 30 days</SelectItem>
-            <SelectItem value="90d">Last 90 days</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+    <PageContainer className={cn(designSystem.animations.fadeIn, 'space-y-8')}>
+      <PageHeader
+        title="Analytics Dashboard"
+        description="Monitor platform performance and usage metrics"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Analytics' }
+        ]}
+        actions={
+          <div className={cn(
+            'flex items-center gap-4',
+            designSystem.animations.slideLeft
+          )}>
+            <div className="relative">
+              <div className={cn(
+                'absolute -inset-2 rounded-lg opacity-25 blur',
+                designSystem.gradients.background.radial
+              )} />
+              <Select value={timeRange} onValueChange={setTimeRange}>
+                <SelectTrigger className={cn(
+                  'w-[180px] relative',
+                  designSystem.components.card.default,
+                  designSystem.animations.hover.border
+                )}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="24h">Last 24 hours</SelectItem>
+                  <SelectItem value="7d">Last 7 days</SelectItem>
+                  <SelectItem value="30d">Last 30 days</SelectItem>
+                  <SelectItem value="90d">Last 90 days</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        }
+      />
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
+      <div className={cn(
+        'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6',
+        designSystem.animations.fadeIn
+      )}>
+        <Card className={cn(
+          designSystem.components.card.hover,
+          'group relative overflow-hidden'
+        )}>
+          <div className={cn(
+            'absolute top-0 right-0 w-20 h-20 rounded-full opacity-10 blur-xl',
+            'bg-gradient-to-br from-blue-400 to-blue-600'
+          )} />
+          <CardHeader className="pb-2 relative">
             <CardDescription className="flex items-center gap-2">
-              <UsersIcon className="w-4 h-4" />
+              <div className={cn(
+                'p-2 rounded-lg',
+                'bg-blue-50 dark:bg-blue-950/30',
+                designSystem.animations.hover.scale
+              )}>
+                <UsersIcon className="w-4 h-4 text-blue-600" />
+              </div>
               Active Users
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className={cn(
+              'text-2xl font-bold',
+              designSystem.gradients.text.primary
+            )}>
               {data.overview.activeUsers.toLocaleString()}
             </div>
             <div className="flex items-center gap-1 text-sm text-green-600 mt-1">
@@ -233,15 +278,31 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
+        <Card className={cn(
+          designSystem.components.card.hover,
+          'group relative overflow-hidden'
+        )}>
+          <div className={cn(
+            'absolute top-0 right-0 w-20 h-20 rounded-full opacity-10 blur-xl',
+            'bg-gradient-to-br from-purple-400 to-purple-600'
+          )} />
+          <CardHeader className="pb-2 relative">
             <CardDescription className="flex items-center gap-2">
-              <BrainIcon className="w-4 h-4" />
+              <div className={cn(
+                'p-2 rounded-lg',
+                'bg-purple-50 dark:bg-purple-950/30',
+                designSystem.animations.hover.scale
+              )}>
+                <BrainIcon className="w-4 h-4 text-purple-600" />
+              </div>
               AI Analyses
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className={cn(
+              'text-2xl font-bold',
+              designSystem.gradients.text.primary
+            )}>
               {data.overview.totalAnalyses.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -250,15 +311,31 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
+        <Card className={cn(
+          designSystem.components.card.hover,
+          'group relative overflow-hidden'
+        )}>
+          <div className={cn(
+            'absolute top-0 right-0 w-20 h-20 rounded-full opacity-10 blur-xl',
+            'bg-gradient-to-br from-green-400 to-green-600'
+          )} />
+          <CardHeader className="pb-2 relative">
             <CardDescription className="flex items-center gap-2">
-              <ActivityIcon className="w-4 h-4" />
+              <div className={cn(
+                'p-2 rounded-lg',
+                'bg-green-50 dark:bg-green-950/30',
+                designSystem.animations.hover.scale
+              )}>
+                <ActivityIcon className="w-4 h-4 text-green-600" />
+              </div>
               Response Time
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className={cn(
+              'text-2xl font-bold',
+              designSystem.gradients.text.primary
+            )}>
               {data.overview.averageResponseTime}s
             </div>
             <div className="flex items-center gap-1 text-sm text-green-600 mt-1">
@@ -268,15 +345,31 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
+        <Card className={cn(
+          designSystem.components.card.hover,
+          'group relative overflow-hidden'
+        )}>
+          <div className={cn(
+            'absolute top-0 right-0 w-20 h-20 rounded-full opacity-10 blur-xl',
+            'bg-gradient-to-br from-red-400 to-red-600'
+          )} />
+          <CardHeader className="pb-2 relative">
             <CardDescription className="flex items-center gap-2">
-              <ShieldIcon className="w-4 h-4" />
+              <div className={cn(
+                'p-2 rounded-lg',
+                'bg-red-50 dark:bg-red-950/30',
+                designSystem.animations.hover.scale
+              )}>
+                <ShieldIcon className="w-4 h-4 text-red-600" />
+              </div>
               Error Rate
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className={cn(
+              'text-2xl font-bold',
+              designSystem.gradients.text.primary
+            )}>
               {(data.overview.errorRate * 100).toFixed(2)}%
             </div>
             <div className="flex items-center gap-1 text-sm text-green-600 mt-1">
@@ -287,62 +380,114 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      <Tabs defaultValue="usage" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="usage">Usage</TabsTrigger>
-          <TabsTrigger value="ai">AI Metrics</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="errors">Errors</TabsTrigger>
-          <TabsTrigger value="geographic">Geographic</TabsTrigger>
-        </TabsList>
+      <div className={cn(designSystem.animations.slideUp, 'delay-200')}>
+        <Tabs defaultValue="usage" className="space-y-6">
+          <TabsList className={cn(
+            'grid w-full grid-cols-5',
+            designSystem.components.card.default,
+            'p-1 h-auto'
+          )}>
+            <TabsTrigger value="usage" className={cn(
+              'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              designSystem.animations.hover.lift
+            )}>
+              <BarChart3Icon className="w-4 h-4 mr-2" />
+              Usage
+            </TabsTrigger>
+            <TabsTrigger value="ai" className={cn(
+              'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              designSystem.animations.hover.lift
+            )}>
+              <BrainIcon className="w-4 h-4 mr-2" />
+              AI Metrics
+            </TabsTrigger>
+            <TabsTrigger value="performance" className={cn(
+              'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              designSystem.animations.hover.lift
+            )}>
+              <CpuIcon className="w-4 h-4 mr-2" />
+              Performance
+            </TabsTrigger>
+            <TabsTrigger value="errors" className={cn(
+              'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              designSystem.animations.hover.lift
+            )}>
+              <AlertCircleIcon className="w-4 h-4 mr-2" />
+              Errors
+            </TabsTrigger>
+            <TabsTrigger value="geographic" className={cn(
+              'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              designSystem.animations.hover.lift
+            )}>
+              <DatabaseIcon className="w-4 h-4 mr-2" />
+              Geographic
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="usage" className="space-y-4">
+        <TabsContent value="usage" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
+            <Card className={cn(
+              designSystem.components.card.hover,
+              'group overflow-hidden'
+            )}>
               <CardHeader>
-                <CardTitle>User Activity</CardTitle>
+                <CardTitle className={designSystem.typography.heading[4]}>User Activity</CardTitle>
                 <CardDescription>Daily active users and sessions</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={data.userActivity}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="date" />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip contentStyle={{ 
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px'
+                    }} />
                     <Legend />
-                    <Area type="monotone" dataKey="users" stackId="1" stroke="#8B5CF6" fill="#8B5CF6" />
-                    <Area type="monotone" dataKey="newUsers" stackId="1" stroke="#10B981" fill="#10B981" />
+                    <Area type="monotone" dataKey="users" stackId="1" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.6} />
+                    <Area type="monotone" dataKey="newUsers" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.6} />
                   </AreaChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className={cn(
+              designSystem.components.card.hover,
+              'group overflow-hidden'
+            )}>
               <CardHeader>
-                <CardTitle>Command Usage</CardTitle>
+                <CardTitle className={designSystem.typography.heading[4]}>Command Usage</CardTitle>
                 <CardDescription>Most used CLI commands</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={data.commandUsage}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="command" />
                     <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#3B82F6" />
+                    <Tooltip contentStyle={{ 
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px'
+                    }} />
+                    <Bar dataKey="count" fill="#3B82F6" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
           </div>
 
-          <Card>
+          <Card className={cn(
+            designSystem.components.card.hover,
+            'group overflow-hidden'
+          )}>
             <CardHeader>
-              <CardTitle>Project Types Distribution</CardTitle>
+              <CardTitle className={designSystem.typography.heading[4]}>Project Types Distribution</CardTitle>
               <CardDescription>Breakdown of project technologies</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-4">
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -359,7 +504,11 @@ export default function AnalyticsPage() {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={{ 
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px'
+                  }} />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
@@ -562,6 +711,6 @@ export default function AnalyticsPage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </PageContainer>
   )
 }

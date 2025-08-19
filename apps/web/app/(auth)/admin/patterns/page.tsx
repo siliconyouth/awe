@@ -23,6 +23,9 @@ import {
   DialogDescription
 } from '../../../../components/ui/dialog'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../../components/ui/tabs'
+import { PageContainer } from '../../../../components/layout/page-container'
+import { PageHeader } from '../../../../components/layout/page-header'
+import { designSystem, cn } from '../../../../lib/design-system'
 import { toast } from '../../../../hooks/use-toast'
 import { 
   Search,
@@ -47,7 +50,8 @@ import {
   GitBranch,
   Archive,
   Download,
-  FileText
+  FileText,
+  Settings2
 } from 'lucide-react'
 
 interface Pattern {
@@ -297,13 +301,33 @@ export default function PatternsPage() {
     const statusColor = statusColors[pattern.status] || 'bg-gray-500'
 
     return (
-      <Card className="p-4 hover:shadow-lg transition-shadow">
-        <div className="flex items-start justify-between mb-2">
+      <Card className={cn(
+        designSystem.components.card.hover,
+        'group relative overflow-hidden',
+        designSystem.animations.fadeIn
+      )}>
+        <div className={cn(
+          'absolute top-0 right-0 w-16 h-16 rounded-full opacity-5 blur-xl',
+          'bg-gradient-to-br from-blue-400 to-purple-600'
+        )} />
+        <div className="flex items-start justify-between mb-2 relative">
           <div className="flex items-center gap-2">
-            <Icon className="h-5 w-5 text-gray-600" />
-            <Badge variant="outline">{pattern.category.replace('_', ' ')}</Badge>
+            <div className={cn(
+              'p-2 rounded-lg',
+              'bg-muted/50',
+              designSystem.animations.hover.scale
+            )}>
+              <Icon className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <Badge variant="outline" className={designSystem.components.badge.outline}>
+              {pattern.category.replace('_', ' ')}
+            </Badge>
           </div>
-          <div className={`w-2 h-2 rounded-full ${statusColor}`} />
+          <div className={cn(
+            'w-2 h-2 rounded-full',
+            statusColor,
+            designSystem.animations.hover.glow
+          )} />
         </div>
 
         <h3 className="font-semibold text-lg mb-2">{pattern.pattern}</h3>
@@ -408,40 +432,101 @@ export default function PatternsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Pattern Library</h1>
-        <p className="text-gray-600">
-          Review and manage extracted patterns from knowledge sources
-        </p>
-      </div>
+    <PageContainer className={cn(designSystem.animations.fadeIn)}>
+      <PageHeader
+        title="Pattern Library"
+        description="Review and manage extracted patterns from knowledge sources"
+        breadcrumbs={[
+          { label: 'Admin', href: '/admin' },
+          { label: 'Patterns' }
+        ]}
+      />
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-        <Card className="p-4">
-          <div className="text-2xl font-bold">{stats.total}</div>
-          <div className="text-sm text-gray-600">Total Patterns</div>
+      <div className={cn(
+        'grid grid-cols-1 md:grid-cols-5 gap-6 mb-8',
+        designSystem.animations.slideUp
+      )}>
+        <Card className={cn(
+          designSystem.components.card.hover,
+          'group relative overflow-hidden'
+        )}>
+          <div className={cn(
+            'absolute top-0 right-0 w-12 h-12 rounded-full opacity-10 blur-lg',
+            'bg-gradient-to-br from-blue-400 to-blue-600'
+          )} />
+          <div className="p-4 relative">
+            <div className={cn(
+              'text-2xl font-bold',
+              designSystem.gradients.text.primary
+            )}>{stats.total}</div>
+            <div className="text-sm text-muted-foreground">Total Patterns</div>
+          </div>
         </Card>
-        <Card className="p-4 border-yellow-200 bg-yellow-50">
-          <div className="text-2xl font-bold text-yellow-700">{stats.pending}</div>
-          <div className="text-sm text-gray-600">Pending Review</div>
+        
+        <Card className={cn(
+          designSystem.components.card.hover,
+          'group relative overflow-hidden border-yellow-200/50 bg-yellow-50/30 dark:bg-yellow-950/20'
+        )}>
+          <div className={cn(
+            'absolute top-0 right-0 w-12 h-12 rounded-full opacity-10 blur-lg',
+            'bg-gradient-to-br from-yellow-400 to-yellow-600'
+          )} />
+          <div className="p-4 relative">
+            <div className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">{stats.pending}</div>
+            <div className="text-sm text-muted-foreground">Pending Review</div>
+          </div>
         </Card>
-        <Card className="p-4 border-green-200 bg-green-50">
-          <div className="text-2xl font-bold text-green-700">{stats.approved}</div>
-          <div className="text-sm text-gray-600">Approved</div>
+        
+        <Card className={cn(
+          designSystem.components.card.hover,
+          'group relative overflow-hidden border-green-200/50 bg-green-50/30 dark:bg-green-950/20'
+        )}>
+          <div className={cn(
+            'absolute top-0 right-0 w-12 h-12 rounded-full opacity-10 blur-lg',
+            'bg-gradient-to-br from-green-400 to-green-600'
+          )} />
+          <div className="p-4 relative">
+            <div className="text-2xl font-bold text-green-700 dark:text-green-400">{stats.approved}</div>
+            <div className="text-sm text-muted-foreground">Approved</div>
+          </div>
         </Card>
-        <Card className="p-4 border-red-200 bg-red-50">
-          <div className="text-2xl font-bold text-red-700">{stats.rejected}</div>
-          <div className="text-sm text-gray-600">Rejected</div>
+        
+        <Card className={cn(
+          designSystem.components.card.hover,
+          'group relative overflow-hidden border-red-200/50 bg-red-50/30 dark:bg-red-950/20'
+        )}>
+          <div className={cn(
+            'absolute top-0 right-0 w-12 h-12 rounded-full opacity-10 blur-lg',
+            'bg-gradient-to-br from-red-400 to-red-600'
+          )} />
+          <div className="p-4 relative">
+            <div className="text-2xl font-bold text-red-700 dark:text-red-400">{stats.rejected}</div>
+            <div className="text-sm text-muted-foreground">Rejected</div>
+          </div>
         </Card>
-        <Card className="p-4 border-orange-200 bg-orange-50">
-          <div className="text-2xl font-bold text-orange-700">{stats.needsRefinement}</div>
-          <div className="text-sm text-gray-600">Needs Refinement</div>
+        
+        <Card className={cn(
+          designSystem.components.card.hover,
+          'group relative overflow-hidden border-orange-200/50 bg-orange-50/30 dark:bg-orange-950/20'
+        )}>
+          <div className={cn(
+            'absolute top-0 right-0 w-12 h-12 rounded-full opacity-10 blur-lg',
+            'bg-gradient-to-br from-orange-400 to-orange-600'
+          )} />
+          <div className="p-4 relative">
+            <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">{stats.needsRefinement}</div>
+            <div className="text-sm text-muted-foreground">Needs Refinement</div>
+          </div>
         </Card>
       </div>
 
       {/* Filters */}
-      <Card className="p-4 mb-6">
+      <Card className={cn(
+        designSystem.components.card.default,
+        designSystem.animations.slideUp,
+        'mb-6 p-6'
+      )}>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
@@ -515,35 +600,98 @@ export default function PatternsPage() {
       </Card>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <TabsList>
-          <TabsTrigger value="all">All Patterns</TabsTrigger>
-          <TabsTrigger value="pending">Pending Review</TabsTrigger>
-          <TabsTrigger value="approved">Approved</TabsTrigger>
-          <TabsTrigger value="rejected">Rejected</TabsTrigger>
-          <TabsTrigger value="needs_refinement">Needs Refinement</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className={cn(designSystem.animations.slideUp, 'delay-200 mb-6')}>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className={cn(
+            designSystem.components.card.default,
+            'grid w-full grid-cols-5 p-1 h-auto'
+          )}>
+            <TabsTrigger value="all" className={cn(
+              'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              designSystem.animations.hover.lift
+            )}>
+              <Settings2 className="w-4 h-4 mr-2" />
+              All Patterns
+            </TabsTrigger>
+            <TabsTrigger value="pending" className={cn(
+              'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              designSystem.animations.hover.lift
+            )}>
+              <Clock className="w-4 h-4 mr-2" />
+              Pending Review
+            </TabsTrigger>
+            <TabsTrigger value="approved" className={cn(
+              'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              designSystem.animations.hover.lift
+            )}>
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Approved
+            </TabsTrigger>
+            <TabsTrigger value="rejected" className={cn(
+              'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              designSystem.animations.hover.lift
+            )}>
+              <XCircle className="w-4 h-4 mr-2" />
+              Rejected
+            </TabsTrigger>
+            <TabsTrigger value="needs_refinement" className={cn(
+              'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+              designSystem.animations.hover.lift
+            )}>
+              <Edit className="w-4 h-4 mr-2" />
+              Needs Refinement
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
 
       {/* Pattern Grid */}
       {loading ? (
-        <div className="flex items-center justify-center h-64">
-          <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className={cn(
+            designSystem.animations.fadeIn,
+            'flex flex-col items-center gap-4'
+          )}>
+            <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+            <p className="text-muted-foreground">Loading patterns...</p>
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {getFilteredPatterns().map((pattern) => (
-            <PatternCard key={pattern.id} pattern={pattern} />
+        <div className={cn(
+          'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6',
+          designSystem.animations.fadeIn,
+          'delay-300'
+        )}>
+          {getFilteredPatterns().map((pattern, index) => (
+            <div
+              key={pattern.id}
+              className={cn(designSystem.animations.slideUp)}
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <PatternCard pattern={pattern} />
+            </div>
           ))}
         </div>
       )}
 
       {/* Empty State */}
       {!loading && getFilteredPatterns().length === 0 && (
-        <Card className="p-12 text-center">
-          <Database className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No patterns found</h3>
-          <p className="text-gray-600">
+        <Card className={cn(
+          designSystem.components.card.default,
+          designSystem.animations.fadeIn,
+          'p-12 text-center'
+        )}>
+          <div className={cn(
+            'w-16 h-16 mx-auto mb-4 rounded-full',
+            'bg-muted/30 flex items-center justify-center'
+          )}>
+            <Database className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h3 className={cn(
+            'font-semibold mb-2',
+            designSystem.typography.heading[4]
+          )}>No patterns found</h3>
+          <p className="text-muted-foreground">
             Try adjusting your filters or search query
           </p>
         </Card>
@@ -658,6 +806,6 @@ export default function PatternsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageContainer>
   )
 }

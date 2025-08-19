@@ -17,6 +17,9 @@ import { Label } from '../../../../components/ui/label'
 import { Switch } from '../../../../components/ui/switch'
 import { Textarea } from '../../../../components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/ui/select'
+import { PageContainer } from '../../../../components/layout/page-container'
+import { PageHeader } from '../../../../components/layout/page-header'
+import { designSystem, cn } from '../../../../lib/design-system'
 import { useToast } from '../../../../hooks/use-toast'
 import { Loader2, Save, Download, Upload, RefreshCw, Settings, Database, Globe, Shield, Brain, AlertTriangle } from 'lucide-react'
 import type { 
@@ -189,37 +192,57 @@ export default function ConfigPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
+      <PageContainer>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className={cn(
+            designSystem.animations.fadeIn,
+            'flex flex-col items-center gap-4'
+          )}>
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <p className="text-muted-foreground">Loading configuration...</p>
+          </div>
+        </div>
+      </PageContainer>
     )
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Configuration Management</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage AWE system configuration across all services
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <Badge variant={environment === 'production' ? 'destructive' : 'secondary'}>
-            {environment.toUpperCase()}
-          </Badge>
-          
-          {unsavedChanges && (
-            <Badge variant="destructive" className="animate-pulse">
-              Unsaved Changes
+    <PageContainer className={cn(designSystem.animations.fadeIn)}>
+      <PageHeader
+        title="Configuration Management"
+        description="Manage AWE system configuration across all services"
+        breadcrumbs={[
+          { label: 'Admin', href: '/admin' },
+          { label: 'Configuration' }
+        ]}
+        actions={
+          <div className={cn(
+            'flex items-center gap-4',
+            designSystem.animations.slideLeft
+          )}>
+            <Badge variant={environment === 'production' ? 'destructive' : 'secondary'} 
+                   className={designSystem.components.badge.default}>
+              {environment.toUpperCase()}
             </Badge>
-          )}
-        </div>
-      </div>
+            
+            {unsavedChanges && (
+              <Badge variant="destructive" className={cn(
+                designSystem.components.badge.default,
+                'animate-pulse'
+              )}>
+                Unsaved Changes
+              </Badge>
+            )}
+          </div>
+        }
+      />
 
       {environment === 'production' && (
-        <Alert className="mb-6">
+        <Alert className={cn(
+          designSystem.components.card.default,
+          designSystem.animations.slideUp,
+          'mb-6 border-destructive/50 text-destructive'
+        )}>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
             <strong>Production Mode:</strong> Configuration changes are disabled for safety.
@@ -228,24 +251,40 @@ export default function ConfigPage() {
         </Alert>
       )}
 
-      <div className="flex gap-4 mb-6">
-        <Button onClick={saveConfig} disabled={saving || !unsavedChanges || environment === 'production'}>
-          {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
-          Save Changes
-        </Button>
+      <div className={cn(
+        'flex gap-4 mb-8',
+        designSystem.animations.slideUp
+      )}>
+        <div className="relative">
+          <div className={cn(
+            'absolute -inset-2 rounded-lg opacity-25 blur',
+            unsavedChanges && 'bg-gradient-to-r from-green-400 to-blue-500'
+          )} />
+          <Button 
+            onClick={saveConfig} 
+            disabled={saving || !unsavedChanges || environment === 'production'}
+            className={cn(
+              'relative',
+              designSystem.animations.hover.lift
+            )}
+          >
+            {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+            Save Changes
+          </Button>
+        </div>
         
-        <Button variant="outline" onClick={loadConfig}>
+        <Button variant="outline" onClick={loadConfig} className={designSystem.animations.hover.lift}>
           <RefreshCw className="h-4 w-4 mr-2" />
           Reload
         </Button>
         
-        <Button variant="outline" onClick={exportConfig}>
+        <Button variant="outline" onClick={exportConfig} className={designSystem.animations.hover.lift}>
           <Download className="h-4 w-4 mr-2" />
           Export
         </Button>
         
         <label htmlFor="import-config">
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className={designSystem.animations.hover.lift}>
             <span>
               <Upload className="h-4 w-4 mr-2" />
               Import
@@ -261,27 +300,53 @@ export default function ConfigPage() {
         </label>
       </div>
 
-      <Tabs value={activeSection} onValueChange={setActiveSection}>
-        <TabsList className="grid grid-cols-6 w-full">
-          {configSections.map(section => (
-            <TabsTrigger key={section.id} value={section.id}>
-              <section.icon className="h-4 w-4 mr-2" />
-              {section.title}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <div className={cn(designSystem.animations.slideUp, 'delay-200')}>
+        <Tabs value={activeSection} onValueChange={setActiveSection}>
+          <TabsList className={cn(
+            'grid grid-cols-6 w-full',
+            designSystem.components.card.default,
+            'p-1 h-auto'
+          )}>
+            {configSections.map(section => (
+              <TabsTrigger 
+                key={section.id} 
+                value={section.id}
+                className={cn(
+                  'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+                  designSystem.animations.hover.lift,
+                  'flex-col gap-1 px-3 py-3'
+                )}
+              >
+                <section.icon className="h-4 w-4" />
+                <span className="text-xs">{section.title}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-        <TabsContent value="app">
-          <Card>
-            <CardHeader>
-              <CardTitle>Application Configuration</CardTitle>
-              <CardDescription>Core application settings and environment configuration</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <AppConfigSection config={config?.app} onChange={updateConfigValue} />
-            </CardContent>
-          </Card>
-        </TabsContent>
+          <TabsContent value="app" className={designSystem.animations.fadeIn}>
+            <Card className={cn(
+              designSystem.components.card.hover,
+              'overflow-hidden'
+            )}>
+              <CardHeader className="relative">
+                <div className={cn(
+                  'absolute top-0 right-0 w-20 h-20 rounded-full opacity-5 blur-xl',
+                  'bg-gradient-to-br from-blue-400 to-purple-600'
+                )} />
+                <CardTitle className={cn(
+                  designSystem.typography.heading[3],
+                  'flex items-center gap-2'
+                )}>
+                  <Settings className="h-5 w-5" />
+                  Application Configuration
+                </CardTitle>
+                <CardDescription>Core application settings and environment configuration</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <AppConfigSection config={config?.app} onChange={updateConfigValue} />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
         <TabsContent value="scraper">
           <Card>
@@ -342,8 +407,9 @@ export default function ConfigPage() {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
-    </div>
+        </Tabs>
+      </div>
+    </PageContainer>
   )
 }
 

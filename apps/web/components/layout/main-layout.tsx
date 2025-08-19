@@ -1,4 +1,4 @@
-import { Navigation } from "./navigation"
+import { ModernHeader } from "./modern-header"
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -7,8 +7,8 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="relative flex min-h-screen flex-col">
-      <Navigation />
-      <main className="flex-1">
+      <ModernHeader />
+      <main id="main-content" className="flex-1" role="main" aria-label="Main content">
         {children}
       </main>
     </div>
