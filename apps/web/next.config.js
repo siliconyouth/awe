@@ -7,7 +7,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig = {
   // Optimize builds for development branch
-  swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' && process.env.VERCEL_GIT_COMMIT_REF === 'main',
   },

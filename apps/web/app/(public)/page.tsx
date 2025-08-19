@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { Button } from '../components/ui/button'
-import { Badge } from '../components/ui/badge'
-import { designSystem, cn } from '../lib/design-system'
-import { HomepageWrapper } from '../components/providers/homepage-wrapper'
+import { Button } from '../../components/ui/button'
+import { Badge } from '../../components/ui/badge'
+import { designSystem, cn } from '../../lib/design-system'
+import { HomepageWrapper } from '../../components/providers/homepage-wrapper'
 import {
   ArrowRight,
   Zap,
