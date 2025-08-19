@@ -1,6 +1,6 @@
 'use client'
 
-import { ClerkProvider, ClerkLoaded, ClerkLoading } from '@clerk/nextjs'
+import { ClerkLoaded, ClerkLoading } from '@clerk/nextjs'
 import { MainLayout } from '../layout/main-layout'
 import { ProjectProvider } from '../../contexts/project-context'
 import { Loader2 } from 'lucide-react'
@@ -22,7 +22,7 @@ function LoadingState() {
 
 export function ClientLayout({ children }: ClientLayoutProps) {
   return (
-    <ClerkProvider>
+    <>
       <ClerkLoading>
         <LoadingState />
       </ClerkLoading>
@@ -33,6 +33,6 @@ export function ClientLayout({ children }: ClientLayoutProps) {
           </MainLayout>
         </ProjectProvider>
       </ClerkLoaded>
-    </ClerkProvider>
+    </>
   )
 }
