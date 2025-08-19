@@ -59,6 +59,12 @@ const navigationItems = [
     requiresAuth: true
   },
   {
+    title: "Resources",
+    href: "/resources",
+    icon: Sparkles,
+    requiresAuth: false
+  },
+  {
     title: "Profile",
     href: "/profile",
     icon: User,

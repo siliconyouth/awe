@@ -1,0 +1,284 @@
+// AWE Resource Hub Schema
+// Purpose: Multi-dimensional knowledge management for Claude Code optimization
+// Based on: Hybrid Browsable + AI System (Best of Both Worlds approach)
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum ResourceType {
+  TEMPLATE      // CLAUDE.md templates and project configs
+  COMMAND       // Slash commands for Claude Code
+  PATTERN       // Reusable code patterns
+  GUIDE         // How-to tutorials and docs
+  TOOL          // External tools and integrations
+  EXAMPLE       // Working code samples
+  HOOK          // Lifecycle hooks
+  WORKFLOW      // Multi-step automations
+  CONFIG        // Configuration files
+  INTEGRATION   // Third-party connections
+}
+
+enum TagCategory {
+  FEATURE       // What capabilities it provides
+  TECHNOLOGY    // Languages, frameworks, platforms
+  USE_CASE      // When and why to use
+  DIFFICULTY    // Skill level required
+  PROJECT_TYPE  // Type of application
+  META          // Quality indicators
+  CUSTOM        // User-defined
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum ResourceStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  DEPRECATED
+}
+
+enum CollectionType {
+  CUSTOM         // User-created
+  LEARNING_PATH  // Progressive learning
+  PROJECT_PACK   // Project starter kits
+  TEAM_BUNDLE    // Team standards
+  OFFICIAL       // Anthropic/AWE official
+}
+
+// ==========================================
+// CORE MODELS
+// ==========================================
+
+model ResourceHub {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  version         String        @default("1.0.0")
+  
+  // Content
+  title           String
+  description     String        @db.Text
+  content         String        @db.Text  // Full content/code
+  summary         String?       @db.Text  // AI-generated summary
+  
+  // Type and Organization
+  resourceType    ResourceType
+  
+  // Source Information
+  sourceUrl       String?
+  authorName      String
+  authorGithub    String?
+  license         String?
+  
+  // Multi-dimensional Tags
+  tags            ResourceHubTag[]
+  
+  // Quality Metrics
+  verified        Boolean       @default(false)
+  official        Boolean       @default(false)
+  aiScore         Int?          // 0-100 AI quality score
+  downloads       Int           @default(0)
+  views           Int           @default(0)
+  stars           Int           @default(0)
+  
+  // Performance Metrics (for AWE optimization)
+  contextReduction  Float?      // % reduction in context size
+  responseSpeed     Float?      // % improvement in response time
+  accuracy          Float?      // % improvement in task completion
+  
+  // Relationships
+  collections     CollectionItem[]
+  interactions    UserInteraction[]
+  
+  // Timestamps
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  publishedAt     DateTime?
+  lastVerified    DateTime?
+  
+  // Metadata JSON for flexibility
+  metadata        Json?
+  
+  @@index([resourceType])
+  @@index([verified, official])
+  @@index([stars])
+  @@index([createdAt])
+}
+
+// ==========================================
+// TAGGING SYSTEM
+// ==========================================
+
+model ResourceTag {
+  id              String        @id @default(cuid())
+  name            String
+  slug            String        @unique
+  category        TagCategory
+  description     String?
+  icon            String?
+  
+  // Usage tracking
+  usageCount      Int           @default(0)
+  trending        Boolean       @default(false)
+  
+  // Relations
+  resources       ResourceHubTag[]
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([category])
+  @@index([usageCount])
+}
+
+model ResourceHubTag {
+  id              String        @id @default(cuid())
+  
+  resourceId      String
+  resource        ResourceHub   @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  
+  tagId           String
+  tag             ResourceTag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  // AI confidence for auto-generated tags
+  aiGenerated     Boolean       @default(false)
+  confidence      Float?        // 0-1 confidence score
+  
+  createdAt       DateTime      @default(now())
+  
+  @@unique([resourceId, tagId])
+  @@index([tagId])
+}
+
+// ==========================================
+// COLLECTIONS
+// ==========================================
+
+model ResourceCollection {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  
+  // Basic Info
+  name            String
+  description     String        @db.Text
+  icon            String?
+  
+  // Type and Ownership
+  collectionType  CollectionType
+  authorName      String
+  authorId        String?
+  isPublic        Boolean       @default(true)
+  isFeatured      Boolean       @default(false)
+  
+  // Items in collection
+  items           CollectionItem[]
+  
+  // Metrics
+  followers       Int           @default(0)
+  uses            Int           @default(0)
+  stars           Int           @default(0)
+  
+  // Timestamps
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  // Metadata for additional info
+  metadata        Json?
+  
+  @@index([collectionType])
+  @@index([isFeatured])
+}
+
+model CollectionItem {
+  id              String        @id @default(cuid())
+  
+  collectionId    String
+  collection      ResourceCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  
+  resourceId      String
+  resource        ResourceHub   @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  
+  order           Int           @default(0)
+  notes           String?       @db.Text
+  
+  addedAt         DateTime      @default(now())
+  
+  @@unique([collectionId, resourceId])
+  @@index([order])
+}
+
+// ==========================================
+// USER INTERACTIONS
+// ==========================================
+
+model UserInteraction {
+  id              String        @id @default(cuid())
+  
+  userId          String        // From Clerk auth
+  resourceId      String
+  resource        ResourceHub   @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  
+  action          String        // view, download, star, use, share
+  rating          Int?          // 1-5 stars
+  feedback        String?       @db.Text
+  
+  createdAt       DateTime      @default(now())
+  
+  @@index([userId])
+  @@index([action])
+}
+
+// ==========================================
+// AI LEARNING & SYNTHESIS
+// ==========================================
+
+model ResourceSynthesis {
+  id              String        @id @default(cuid())
+  
+  // User Query
+  query           String        @db.Text
+  userId          String?
+  projectContext  Json?         // Project-specific context
+  
+  // Synthesized Result
+  result          String        @db.Text
+  resourceIds     String[]      // Resources used in synthesis
+  
+  // Quality Metrics
+  userRating      Int?          // 1-5 stars
+  successful      Boolean?
+  timeToGenerate  Int?          // milliseconds
+  
+  createdAt       DateTime      @default(now())
+  
+  @@index([userId])
+  @@index([successful])
+}
+
+model PatternLearning {
+  id              String        @id @default(cuid())
+  
+  // Pattern Detection
+  pattern         String        @db.Text
+  category        String
+  frequency       Int           @default(1)
+  
+  // Effectiveness Metrics
+  successRate     Float?        // 0-1
+  avgTimeReduction Float?       // percentage
+  
+  // Source Tracking
+  sourceResourceIds String[]
+  projectTypes    String[]
+  
+  lastSeen        DateTime      @default(now())
+  createdAt       DateTime      @default(now())
+  
+  @@index([category])
+  @@index([frequency])
+}
