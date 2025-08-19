@@ -28,8 +28,7 @@ export async function GET(request: NextRequest) {
             dependencies: true,
             recommendations: true,
             templates: true,
-            knowledgeSources: true,
-            patterns: true
+            telemetryEvents: true
           }
         }
       }
