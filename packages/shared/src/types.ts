@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { ResourceType, ResourceStatus, ResourceVisibility, TagType, TagCategory } from './types/resources'
 
 // Core AWE Types
 export const ProjectTypeSchema = z.enum([
@@ -143,6 +144,9 @@ export type ProjectAnalysis = z.infer<typeof ProjectAnalysisSchema>
 export type Template = z.infer<typeof TemplateSchema>
 export type Config = z.infer<typeof ConfigSchema>
 
+// Re-export enums from resources for convenience
+export { ResourceType, ResourceStatus, ResourceVisibility, TagType, TagCategory }
+
 // API Response types
 export interface ApiResponse<T> {
   success: boolean
@@ -170,38 +174,7 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   }
 }
 
-// Resource Management Types
-export enum ResourceType {
-  PATTERN = 'PATTERN',
-  SNIPPET = 'SNIPPET',
-  HOOK = 'HOOK',
-  AGENT = 'AGENT',
-  TEMPLATE = 'TEMPLATE',
-  GUIDE = 'GUIDE',
-  TOOL = 'TOOL',
-  CONFIG = 'CONFIG',
-  WORKFLOW = 'WORKFLOW',
-  INTEGRATION = 'INTEGRATION'
-}
-
-export enum ResourceStatus {
-  DRAFT = 'DRAFT',
-  PUBLISHED = 'PUBLISHED',
-  ARCHIVED = 'ARCHIVED',
-  DEPRECATED = 'DEPRECATED'
-}
-
-export enum ResourceVisibility {
-  PUBLIC = 'PUBLIC',
-  PRIVATE = 'PRIVATE',
-  UNLISTED = 'UNLISTED'
-}
-
-export enum TagType {
-  USER = 'USER',
-  AI = 'AI',
-  SYSTEM = 'SYSTEM'
-}
+// Resource Management Types - imported from types/resources.ts
 
 export interface Resource {
   id: string
@@ -285,7 +258,7 @@ export interface Category {
   updatedAt: Date
 }
 
-export interface TagCategory {
+export interface TagCategoryGroup {
   id: string
   name: string
   description: string

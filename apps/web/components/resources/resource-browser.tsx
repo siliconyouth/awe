@@ -64,8 +64,8 @@ export function ResourceBrowser({
   const [searchQuery, setSearchQuery] = useState(initialFilters.query || '')
   const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(initialFilters.types || [])
   const [selectedTags, setSelectedTags] = useState<string[]>(initialFilters.tags || [])
-  const [sortBy, setSortBy] = useState(initialFilters.sortBy || 'createdAt')
-  const [sortOrder, setSortOrder] = useState(initialFilters.sortOrder || 'desc')
+  const [sortBy, setSortBy] = useState<string>(initialFilters.sortBy || 'createdAt')
+  const [sortOrder, setSortOrder] = useState<string>(initialFilters.sortOrder || 'desc')
   
   // Data state
   const [resources, setResources] = useState<Resource[]>([])
@@ -96,7 +96,7 @@ export function ResourceBrowser({
       const data: ResourceSearchResult = await response.json()
       
       setResources(data.resources)
-      setTotalPages(data.pages)
+      setTotalPages(data.pages || 1)
     } catch (error) {
       console.error('Failed to fetch resources:', error)
     } finally {
@@ -363,7 +363,7 @@ export function ResourceBrowser({
 
             <TabsContent value="recommended" className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {recommendations.map((rec) => (
+                {recommendations.map((rec) => rec.resource && (
                   <div key={rec.resource.id} className="space-y-2">
                     <ResourceCard
                       resource={rec.resource}

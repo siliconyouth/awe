@@ -27,7 +27,7 @@ const RemoveTagsSchema = z.object({
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -39,7 +39,8 @@ export async function POST(
       )
     }
 
-    const resourceId = params.id
+    const resolvedParams = await params
+    const resourceId = resolvedParams.id
     const body = await request.json()
 
     // Validate input
@@ -78,7 +79,7 @@ export async function POST(
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid tag data', details: error.errors },
+        { error: 'Invalid tag data', details: error.issues },
         { status: 400 }
       )
     }
@@ -96,7 +97,7 @@ export async function POST(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -108,7 +109,8 @@ export async function DELETE(
       )
     }
 
-    const resourceId = params.id
+    const resolvedParams = await params
+    const resourceId = resolvedParams.id
     const body = await request.json()
 
     // Validate input
@@ -144,7 +146,7 @@ export async function DELETE(
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       )
     }
@@ -162,7 +164,7 @@ export async function DELETE(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -174,7 +176,8 @@ export async function PUT(
       )
     }
 
-    const resourceId = params.id
+    const resolvedParams = await params
+    const resourceId = resolvedParams.id
 
     // Get resource
     const resource = await resourceManager.getResource(resourceId)

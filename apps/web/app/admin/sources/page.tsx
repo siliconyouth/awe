@@ -156,7 +156,7 @@ export default function AdminSourcesPage() {
   }
 
   const getFrequencyBadge = (frequency: string) => {
-    const colors = {
+    const colors: Record<string, string> = {
       daily: 'bg-green-500',
       weekly: 'bg-blue-500',
       monthly: 'bg-purple-500',

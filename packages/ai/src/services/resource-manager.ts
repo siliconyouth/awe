@@ -82,9 +82,9 @@ export class ResourceManager {
         slug,
         name: data.name || 'Untitled Resource',
         description: data.description || '',
-        type: data.type || ResourceType.PATTERN,
-        status: data.status || ResourceStatus.PUBLISHED,
-        visibility: data.visibility || ResourceVisibility.PUBLIC,
+        type: (data.type || ResourceType.PATTERN) as any,
+        status: (data.status || ResourceStatus.PUBLISHED) as any,
+        visibility: (data.visibility || ResourceVisibility.PUBLIC) as any,
         content: data.content ? JSON.stringify(data.content) : JSON.stringify({ main: '' }),
         rawContent: data.rawContent,
         fileType: data.fileType || 'markdown',
@@ -224,7 +224,7 @@ export class ResourceManager {
           data: {
             resourceId,
             tagId,
-            tagType,
+            tagType: tagType as any,
             addedBy
           },
           include: {
@@ -237,7 +237,7 @@ export class ResourceManager {
     // Update tag usage counts
     await this.updateTagUsageCounts(tagIds)
 
-    return tags.map(t => ({
+    return tags.map((t: any) => ({
       id: t.id,
       resourceId: t.resourceId,
       tagId: t.tagId,
@@ -497,7 +497,7 @@ Return as JSON array of objects with tagName and confidence (0-1).`
         isOfficial: data.isOfficial || false,
         isCurated: data.isCurated || false,
         author: data.author,
-        metadata: data.metadata
+        metadata: data.metadata || undefined
       }
     })
 

@@ -6,19 +6,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { ResourceManager } from '@awe/ai'
+import { ResourceStatus, ResourceVisibility } from '@awe/shared'
 import { z } from 'zod'
 
 const resourceManager = new ResourceManager()
+
+// Content schema matching ResourceContent interface
+const ResourceContentSchema = z.object({
+  main: z.string(),
+  examples: z.array(z.string()).optional(),
+  prerequisites: z.array(z.string()).optional(),
+  relatedResources: z.array(z.string()).optional(),
+  supportedVersions: z.array(z.string()).optional()
+})
 
 // Validation schemas
 const UpdateResourceSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   description: z.string().min(10).max(1000).optional(),
-  content: z.record(z.any()).optional(),
+  content: ResourceContentSchema.optional(),
   categoryId: z.string().optional(),
-  visibility: z.enum(['PUBLIC', 'PRIVATE', 'WORKSPACE', 'PROJECT']).optional(),
-  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED', 'DEPRECATED']).optional(),
-  metadata: z.record(z.any()).optional(),
+  visibility: z.nativeEnum(ResourceVisibility).optional(),
+  status: z.nativeEnum(ResourceStatus).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
   version: z.string().optional()
 })
 
@@ -28,11 +38,12 @@ const UpdateResourceSchema = z.object({
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
-    const resourceId = params.id
+    const resolvedParams = await params
+    const resourceId = resolvedParams.id
 
     // Get resource
     const resource = await resourceManager.getResource(resourceId)
@@ -73,7 +84,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -85,7 +96,8 @@ export async function PUT(
       )
     }
 
-    const resourceId = params.id
+    const resolvedParams = await params
+    const resourceId = resolvedParams.id
     const body = await request.json()
 
     // Validate input
@@ -124,7 +136,7 @@ export async function PUT(
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid update data', details: error.errors },
+        { error: 'Invalid update data', details: error.issues },
         { status: 400 }
       )
     }
@@ -142,7 +154,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -154,7 +166,8 @@ export async function DELETE(
       )
     }
 
-    const resourceId = params.id
+    const resolvedParams = await params
+    const resourceId = resolvedParams.id
 
     // Get existing resource to check permissions
     const existing = await resourceManager.getResource(resourceId)

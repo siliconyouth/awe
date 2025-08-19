@@ -35,7 +35,7 @@ interface TagSelectorProps {
   className?: string
 }
 
-const categoryColors: Record<TagCategory, string> = {
+const categoryColors: Record<string, string> = {
   [TagCategory.LANGUAGE]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
   [TagCategory.FRAMEWORK]: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
   [TagCategory.DOMAIN]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
@@ -62,14 +62,15 @@ export function TagSelector({
 
   // Group tags by category
   const groupedTags = useMemo(() => {
-    const groups: Record<TagCategory, Tag[]> = {} as any
+    const groups: Partial<Record<TagCategory, Tag[]>> = {}
     
     tags.forEach(tag => {
-      if (!categories || categories.includes(tag.category)) {
-        if (!groups[tag.category]) {
-          groups[tag.category] = []
+      if (tag.category && (!categories || categories.includes(tag.category as TagCategory))) {
+        const category = tag.category as TagCategory
+        if (!groups[category]) {
+          groups[category] = []
         }
-        groups[tag.category].push(tag)
+        groups[category]!.push(tag)
       }
     })
 
@@ -80,10 +81,11 @@ export function TagSelector({
   const filteredGroups = useMemo(() => {
     if (!searchQuery) return groupedTags
 
-    const filtered: Record<TagCategory, Tag[]> = {} as any
+    const filtered: Partial<Record<TagCategory, Tag[]>> = {}
     
-    Object.entries(groupedTags).forEach(([category, tags]) => {
-      const matchingTags = tags.filter(tag =>
+    Object.entries(groupedTags).forEach(([category, categoryTags]) => {
+      if (!categoryTags) return
+      const matchingTags = categoryTags.filter(tag =>
         tag.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         tag.description?.toLowerCase().includes(searchQuery.toLowerCase())
       )
@@ -150,9 +152,9 @@ export function TagSelector({
                   No tags found
                 </div>
               ) : (
-                Object.entries(filteredGroups).map(([category, tags]) => (
+                Object.entries(filteredGroups).map(([category, categoryTags]) => (
                   <CommandGroup key={category} heading={category.replace(/_/g, ' ')}>
-                    {tags.map((tag) => {
+                    {categoryTags && categoryTags.map((tag) => {
                       const isSelected = selectedTags.includes(tag.id)
                       const isDisabled = !isSelected && maxTags && selectedTags.length >= maxTags
 
@@ -161,7 +163,7 @@ export function TagSelector({
                           key={tag.id}
                           value={tag.id}
                           onSelect={() => handleToggleTag(tag.id)}
-                          disabled={isDisabled}
+                          disabled={isDisabled ? true : undefined}
                           className="flex items-center justify-between"
                         >
                           <div className="flex items-center gap-2">
@@ -214,7 +216,7 @@ export function TagSelector({
               variant="secondary"
               className={cn(
                 'pr-1',
-                categoryColors[tag.category]
+                tag.category && categoryColors[tag.category as string]
               )}
             >
               {tag.name}

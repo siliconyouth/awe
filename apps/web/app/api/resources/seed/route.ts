@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@awe/database'
+import { ResourceType } from '@awe/shared'
 
 // Seed data - some sample resources
 const sampleResources = [
@@ -88,10 +89,15 @@ export async function POST() {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '')
       
+      const { title, type, tags, ...restResource } = resource
+      
       await prisma.resource.create({
         data: {
-          ...resource,
+          ...restResource,
+          name: title,
+          type: type as any,
           slug
+          // Tags would need to be created separately as they are relations
         }
       })
     }

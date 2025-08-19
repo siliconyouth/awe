@@ -159,7 +159,7 @@ export default function AdminImportPage() {
         imported: 0,
         failed: previewResources.length,
         resources: [],
-        errors: [{ error: 'Import failed', message: error.message }]
+        errors: [{ error: 'Import failed', message: error instanceof Error ? error.message : String(error) }]
       })
     } finally {
       setImporting(false)

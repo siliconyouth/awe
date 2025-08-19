@@ -35,7 +35,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Progress } from '@/components/ui/progress'
-import { Resource, ResourceType, TagCategory } from '@awe/shared'
+import { Resource, ResourceType, TagCategory, TagType } from '@awe/shared'
 
 interface ResourceCardProps {
   resource: Resource
@@ -48,17 +48,21 @@ interface ResourceCardProps {
   compact?: boolean
 }
 
-const resourceIcons: Record<ResourceType, React.ElementType> = {
-  [ResourceType.PATTERN]: Code,
-  [ResourceType.TEMPLATE]: FileText,
-  [ResourceType.HOOK]: Settings,
-  [ResourceType.AGENT]: Zap,
-  [ResourceType.SNIPPET]: Terminal,
-  [ResourceType.COMMAND]: Terminal,
-  [ResourceType.WORKFLOW]: Workflow,
-  [ResourceType.KNOWLEDGE]: BookOpen,
-  [ResourceType.CONFIGURATION]: Settings,
-  [ResourceType.INTEGRATION]: Link,
+// Map ResourceType enum values to icons, with fallbacks for any missing types
+const resourceIcons: Record<string, React.ElementType> = {
+  'PATTERN': Code,
+  'TEMPLATE': FileText,
+  'HOOK': Settings,
+  'AGENT': Zap,
+  'SNIPPET': Terminal,
+  'COMMAND': Terminal,
+  'WORKFLOW': Workflow,
+  'KNOWLEDGE': BookOpen,
+  'CONFIGURATION': Settings,
+  'CONFIG': Settings,
+  'INTEGRATION': Link,
+  'GUIDE': BookOpen,
+  'TOOL': Puzzle,
 }
 
 const categoryColors: Record<string, string> = {
@@ -80,7 +84,7 @@ export function ResourceCard({
   compact = false
 }: ResourceCardProps) {
   const [isHovered, setIsHovered] = useState(false)
-  const Icon = resourceIcons[resource.type] || Puzzle
+  const Icon = resourceIcons[resource.type as string] || Puzzle
 
   const handleAction = (action: 'view' | 'download' | 'share' | 'apply') => {
     switch (action) {
@@ -110,7 +114,7 @@ export function ResourceCard({
   }
 
   const primaryTags = resource.tags
-    ?.filter(rt => rt.tagType === 'PRIMARY')
+    ?.filter(rt => (rt.tagType as string) === 'PRIMARY' || rt.tagType === TagType.USER)
     .slice(0, 3)
 
   return (
@@ -196,7 +200,7 @@ export function ResourceCard({
                 variant="secondary"
                 className={cn(
                   'text-xs',
-                  rt.tag && categoryColors[rt.tag.category]
+                  rt.tag && categoryColors[rt.tag.category as string]
                 )}
               >
                 {rt.tag?.name}

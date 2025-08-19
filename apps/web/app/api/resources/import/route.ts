@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@awe/database'
 import { ResourceProcessor } from '@awe/ai'
+import { ResourceType } from '@awe/shared'
 
 // POST /api/resources/import - Import resources from a knowledge source
 export async function POST(request: NextRequest) {
@@ -66,14 +67,15 @@ export async function POST(request: NextRequest) {
         const created = await prisma.resource.create({
           data: {
             slug,
-            title: processed.title,
+            name: processed.title,
             description: processed.description,
             content: processed.content,
             rawContent: processed.rawContent,
             fileType: processed.fileType,
-            type: processed.type,
-            category: processed.category,
-            tags: processed.tags,
+            type: processed.type as any,
+            // Category and tags will be handled separately
+            // category: processed.category,
+            // tags: processed.tags,
             keywords: processed.keywords,
             author: processed.author || 'community',
             authorGithub: processed.authorGithub,
@@ -95,7 +97,7 @@ export async function POST(request: NextRequest) {
         console.error('Failed to import resource:', resource.name, error)
         errors.push({
           resource: resource.name || 'unknown',
-          error: error.message
+          error: error instanceof Error ? error.message : String(error)
         })
       }
     }
