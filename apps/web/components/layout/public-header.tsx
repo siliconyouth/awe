@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
 import { Button } from '../ui/button'
 import { ThemeToggle } from '../ui/theme-toggle'
+import { ProjectSelector } from './project-selector'
 import { designSystem, cn } from '../../lib/design-system'
 import {
   Home,
@@ -96,6 +97,10 @@ export function PublicHeader() {
 
             {/* Right side actions */}
             <div className="flex items-center space-x-4">
+              <SignedIn>
+                <ProjectSelector />
+              </SignedIn>
+              
               <ThemeToggle />
               
               <SignedOut>
@@ -164,6 +169,12 @@ export function PublicHeader() {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t">
             <nav className="container py-4 space-y-2">
+              <SignedIn>
+                <div className="pb-4 border-b">
+                  <ProjectSelector />
+                </div>
+              </SignedIn>
+              
               {navItems.map((item) => (
                 <Link
                   key={item.href}
