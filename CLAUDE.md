@@ -1,4 +1,4 @@
-# CLAUDE.md - AWE Workspace Engineering v2.3
+# CLAUDE.md - AWE Workspace Engineering v2.4
 
 ## Development Guidelines
 
@@ -12,7 +12,7 @@ AWE (Awesome Workspace Engineering) is an intelligent AI-powered development com
 
 **🎯 Vision**: Industry-leading Claude Code optimization platform  
 **🚀 Mission**: Transform development workflows through AI-powered intelligence  
-**⚡ Current Version**: 2.3.0 - Enterprise UI with Accessibility & Performance  
+**⚡ Current Version**: 2.4.0 - Production-Ready Clerk Integration & Security Hardening  
 **📅 Release Date**: August 19, 2025
 
 ## Architecture
@@ -192,6 +192,17 @@ pnpm db:migrate   # Run migrations
 - **Dynamic SEO**: Page-specific metadata with Open Graph support
 - **Optimistic UI**: Instant feedback with automatic rollback on errors
 - **Image Optimization**: Next.js Image component with lazy loading
+
+### Security & Infrastructure (v2.4)
+- **Enhanced Clerk Integration**: Complete auth flow with database sync
+- **Rate Limiting System**: In-memory rate limiting with configurable tiers
+- **Session Token Monitoring**: Track JWT size to prevent performance issues
+- **Webhook Security**: Svix signature verification with retry logic
+- **Error Boundaries**: Auth-specific error handling with recovery actions
+- **Database Models**: User, Organization, and OrganizationMember models
+- **Retry Logic**: Exponential backoff for webhook processing
+- **Public Routes**: Proper middleware configuration for test endpoints
+- **Production Build**: Optimized and tested for deployment
 
 ## AI-Powered Development Assistance
 

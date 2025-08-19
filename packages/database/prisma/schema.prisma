@@ -8,6 +8,65 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// User model for storing Clerk user data
+model User {
+  id                   String   @id @default(cuid())
+  clerkId              String   @unique // Clerk user ID
+  email                String   
+  firstName            String?
+  lastName             String?
+  role                 String   @default("user") // admin, moderator, developer, user
+  tier                 String   @default("free") // free, premium, enterprise
+  onboardingCompleted  Boolean  @default(false)
+  lastSignIn           DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  // Relations
+  projects             Project[] @relation("UserProjects")
+  knowledgeSources     KnowledgeSource[] @relation("UserKnowledgeSources")
+  patternReviews       PatternReview[] @relation("UserPatternReviews")
+  patternUsage         PatternUsage[] @relation("UserPatternUsage")
+  organizationMemberships OrganizationMember[]
+  
+  @@index([clerkId])
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+// Organization support
+model Organization {
+  id          String   @id @default(cuid())
+  clerkOrgId  String   @unique // Clerk organization ID
+  name        String
+  slug        String   @unique
+  plan        String   @default("free")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  members     OrganizationMember[]
+  
+  @@index([clerkOrgId])
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  userId         String
+  organizationId String
+  role           String       @default("member") // admin, member
+  joinedAt       DateTime     @default(now())
+  
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, organizationId])
+  @@index([userId])
+  @@index([organizationId])
+  @@map("organization_members")
+}
+
 model Project {
   id                   String                @id @default(cuid())
   userId               String                // Owner of the project
@@ -30,6 +89,9 @@ model Project {
   isDefault            Boolean               @default(false) // Default project for user
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
+  
+  // Relations
+  user                 User                  @relation("UserProjects", fields: [userId], references: [clerkId], onDelete: Cascade)
   configuration        ProjectConfiguration?
   dependencies         ProjectDependency[]
   templates            ProjectTemplate[]
@@ -234,6 +296,8 @@ model KnowledgeSource {
   updatedAt    DateTime          @updatedAt
   updates      KnowledgeUpdate[]
   patterns     ExtractedPattern[]
+  
+  user         User?             @relation("UserKnowledgeSources", fields: [userId], references: [clerkId], onDelete: SetNull)
 
   @@unique([name])
   @@index([userId])
@@ -368,6 +432,7 @@ model PatternReview {
   metadata   Json?        // Additional review data
   createdAt  DateTime     @default(now())
   
+  user       User             @relation("UserPatternReviews", fields: [userId], references: [clerkId], onDelete: Cascade)
   pattern    ExtractedPattern @relation(fields: [patternId], references: [id], onDelete: Cascade)
   
   @@index([patternId])
@@ -407,6 +472,7 @@ model PatternUsage {
   sessionId     String?  // Track usage within a session
   createdAt     DateTime @default(now())
   
+  user          User?            @relation("UserPatternUsage", fields: [userId], references: [clerkId], onDelete: Cascade)
   pattern       ExtractedPattern @relation(fields: [patternId], references: [id], onDelete: Cascade)
   project       Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   

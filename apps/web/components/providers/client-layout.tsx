@@ -3,6 +3,7 @@
 import { ClerkLoaded, ClerkLoading } from '@clerk/nextjs'
 import { MainLayout } from '../layout/main-layout'
 import { ProjectProvider } from '../../contexts/project-context'
+import { AuthErrorBoundary } from '../auth/auth-error-boundary'
 import { Loader2 } from 'lucide-react'
 
 interface ClientLayoutProps {
@@ -22,7 +23,7 @@ function LoadingState() {
 
 export function ClientLayout({ children }: ClientLayoutProps) {
   return (
-    <>
+    <AuthErrorBoundary>
       <ClerkLoading>
         <LoadingState />
       </ClerkLoading>
@@ -33,6 +34,6 @@ export function ClientLayout({ children }: ClientLayoutProps) {
           </MainLayout>
         </ProjectProvider>
       </ClerkLoaded>
-    </>
+    </AuthErrorBoundary>
   )
 }

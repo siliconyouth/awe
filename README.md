@@ -1,9 +1,9 @@
-# 🌆 AWE - Awesome Workspace Engineering v2.3
+# 🌆 AWE - Awesome Workspace Engineering v2.4
 
 > **The Industry-Leading AI Companion for Claude Code**  
 > Transform your development workflow with Claude Opus 4.1 powered intelligence, project-centric organization, world-class UI/UX, and automated optimization.
 
-[![Version](https://img.shields.io/badge/Version-2.3.0-red)](https://github.com/awe-team/awe/releases)
+[![Version](https://img.shields.io/badge/Version-2.4.0-red)](https://github.com/awe-team/awe/releases)
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-green)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
 [![Claude Opus](https://img.shields.io/badge/Claude-Opus%204.1-purple)](https://www.anthropic.com/claude)
@@ -47,6 +47,13 @@
 - **⚡ Lightning Performance**: Sub-2s response times with advanced caching
 - **🔒 Enterprise Ready**: Role-based access control, audit logging
 - **🌐 Offline Support**: Graceful degradation when services unavailable
+
+#### Security & Infrastructure (v2.4)
+- **🛡️ Rate Limiting**: Configurable API rate limits with role exemptions
+- **🔑 Webhook Security**: Svix signature verification with retry logic
+- **📊 Session Monitoring**: JWT size tracking for performance
+- **🔄 Retry Logic**: Exponential backoff for database operations
+- **🏥 Health Checks**: Production-ready monitoring endpoints
 
 ## 🏗️ Architecture
 

@@ -17,6 +17,9 @@ import { Webhook } from 'svix'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { initializeUserRole } from '../../../../lib/auth/rbac'
 import type { Roles } from '../../../../types/globals'
+import { getPrisma } from '@awe/database'
+
+const prisma = getPrisma()
 
 // Get the webhook secret from environment
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET
@@ -175,28 +178,49 @@ async function storeUserInDatabase(userData: {
   lastName?: string | null
   role?: Roles
 }) {
-  try {
-    // Import your database client
-    // const { PrismaClient } = await import('@awe/database')
-    // const prisma = new PrismaClient()
-
-    // Store user (example - adjust to your schema)
-    // await prisma.user.create({
-    //   data: {
-    //     clerkId: userData.clerkId,
-    //     email: userData.email,
-    //     firstName: userData.firstName,
-    //     lastName: userData.lastName,
-    //     role: userData.role,
-    //   }
-    // })
-
-    // await prisma.$disconnect()
-    
-    console.log('Storing user in database:', userData)
-  } catch (error) {
-    console.error('Failed to store user in database:', error)
+  // Retry logic for database operations
+  const maxRetries = 3
+  let lastError: Error | null = null
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      // Upsert user to handle race conditions
+      await prisma.user.upsert({
+        where: { clerkId: userData.clerkId },
+        update: {
+          email: userData.email || '',
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          role: userData.role || 'user',
+          lastSignIn: new Date(),
+        },
+        create: {
+          clerkId: userData.clerkId,
+          email: userData.email || '',
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          role: userData.role || 'user',
+          tier: 'free',
+          onboardingCompleted: false,
+        },
+      })
+      
+      console.log(`✅ User ${userData.clerkId} stored in database`)
+      return // Success - exit function
+    } catch (error) {
+      lastError = error as Error
+      console.error(`Attempt ${attempt + 1}/${maxRetries} failed:`, error)
+      
+      // Exponential backoff: wait before retrying
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt)))
+      }
+    }
   }
+  
+  // All retries failed
+  console.error(`❌ Failed to store user ${userData.clerkId} after ${maxRetries} attempts:`, lastError)
+  // Could implement dead letter queue here for manual processing
 }
 
 /**
@@ -209,28 +233,65 @@ async function updateUserInDatabase(userData: {
   lastName?: string | null
   metadata?: Record<string, unknown>
 }) {
-  try {
-    // Import your database client
-    // const { PrismaClient } = await import('@awe/database')
-    // const prisma = new PrismaClient()
-
-    // Update user (example - adjust to your schema)
-    // await prisma.user.update({
-    //   where: { clerkId: userData.clerkId },
-    //   data: {
-    //     email: userData.email,
-    //     firstName: userData.firstName,
-    //     lastName: userData.lastName,
-    //     metadata: userData.metadata,
-    //   }
-    // })
-
-    // await prisma.$disconnect()
-    
-    console.log('Updating user in database:', userData)
-  } catch (error) {
-    console.error('Failed to update user in database:', error)
+  const maxRetries = 3
+  let lastError: Error | null = null
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      // Extract role and tier from metadata
+      const role = (userData.metadata?.role as Roles) || undefined
+      const tier = (userData.metadata?.tier as string) || undefined
+      const onboardingCompleted = userData.metadata?.onboardingCompleted as boolean | undefined
+      
+      // Check if user exists first
+      const existingUser = await prisma.user.findUnique({
+        where: { clerkId: userData.clerkId },
+      })
+      
+      if (!existingUser) {
+        // User doesn't exist, create them
+        await prisma.user.create({
+          data: {
+            clerkId: userData.clerkId,
+            email: userData.email || '',
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            role: role || 'user',
+            tier: tier || 'free',
+            onboardingCompleted: onboardingCompleted || false,
+            lastSignIn: new Date(),
+          },
+        })
+        console.log(`✅ User ${userData.clerkId} created in database`)
+      } else {
+        // Update existing user
+        await prisma.user.update({
+          where: { clerkId: userData.clerkId },
+          data: {
+            ...(userData.email && { email: userData.email }),
+            ...(userData.firstName !== undefined && { firstName: userData.firstName }),
+            ...(userData.lastName !== undefined && { lastName: userData.lastName }),
+            ...(role && { role }),
+            ...(tier && { tier }),
+            ...(onboardingCompleted !== undefined && { onboardingCompleted }),
+            lastSignIn: new Date(),
+          },
+        })
+        console.log(`✅ User ${userData.clerkId} updated in database`)
+      }
+      
+      return // Success - exit function
+    } catch (error) {
+      lastError = error as Error
+      console.error(`Attempt ${attempt + 1}/${maxRetries} failed:`, error)
+      
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt)))
+      }
+    }
   }
+  
+  console.error(`❌ Failed to update user ${userData.clerkId} after ${maxRetries} attempts:`, lastError)
 }
 
 /**
@@ -312,21 +373,90 @@ async function updateUserOrganizationRole(
   organizationId: string,
   role: Roles
 ) {
-  try {
-    // You can store organization-specific roles in your database
-    // or update Clerk metadata with organization roles
-    console.log(`Setting ${role} role for user ${userId} in org ${organizationId}`)
-    
-    // TODO: Implement database storage for organization roles
-    // const db = await getDatabase()
-    // if (db) {
-    //   await db.organizationMember.upsert({
-    //     where: { userId_organizationId: { userId, organizationId } },
-    //     update: { role },
-    //     create: { userId, organizationId, role }
-    //   })
-    // }
-  } catch (error) {
-    console.error('Failed to update organization role:', error)
+  const maxRetries = 3
+  let lastError: Error | null = null
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      // First ensure the user exists in the database
+      const user = await prisma.user.findUnique({
+        where: { clerkId: userId },
+      })
+      
+      if (!user) {
+        // Create basic user record if doesn't exist
+        await prisma.user.create({
+          data: {
+            clerkId: userId,
+            email: '',
+            role: role,
+            tier: 'free',
+            onboardingCompleted: false,
+          },
+        })
+      }
+      
+      // Check if organization exists, create if not
+      await prisma.organization.upsert({
+        where: { clerkOrgId: organizationId },
+        update: {},
+        create: {
+          clerkOrgId: organizationId,
+          name: `Organization ${organizationId}`,
+          slug: organizationId.toLowerCase(),
+          plan: 'free',
+        },
+      })
+      
+      // Get the user's database ID
+      const dbUser = await prisma.user.findUnique({
+        where: { clerkId: userId },
+        select: { id: true },
+      })
+      
+      if (!dbUser) {
+        throw new Error(`User ${userId} not found in database`)
+      }
+      
+      // Get the organization's database ID
+      const dbOrg = await prisma.organization.findUnique({
+        where: { clerkOrgId: organizationId },
+        select: { id: true },
+      })
+      
+      if (!dbOrg) {
+        throw new Error(`Organization ${organizationId} not found in database`)
+      }
+      
+      // Update or create organization membership
+      await prisma.organizationMember.upsert({
+        where: {
+          userId_organizationId: {
+            userId: dbUser.id,
+            organizationId: dbOrg.id,
+          },
+        },
+        update: {
+          role: role === 'admin' ? 'admin' : 'member',
+        },
+        create: {
+          userId: dbUser.id,
+          organizationId: dbOrg.id,
+          role: role === 'admin' ? 'admin' : 'member',
+        },
+      })
+      
+      console.log(`✅ Set ${role} role for user ${userId} in org ${organizationId}`)
+      return // Success - exit function
+    } catch (error) {
+      lastError = error as Error
+      console.error(`Attempt ${attempt + 1}/${maxRetries} failed:`, error)
+      
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt)))
+      }
+    }
   }
+  
+  console.error(`❌ Failed to update org role after ${maxRetries} attempts:`, lastError)
 }

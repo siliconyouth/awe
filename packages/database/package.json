@@ -1,6 +1,6 @@
 {
   "name": "@awe/database",
-  "version": "2.2.0",
+  "version": "2.4.0",
   "description": "Database layer for AWE workspace with Prisma and Supabase",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

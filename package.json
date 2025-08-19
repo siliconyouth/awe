@@ -1,6 +1,6 @@
 {
   "name": "awe-workspace",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "AWE - Awesome Workspace Engineering - Full Stack AI Assistant for Claude Code",
   "private": true,
   "workspaces": [

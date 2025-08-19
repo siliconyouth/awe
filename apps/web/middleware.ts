@@ -3,6 +3,17 @@ import { NextResponse } from 'next/server';
 import type { Roles } from './types/globals';
 import { enforceProjectSelection } from './middleware/project-enforcement';
 
+// Define public routes that don't need authentication
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/api/webhooks(.*)',
+  '/api/test(.*)',
+  '/api/health',
+  '/api/public(.*)',
+]);
+
 // Define which routes should be protected
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
@@ -56,6 +67,11 @@ const ROLE_HIERARCHY: Record<Roles, number> = {
 };
 
 export default clerkMiddleware(async (auth, req) => {
+  // For public routes, skip authentication entirely
+  if (isPublicRoute(req)) {
+    return NextResponse.next();
+  }
+  
   // Protect routes that require authentication
   if (isProtectedRoute(req)) {
     await auth.protect();

@@ -1,6 +1,6 @@
 {
   "name": "@awe/shared",
-  "version": "2.2.0",
+  "version": "2.4.0",
   "description": "Shared utilities and types for AWE workspace",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

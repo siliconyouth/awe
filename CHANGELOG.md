@@ -5,6 +5,42 @@ All notable changes to AWE (Awesome Workspace Engineering) will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2025-08-19
+
+### 🔒 Security & Infrastructure Hardening
+
+### Added
+
+#### Authentication & Security
+- **Enhanced Clerk Integration**: Complete authentication flow with database synchronization
+- **Database Models**: Added User, Organization, and OrganizationMember models
+- **Webhook Handlers**: Secure webhook processing with Svix signature verification
+- **Session Token Monitoring**: JWT size tracking to prevent performance degradation
+- **Auth Error Boundaries**: Specialized error handling for authentication failures
+
+#### Rate Limiting
+- **In-Memory Rate Limiting**: Configurable rate limits for API endpoints
+- **Multiple Tiers**: auth (5/15min), api (30/min), read (100/min), write (10/min), expensive (3/5min)
+- **Role-Based Exemptions**: Skip rate limiting for admin and specific roles
+- **Rate Limit Headers**: X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+
+#### Infrastructure
+- **Retry Logic**: Exponential backoff for database operations (3 attempts)
+- **Public Routes**: Proper middleware configuration for test endpoints
+- **Health Check Endpoint**: /api/health for monitoring server status
+- **Test Endpoints**: Comprehensive test suite for all security features
+
+### Fixed
+- **Import Paths**: Resolved all TypeScript import issues
+- **Prisma Client**: Fixed database client initialization
+- **Middleware**: Corrected auth middleware for public routes
+- **Build Errors**: Resolved all production build issues
+
+### Security
+- **Webhook Signature Verification**: Required for all webhook endpoints
+- **Environment Variable Validation**: Proper checks for Clerk configuration
+- **Error Message Sanitization**: No internal details exposed in production
+
 ## [2.3.0] - 2025-08-19
 
 ### 🎨 UI/UX Excellence & Performance Optimization
