@@ -10,8 +10,16 @@ import { createWebConfig } from '@awe/config'
 // import { z } from 'zod'
 import { checkPermission, protectApiRoute } from '../../../lib/auth/rbac'
 
-// Initialize configuration manager
-const configManager = createWebConfig()
+// Initialize configuration manager singleton
+let configManager: ReturnType<typeof createWebConfig> | null = null
+
+const getConfigManager = async () => {
+  if (!configManager) {
+    configManager = createWebConfig()
+    await configManager.initialize()
+  }
+  return configManager
+}
 
 /**
  * GET /api/config
@@ -39,8 +47,8 @@ export async function GET(request: NextRequest) {
     const path = searchParams.get('path') || undefined
     const section = searchParams.get('section') || undefined
 
-    // Initialize config
-    await configManager.initialize()
+    // Get configuration manager
+    const manager = await getConfigManager()
 
     // Get configuration
     let config: Record<string, unknown>
@@ -49,38 +57,38 @@ export async function GET(request: NextRequest) {
       // Get specific section
       switch (section) {
         case 'app':
-          config = configManager.getApp()
+          config = manager.getApp()
           break
         case 'api':
-          config = configManager.getApi()
+          config = manager.getApi()
           break
         case 'auth':
-          config = configManager.getAuth()
+          config = manager.getAuth()
           break
         case 'scraper':
-          config = configManager.getScraper()
+          config = manager.getScraper()
           break
         case 'knowledge':
-          config = configManager.getKnowledge()
+          config = manager.getKnowledge()
           break
         case 'features':
-          config = configManager.getFeatures()
+          config = manager.getFeatures()
           break
         default:
-          config = configManager.get(path)
+          config = manager.get(path)
       }
     } else if (path) {
       // Get by path
-      config = configManager.get(path)
+      config = manager.get(path)
     } else {
       // Get all config (sanitized)
-      config = sanitizeConfig(configManager.get())
+      config = sanitizeConfig(manager.get())
     }
 
     return NextResponse.json({
       success: true,
       data: config,
-      environment: configManager.getEnvironment(),
+      environment: manager.getEnvironment(),
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
@@ -117,11 +125,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { path, value } = body
 
-    // Initialize config
-    await configManager.initialize()
+    // Get configuration manager
+    const manager = await getConfigManager()
 
     // Update configuration
-    await configManager.set(path, value)
+    await manager.set(path, value)
 
     return NextResponse.json({
       success: true,
@@ -159,11 +167,11 @@ export async function PUT(request: NextRequest) {
     // Parse request body
     const configData = await request.json()
 
-    // Initialize config
-    await configManager.initialize()
+    // Get configuration manager
+    const manager = await getConfigManager()
 
     // Import configuration
-    await configManager.import(configData)
+    await manager.import(configData)
 
     return NextResponse.json({
       success: true,
@@ -198,8 +206,9 @@ export async function DELETE(_request: NextRequest) {
       return unauthorizedResponse
     }
 
-    // Reload configuration to defaults
-    await configManager.reload()
+    // Get configuration manager and reload to defaults
+    const manager = await getConfigManager()
+    await manager.reload()
 
     return NextResponse.json({
       success: true,
