@@ -96,8 +96,8 @@ export async function POST(request: NextRequest) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       : (contentToAnalyze as any).content || (contentToAnalyze as any).markdown || JSON.stringify(contentToAnalyze)
 
-    // Extract patterns using Claude
-    const systemPrompt = `You are an expert at analyzing documentation and extracting meaningful patterns, best practices, and important information.
+    // Extract patterns using Claude chat method
+    const prompt = `You are an expert at analyzing documentation and extracting meaningful patterns, best practices, and important information.
     
     Analyze the provided content and extract:
     1. Key concepts and terminology
@@ -109,8 +109,8 @@ export async function POST(request: NextRequest) {
     7. Performance tips
     8. Security considerations
     
-    Source Category: ${sourceInfo.category}
-    Source Name: ${sourceInfo.name}
+    Source Category: ${sourceInfo?.category || 'DOCUMENTATION'}
+    Source Name: ${sourceInfo?.name || 'Unknown'}
     
     Format your response as a JSON array of patterns, each with:
     {
@@ -121,44 +121,45 @@ export async function POST(request: NextRequest) {
       "relevance": 0.0-1.0,
       "examples": ["optional code examples"],
       "tags": ["relevant", "tags"]
-    }`
+    }
+    
+    Content to analyze:
+    ${textContent.substring(0, 10000)}`
 
-    const userPrompt = `Extract patterns from this content:\n\n${textContent.substring(0, 10000)}`
-
-    // Call Claude API
-    const response = await claude.anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 4000,
-      temperature: 0.3,
-      system: systemPrompt,
-      messages: [{
-        role: 'user',
-        content: userPrompt
-      }]
-    })
-
-    // Parse the response
-    const aiContent = response.content[0]
-    if (aiContent.type !== 'text') {
-      throw new Error('Unexpected AI response format')
+    // Call Claude API using chat method
+    let aiResponse
+    try {
+      aiResponse = await claude.chat(prompt, {
+        source: sourceInfo?.name,
+        type: 'pattern-extraction'
+      })
+    } catch (error) {
+      console.error('Claude API error:', error)
+      // Return empty patterns on error
+      return NextResponse.json({
+        success: false,
+        message: 'Failed to extract patterns',
+        patterns: [],
+        error: error instanceof Error ? error.message : 'Unknown error'
+      })
     }
 
     let patterns = []
     try {
       // Extract JSON from the response
-      const jsonMatch = aiContent.text.match(/\[[\s\S]*\]/)
+      const jsonMatch = aiResponse.match(/\[[\s\S]*\]/)
       if (jsonMatch) {
         patterns = JSON.parse(jsonMatch[0])
       } else {
         // Fallback: try to parse the entire response
-        patterns = JSON.parse(aiContent.text)
+        patterns = JSON.parse(aiResponse)
       }
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError)
       // Create a single pattern from the response
       patterns = [{
         pattern: 'Content Analysis',
-        description: aiContent.text.substring(0, 500),
+        description: aiResponse.substring(0, 500),
         category: 'OTHER',
         confidence: 0.5,
         relevance: 0.5,
