@@ -10,17 +10,10 @@ async function testDb() {
         name: 'Claude Documentation',
         url: 'https://docs.anthropic.com',
         type: 'DOCUMENTATION',
-        category: 'DOCUMENTATION',
         frequency: 'DAILY',
-        priority: 1,
-        extractPatterns: true,
         scrapeConfig: {},
         active: true,
-        status: 'ACTIVE',
-        reliability: 1.0,
-        metadata: {
-          addedAt: new Date().toISOString()
-        }
+        reliability: 1.0
       }
     });
     
@@ -33,7 +26,7 @@ async function testDb() {
   } catch (error) {
     console.error('Error:', error);
   } finally {
-    await db.$disconnect();
+    process.exit(0);
   }
 }
 

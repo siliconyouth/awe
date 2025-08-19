@@ -9,6 +9,16 @@ import { auth, clerkClient } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import type { Roles } from '../../types/globals'
 
+// Define UserPublicMetadata interface
+interface UserPublicMetadata {
+  role?: Roles
+  permissions?: string[]
+  tier?: string
+  onboardingCompleted?: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
 /**
  * Role hierarchy with permission levels
  * Higher numbers have more permissions
