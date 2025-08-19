@@ -167,25 +167,51 @@ export async function POST(request: NextRequest) {
       }]
     }
 
-    // Format patterns for response
+    // Store patterns in database
+    const storedPatterns = []
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const formattedPatterns = patterns.map((pattern: any) => ({
-      sourceId: sourceInfo?.id || sourceId,
-      updateId: updateToProcess?.id,
-      pattern: pattern.pattern || 'Unnamed Pattern',
-      description: pattern.description || '',
-      category: pattern.category || 'OTHER',
-      confidence: pattern.confidence || 0.5,
-      relevance: pattern.relevance || 0.5,
-      metadata: {
-        examples: pattern.examples || [],
-        tags: pattern.tags || [],
-        extractedBy: 'claude-ai',
-        extractedAt: new Date().toISOString()
-      },
-      status: 'PENDING',
-      extractedBy: userId
-    }))
+    for (const pattern of patterns as any[]) {
+      try {
+        // Map category to enum value
+        const categoryMap: Record<string, any> = {
+          'API_CHANGE': 'API_CHANGE',
+          'BEST_PRACTICE': 'BEST_PRACTICE',
+          'WARNING': 'WARNING',
+          'EXAMPLE': 'EXAMPLE',
+          'CONCEPT': 'CONCEPT',
+          'PERFORMANCE': 'PERFORMANCE',
+          'SECURITY': 'SECURITY',
+          'DEPRECATION': 'DEPRECATION',
+          'BREAKING_CHANGE': 'BREAKING_CHANGE',
+          'OTHER': 'OTHER'
+        }
+        
+        const category = categoryMap[pattern.category] || 'OTHER'
+        
+        const stored = await db.extractedPattern.create({
+          data: {
+            sourceId: sourceInfo?.id || sourceId,
+            updateId: updateToProcess?.id,
+            pattern: pattern.pattern || 'Unnamed Pattern',
+            description: pattern.description || '',
+            category,
+            confidence: pattern.confidence || 0.5,
+            relevance: pattern.relevance || 0.5,
+            metadata: {
+              examples: pattern.examples || [],
+              tags: pattern.tags || [],
+              extractedBy: 'claude-ai',
+              extractedAt: new Date().toISOString()
+            },
+            status: 'PENDING',
+            extractedBy: userId
+          }
+        })
+        storedPatterns.push(stored)
+      } catch (error) {
+        console.error('Failed to store pattern:', error)
+      }
+    }
 
     // Mark update as processed
     if (updateToProcess) {
@@ -195,15 +221,28 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Pattern queue removal would go here if the model existed
+    // Add to pattern queue for further processing if needed
+    if (storedPatterns.length > 0 && updateToProcess) {
+      await db.patternQueue.create({
+        data: {
+          sourceId: sourceInfo?.id,
+          updateId: updateToProcess.id,
+          content: updateToProcess.content,
+          priority: 1,
+          status: 'completed',
+          completedAt: new Date()
+        }
+      }).catch(err => console.log('Queue entry creation failed:', err))
+    }
 
     return NextResponse.json({
       success: true,
-      message: `Extracted ${formattedPatterns.length} patterns`,
-      patterns: formattedPatterns,
+      message: `Extracted and stored ${storedPatterns.length} patterns`,
+      patterns: storedPatterns,
       stats: {
         total: patterns.length,
-        extracted: formattedPatterns.length
+        stored: storedPatterns.length,
+        failed: patterns.length - storedPatterns.length
       }
     })
 

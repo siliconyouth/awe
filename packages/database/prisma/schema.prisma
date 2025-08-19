@@ -223,6 +223,7 @@ model KnowledgeSource {
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
   updates      KnowledgeUpdate[]
+  patterns     ExtractedPattern[]
 
   @@map("knowledge_sources")
 }
@@ -283,4 +284,101 @@ model Agent {
 
   @@index([type])
   @@map("agents")
+}
+
+// ============================================
+// Pattern Management System
+// ============================================
+
+enum PatternStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_REFINEMENT
+}
+
+enum ReviewAction {
+  APPROVE
+  REJECT
+  REFINE
+  REQUEST_INFO
+}
+
+enum PatternCategory {
+  API_CHANGE
+  BEST_PRACTICE
+  WARNING
+  EXAMPLE
+  CONCEPT
+  PERFORMANCE
+  SECURITY
+  DEPRECATION
+  BREAKING_CHANGE
+  OTHER
+}
+
+// Pattern extracted from knowledge sources
+model ExtractedPattern {
+  id          String          @id @default(cuid())
+  sourceId    String
+  updateId    String?         // Reference to specific KnowledgeUpdate
+  pattern     String          @db.Text
+  description String?         @db.Text
+  category    PatternCategory
+  confidence  Float           @default(0.5)
+  relevance   Float           @default(0.5)
+  metadata    Json?           // Examples, tags, additional info
+  status      PatternStatus   @default(PENDING)
+  extractedBy String          // User ID who triggered extraction
+  extractedAt DateTime        @default(now())
+  approvedAt  DateTime?
+  approvedBy  String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  
+  source      KnowledgeSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  reviews     PatternReview[]
+  
+  @@index([sourceId, status])
+  @@index([category, status])
+  @@index([extractedAt])
+  @@map("extracted_patterns")
+}
+
+// Review actions for patterns
+model PatternReview {
+  id         String       @id @default(cuid())
+  patternId  String
+  userId     String
+  action     ReviewAction
+  feedback   String?      @db.Text
+  metadata   Json?        // Additional review data
+  createdAt  DateTime     @default(now())
+  
+  pattern    ExtractedPattern @relation(fields: [patternId], references: [id], onDelete: Cascade)
+  
+  @@index([patternId])
+  @@index([userId])
+  @@map("pattern_reviews")
+}
+
+// Pattern processing queue
+model PatternQueue {
+  id            String   @id @default(cuid())
+  sourceId      String?
+  updateId      String?
+  content       Json     // Content to extract patterns from
+  priority      Int      @default(0)
+  attempts      Int      @default(0)
+  maxAttempts   Int      @default(3)
+  status        String   @default("pending") // pending, processing, completed, failed
+  error         String?  @db.Text
+  processedAt   DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([status, priority])
+  @@index([sourceId])
+  @@map("pattern_queue")
 }
