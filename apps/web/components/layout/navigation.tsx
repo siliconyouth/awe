@@ -18,7 +18,8 @@ import {
   Menu,
   User,
   Building2,
-  BarChart3
+  BarChart3,
+  Settings
 } from "lucide-react"
 import { cn } from "../../lib/utils"
 import { Button } from "../ui/button"
@@ -74,6 +75,13 @@ const navigationItems = [
     title: "Admin", 
     href: "/admin/users", 
     icon: Shield,
+    requiresAuth: true,
+    requiresRole: "admin" as const
+  },
+  {
+    title: "Configuration",
+    href: "/admin/config",
+    icon: Settings,
     requiresAuth: true,
     requiresRole: "admin" as const
   },
