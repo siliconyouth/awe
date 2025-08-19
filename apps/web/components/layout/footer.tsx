@@ -54,7 +54,7 @@ export function Footer() {
               Terms
             </Link>
             <a 
-              href="https://github.com/awehq/awe" 
+              href="https://github.com/siliconyouth/awe" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
