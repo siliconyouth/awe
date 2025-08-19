@@ -3,6 +3,7 @@ import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { designSystem, cn } from '../lib/design-system'
 import { PublicHeader } from '../components/layout/public-header'
+import { HomepageWrapper } from '../components/providers/homepage-wrapper'
 import {
   ArrowRight,
   Zap,
@@ -26,7 +27,7 @@ import {
 
 export default function HomePage() {
   return (
-    <>
+    <HomepageWrapper>
       <PublicHeader />
       <div className="relative">
         {/* Background Pattern */}
@@ -244,7 +245,7 @@ export default function HomePage() {
         </div>
       </section>
       </div>
-    </>
+    </HomepageWrapper>
   )
 }
 
