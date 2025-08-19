@@ -137,21 +137,21 @@ export function ModernHeader() {
         isScrolled && 'shadow-sm'
       )}
     >
-      <div className={cn(designSystem.spacing.container, designSystem.spacing.page)}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo and Brand */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center">
             <Link
               href="/"
               className="flex items-center gap-2 font-semibold transition-opacity hover:opacity-80"
               aria-label="AWE - Awesome Workspace Engineering Home"
             >
-              <Logo size="sm" />
+              <Logo size="md" />
             </Link>
 
             {/* Main Navigation */}
             <SignedIn>
-              <NavigationMenu className="hidden lg:flex">
+              <NavigationMenu className="hidden lg:flex ml-10">
                 <NavigationMenuList>
                   {/* Products */}
                   <NavigationMenuItem>

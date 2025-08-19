@@ -12,6 +12,9 @@ const isPublicRoute = createRouteMatcher([
   '/api/test(.*)',
   '/api/health',
   '/api/public(.*)',
+  '/api/check-clerk',
+  '/privacy-policy',
+  '/terms-of-service',
 ]);
 
 // Define which routes should be protected

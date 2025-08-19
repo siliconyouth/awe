@@ -7,9 +7,9 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="relative flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col">
       <ModernHeader />
-      <main id="main-content" className="flex-1" role="main" aria-label="Main content">
+      <main id="main-content" className="flex-1 flex flex-col" role="main" aria-label="Main content">
         {children}
       </main>
       <Footer />

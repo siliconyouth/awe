@@ -61,20 +61,20 @@ export function PublicHeader() {
         )}
         role="banner"
       >
-        <div className="container flex h-16 items-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center">
           {/* Logo and Home Link */}
-          <div className="mr-4 flex">
+          <div className="flex">
             <Link 
               href="/" 
-              className="mr-6 flex items-center space-x-2"
+              className="flex items-center"
               aria-label="AWE - Awesome Workspace Engineering Home"
             >
-              <Logo size="sm" />
+              <Logo size="md" />
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex flex-1 items-center justify-between">
+          <nav className="hidden md:flex flex-1 items-center justify-between ml-10">
             <div className="flex items-center space-x-6">
               {navItems.map((item) => (
                 <Link
