@@ -111,22 +111,22 @@ export function ProjectSelector() {
           value={currentProject?.id || ''}
           onValueChange={handleProjectChange}
         >
-          <SelectTrigger className="w-[200px] h-9">
+          <SelectTrigger className="w-[200px] h-9 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 hover:opacity-90 [&_svg]:text-white/90">
             <div className="flex items-center gap-2">
               {currentProject ? (
                 <>
-                  <FolderOpen className="h-4 w-4" />
-                  <span className="truncate">{currentProject.name}</span>
+                  <FolderOpen className="h-4 w-4 text-white/90" />
+                  <span className="truncate text-white font-medium">{currentProject.name}</span>
                   {currentProject.isDefault && (
-                    <Badge variant="secondary" className="ml-auto text-xs px-1 py-0">
+                    <Badge variant="secondary" className="ml-auto text-xs px-1 py-0 bg-white/20 text-white border-white/30">
                       Default
                     </Badge>
                   )}
                 </>
               ) : (
                 <>
-                  <FolderOpen className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Select Project</span>
+                  <FolderOpen className="h-4 w-4 text-white/70" />
+                  <span className="text-white/70">Select Project</span>
                 </>
               )}
             </div>
