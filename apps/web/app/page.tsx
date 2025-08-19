@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { designSystem, cn } from '../lib/design-system'
+import { ModernHeaderAccessible } from '../components/layout/modern-header-accessible'
 import {
   ArrowRight,
   Zap,
@@ -25,9 +26,11 @@ import {
 
 export default function HomePage() {
   return (
-    <div className="relative">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 -z-10">
+    <>
+      <ModernHeaderAccessible />
+      <div className="relative">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 -z-10">
         <div className={cn(designSystem.patterns.dots, 'opacity-50')} />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
       </div>
@@ -240,7 +243,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   )
 }
 
