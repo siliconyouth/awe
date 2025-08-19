@@ -220,7 +220,7 @@ export const ModernHeaderAccessible = React.memo(function ModernHeaderAccessible
                         Products
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
-                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]" role="menu">
+                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] bg-popover rounded-md" role="menu">
                           {products.map((product) => (
                             <li key={product.title} role="none">
                               <NavigationMenuLink asChild>
@@ -258,7 +258,7 @@ export const ModernHeaderAccessible = React.memo(function ModernHeaderAccessible
                         Admin
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
-                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2" role="menu">
+                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 bg-popover rounded-md" role="menu">
                           {adminTools.map((tool) => (
                             <li key={tool.title} role="none">
                               <NavigationMenuLink asChild>
@@ -296,7 +296,7 @@ export const ModernHeaderAccessible = React.memo(function ModernHeaderAccessible
                         Resources
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
-                        <ul className="grid w-[400px] gap-3 p-4" role="menu">
+                        <ul className="grid w-[400px] gap-3 p-4 bg-popover rounded-md" role="menu">
                           {resources.map((resource) => (
                             <li key={resource.title} role="none">
                               <NavigationMenuLink asChild>

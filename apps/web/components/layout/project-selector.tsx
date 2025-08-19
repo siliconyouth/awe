@@ -169,15 +169,9 @@ export function ProjectSelector() {
           </SelectContent>
         </Select>
 
-        {currentProject && (
+        {currentProject && currentProject.optimizationLevel > 0 && (
           <div className="hidden md:flex items-center gap-1 text-xs text-muted-foreground">
-            <span>{currentProject.type}</span>
-            {currentProject.optimizationLevel > 0 && (
-              <>
-                <span>•</span>
-                <span>{(currentProject.optimizationLevel * 100).toFixed(0)}% optimized</span>
-              </>
-            )}
+            <span>{(currentProject.optimizationLevel * 100).toFixed(0)}% optimized</span>
           </div>
         )}
       </div>
