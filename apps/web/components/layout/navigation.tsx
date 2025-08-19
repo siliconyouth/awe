@@ -10,6 +10,7 @@ import {
   SignedOut
 } from '@clerk/nextjs'
 import { UserMenu } from './user-menu'
+import { ProjectSelector } from './project-selector'
 import { 
   Home, 
   LayoutDashboard, 
@@ -19,7 +20,11 @@ import {
   User,
   Building2,
   BarChart3,
-  Settings
+  Settings,
+  Database,
+  Sparkles,
+  FileText,
+  FolderOpen
 } from "lucide-react"
 import { cn } from "../../lib/utils"
 import { Button } from "../ui/button"
@@ -48,6 +53,12 @@ const navigationItems = [
     requiresAuth: true 
   },
   {
+    title: "Projects",
+    href: "/projects",
+    icon: FolderOpen,
+    requiresAuth: true
+  },
+  {
     title: "Profile",
     href: "/profile",
     icon: User,
@@ -71,6 +82,18 @@ const navigationItems = [
     icon: TestTube,
     requiresAuth: true 
   },
+  {
+    title: "Recommendations",
+    href: "/recommendations",
+    icon: Sparkles,
+    requiresAuth: true
+  },
+  {
+    title: "CLAUDE.md",
+    href: "/claude-md",
+    icon: FileText,
+    requiresAuth: true
+  },
   { 
     title: "Admin", 
     href: "/admin/users", 
@@ -82,6 +105,13 @@ const navigationItems = [
     title: "Configuration",
     href: "/admin/config",
     icon: Settings,
+    requiresAuth: true,
+    requiresRole: "admin" as const
+  },
+  {
+    title: "Pattern Library",
+    href: "/admin/patterns",
+    icon: Database,
     requiresAuth: true,
     requiresRole: "admin" as const
   },
@@ -154,6 +184,13 @@ export function Navigation() {
                 })}
               </DropdownMenuContent>
             </DropdownMenu>
+          </SignedIn>
+
+          {/* Project Selector - Only show when signed in */}
+          <SignedIn>
+            <div className="hidden md:block">
+              <ProjectSelector />
+            </div>
           </SignedIn>
 
           {/* Sign In/Up Buttons - Only show when signed out */}

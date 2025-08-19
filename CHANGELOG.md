@@ -5,6 +5,66 @@ All notable changes to AWE (Awesome Workspace Engineering) will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-08-19
+
+### 🎯 Project-Centric Architecture
+
+### Added
+- **Project Management System**: Complete project-centric architecture transformation
+  - Projects are now the core organizational unit for all resources
+  - Users must select a project before accessing most features
+  - All resources (knowledge sources, patterns, telemetry) are scoped to projects
+  - Project selector always visible in navbar for quick switching
+  
+- **Project Features**:
+  - Create, edit, and delete projects with metadata
+  - Set default project for automatic selection
+  - Project paths for file organization
+  - Project types and optimization tracking
+  - Visual project cards with status indicators
+  
+- **Project Context Provider**: React Context for project state management
+  - Persistent project selection across sessions
+  - Automatic redirection when no project selected
+  - Project switching without page reload
+  - Loading states and error handling
+  
+- **Database Schema Updates**:
+  - New Project model with full metadata support
+  - Added projectId relationships to all relevant models
+  - Migration script for existing data to default projects
+  - Unique constraints for project names per user
+
+- **Pattern Management System**: Complete pattern extraction and review workflow
+  - Extract patterns from any webpage with AI analysis
+  - Review and approve extracted patterns
+  - Export patterns in multiple formats (JSON, CSV, Markdown)
+  - Pattern usage tracking and analytics
+  - AI-powered pattern recommendations
+
+- **CLAUDE.md Generation**: Automated context file generation
+  - AI-powered analysis of project structure
+  - Technology detection and documentation
+  - Custom instruction support
+  - Section prioritization and filtering
+
+### Changed
+- **Navigation**: Updated to include Projects link and project selector
+- **API Routes**: All routes now support project context
+- **Middleware**: Added project enforcement for protected routes
+- **UI Components**: Added alert-dialog and reorganized component structure
+
+### Fixed
+- **Build Issues**: Resolved all TypeScript and ESLint errors
+- **Import Paths**: Fixed use-toast and other component imports
+- **Dynamic Routes**: Updated to Next.js 15 async params format
+- **Missing Dependencies**: Added all required Radix UI components
+
+### Infrastructure
+- **Version**: Updated to 2.2.0 across all packages
+- **Documentation**: Updated all docs to reflect project-centric changes
+- **Migration**: Created scripts for data migration to project structure
+
 ## [2.1.1] - 2025-08-18
 
 ### 🔧 Environment Setup & Configuration

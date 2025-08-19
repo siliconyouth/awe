@@ -13,7 +13,7 @@ import {
   SelectValue 
 } from '../ui/select'
 import { Shield, User, UserCheck, UserX } from 'lucide-react'
-import { useToast } from '../ui/use-toast'
+import { useToast } from '../../hooks/use-toast'
 
 interface UserRoleManagerProps {
   userId: string

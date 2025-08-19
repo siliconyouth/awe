@@ -1,6 +1,6 @@
 {
   "name": "@awe/config",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Comprehensive configuration system for AWE",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

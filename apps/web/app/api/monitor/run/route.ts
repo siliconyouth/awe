@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
         })
 
         // If content changed, trigger pattern extraction for important sources
-        if (changed && (source.type === 'DOCUMENTATION' || source.type === 'API_REFERENCE')) {
+        if (changed && (source.type === 'DOCUMENTATION' || source.type === 'API_REFERENCE' || source.type === 'BLOG' || source.type === 'CHANGELOG')) {
           try {
             const extractResponse = await fetch(`${request.url.replace('/monitor/run', '/patterns/extract')}`, {
               method: 'POST',
@@ -151,11 +151,16 @@ export async function POST(request: NextRequest) {
                 'Content-Type': 'application/json',
                 'Cookie': request.headers.get('cookie') || ''
               },
-              body: JSON.stringify({ updateId: update.id })
+              body: JSON.stringify({ 
+                updateId: update.id,
+                sourceId: source.id 
+              })
             })
             
             if (extractResponse.ok) {
+              const extractResult = await extractResponse.json()
               console.log(`Pattern extraction triggered for source: ${source.name}`)
+              console.log(`Extracted ${extractResult.stats?.stored || 0} patterns`)
             }
           } catch (extractError) {
             console.error('Failed to trigger pattern extraction:', extractError)

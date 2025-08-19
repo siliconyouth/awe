@@ -30,7 +30,7 @@ import {
   SelectValue 
 } from '../../../../components/ui/select'
 import { Shield, Users, AlertTriangle, Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useToast } from '../../../../components/ui/use-toast'
+import { useToast } from '../../../../hooks/use-toast'
 
 interface User {
   id: string

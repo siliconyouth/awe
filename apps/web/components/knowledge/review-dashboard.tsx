@@ -6,7 +6,7 @@ import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
 import { Badge } from '../ui/badge'
 import { Label } from '../ui/label'
-import { toast } from '../ui/use-toast'
+import { toast } from '../../hooks/use-toast'
 import { CheckIcon, XIcon, SparklesIcon } from 'lucide-react'
 
 interface ExtractedPattern {

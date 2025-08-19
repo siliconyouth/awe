@@ -46,9 +46,11 @@ import {
   Edit,
   Trash,
   Eye,
-  Database
+  Database,
+  Brain,
+  Sparkles
 } from 'lucide-react'
-import { useToast } from '../../../../components/ui/use-toast'
+import { useToast } from '../../../../hooks/use-toast'
 
 interface KnowledgeSource {
   id: string
@@ -266,6 +268,39 @@ export default function KnowledgeAdmin() {
     }
   }
 
+  const extractPatterns = async (sourceId: string, sourceName: string) => {
+    try {
+      const response = await fetch('/api/patterns/extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sourceId })
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Failed to extract patterns')
+      }
+
+      const result = await response.json()
+      
+      toast({
+        title: 'Pattern Extraction Complete',
+        description: `Extracted ${result.stats?.stored || 0} patterns from ${sourceName}`
+      })
+
+      // Refresh patterns if on patterns tab
+      if (activeTab === 'patterns') {
+        await fetchPatterns()
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to extract patterns',
+        variant: 'destructive'
+      })
+    }
+  }
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE': return 'default'
@@ -366,6 +401,23 @@ export default function KnowledgeAdmin() {
                   >
                     <RefreshCw className={`h-4 w-4 mr-2 ${isMonitoring ? 'animate-spin' : ''}`} />
                     {isMonitoring ? 'Monitoring...' : 'Run Monitor'}
+                  </Button>
+                  <Button 
+                    onClick={async () => {
+                      toast({
+                        title: 'Extracting Patterns',
+                        description: 'Processing all active sources...'
+                      })
+                      for (const source of sources.filter(s => s.active)) {
+                        await extractPatterns(source.id, source.name)
+                      }
+                    }}
+                    variant="outline" 
+                    size="sm"
+                    disabled={sources.filter(s => s.active).length === 0}
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Extract All Patterns
                   </Button>
                   <Dialog open={showAddSourceDialog} onOpenChange={setShowAddSourceDialog}>
                     <DialogTrigger asChild>
@@ -524,16 +576,25 @@ export default function KnowledgeAdmin() {
                             </TableCell>
                             <TableCell>{source._count?.updates || 0}</TableCell>
                             <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
-                                <Button size="icon" variant="ghost">
+                              <div className="flex justify-end gap-1">
+                                <Button 
+                                  size="icon" 
+                                  variant="ghost"
+                                  title="Extract Patterns"
+                                  onClick={() => extractPatterns(source.id, source.name)}
+                                >
+                                  <Brain className="h-4 w-4" />
+                                </Button>
+                                <Button size="icon" variant="ghost" title="View Details">
                                   <Eye className="h-4 w-4" />
                                 </Button>
-                                <Button size="icon" variant="ghost">
+                                <Button size="icon" variant="ghost" title="Edit Source">
                                   <Edit className="h-4 w-4" />
                                 </Button>
                                 <Button 
                                   size="icon" 
                                   variant="ghost"
+                                  title="Delete Source"
                                   onClick={() => handleDeleteSource(source.id)}
                                 >
                                   <Trash className="h-4 w-4" />

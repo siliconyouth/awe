@@ -1,4 +1,4 @@
-# CLAUDE.md - AWE Workspace Engineering v2.0
+# CLAUDE.md - AWE Workspace Engineering v2.2
 
 ## ⚠️ CRITICAL: Branch Development Rules
 
@@ -20,12 +20,12 @@
 5. Test that changes won't break existing UI
 
 ## Project Overview
-AWE (Awesome Workspace Engineering) is an intelligent AI-powered development companion specifically designed to enhance Claude Code workflows. Built with Claude Opus 4.1 and ultrathinking capabilities, AWE provides deep project analysis, optimization recommendations, authentication, web scraping, and intelligent automation for modern development teams.
+AWE (Awesome Workspace Engineering) is an intelligent AI-powered development companion specifically designed to enhance Claude Code workflows. Built with Claude Opus 4.1 and ultrathinking capabilities, AWE provides project-centric organization, deep project analysis, pattern management, optimization recommendations, authentication, web scraping, and intelligent automation for modern development teams.
 
 **🎯 Vision**: Industry-leading Claude Code optimization platform  
 **🚀 Mission**: Transform development workflows through AI-powered intelligence  
-**⚡ Current Version**: 2.0.0 - Authentication, Web Scraping & External Services  
-**📅 Release Date**: August 16, 2025
+**⚡ Current Version**: 2.2.0 - Project-Centric Architecture & Pattern Management  
+**📅 Release Date**: August 19, 2025
 
 ## Architecture
 
@@ -49,11 +49,21 @@ awe-workspace/
 - **Shared Utilities** (packages/shared): Type-safe utilities and constants
 
 ### AI-Powered Features
+- **📁 Project-Centric Organization**: All resources organized by projects with seamless switching
 - **🧠 Deep Analysis**: Project scanning with intelligent insights
-- **📝 Context Generation**: Automated CLAUDE.md creation
+- **📝 Context Generation**: Automated CLAUDE.md creation tailored to each project
+- **🔍 Pattern Management**: Extract, review, and export coding patterns with AI analysis
 - **🎯 Smart Recommendations**: Performance and architecture optimization
 - **🏗️ Template Engine**: AI-driven project scaffolding
-- **📊 Analytics**: Usage tracking and performance metrics
+- **📊 Analytics**: Usage tracking and performance metrics per project
+
+### Project-Centric Architecture (v2.2)
+- **Project Management**: Core organizational unit for all resources
+- **Project Context Provider**: React Context for state management
+- **Project Selector**: Always visible in navbar for quick switching
+- **Project Enforcement**: Middleware ensures project selection before access
+- **Project Migration**: Automated scripts for existing data migration
+- **Default Projects**: Automatic default project creation for new users
 
 ## Technical Stack
 

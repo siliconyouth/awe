@@ -1,9 +1,9 @@
-# 🌆 AWE - Awesome Workspace Engineering v2.0
+# 🌆 AWE - Awesome Workspace Engineering v2.2
 
 > **The Industry-Leading AI Companion for Claude Code**  
-> Transform your development workflow with Claude Opus 4.1 powered intelligence, authentication, web scraping, and automated optimization.
+> Transform your development workflow with Claude Opus 4.1 powered intelligence, project-centric organization, and automated optimization.
 
-[![Version](https://img.shields.io/badge/Version-2.0.0-red)](https://github.com/awe-team/awe/releases)
+[![Version](https://img.shields.io/badge/Version-2.2.0-red)](https://github.com/awe-team/awe/releases)
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-green)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
 [![Claude Opus](https://img.shields.io/badge/Claude-Opus%204.1-purple)](https://www.anthropic.com/claude)
@@ -16,14 +16,18 @@
 
 ### 🎯 Core Capabilities
 
+- **📁 Project-Centric Architecture**: Organize all resources by projects with seamless switching
 - **🧠 Claude Opus 4.1 Integration**: Advanced AI analysis with ultrathinking methodology
 - **📈 Deep Project Analysis**: Intelligent codebase scanning with performance insights
 - **📝 Smart Context Generation**: Automated CLAUDE.md creation tailored to your project
+- **🔍 Pattern Management**: Extract, review, and export coding patterns with AI analysis
 - **🏗️ AI-Powered Scaffolding**: Intelligent template recommendations and generation
 - **📊 Optimization Engine**: Performance, security, and architecture recommendations
+- **🌐 Web Scraping**: SmartScraper with Playwright/Cheerio for knowledge extraction
+- **🔐 Authentication**: Complete user management with Clerk integration
 - **⚡ Lightning Performance**: Sub-2s response times with advanced caching
 - **🌐 Offline Support**: Graceful degradation when services unavailable
-- **🔒 Enterprise Ready**: SOC 2 compliance, SSO integration, audit logging
+- **🔒 Enterprise Ready**: Role-based access control, audit logging, multi-tenant support
 
 ## 🏗️ Architecture
 

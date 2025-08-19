@@ -6,7 +6,7 @@ import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
-import { toast } from '../ui/use-toast'
+import { toast } from '../../hooks/use-toast'
 import { SearchIcon, FilterIcon, DownloadIcon, CopyIcon } from 'lucide-react'
 
 interface Pattern {

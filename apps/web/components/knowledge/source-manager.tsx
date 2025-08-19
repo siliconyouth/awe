@@ -7,7 +7,7 @@ import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Badge } from '../ui/badge'
-import { toast } from '../ui/use-toast'
+import { toast } from '../../hooks/use-toast'
 import { PlayIcon, PauseIcon, RefreshCwIcon, AlertCircleIcon } from 'lucide-react'
 
 interface KnowledgeSource {

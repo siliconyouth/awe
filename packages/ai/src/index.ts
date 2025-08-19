@@ -1,5 +1,7 @@
 export { ClaudeAIService } from './claude'
 export { ProjectScanner } from './project-scanner'
+export { ClaudeMdGenerator } from './services/claude-md-generator'
+export { ProjectScanner as ProjectScannerService } from './services/project-scanner'
 export { StreamingAIInterface, InteractivePrompt } from './streaming'
 export { SmartScraper } from './smart-scraper'
 export { AdvancedSmartScraper } from './smart-scraper-advanced'

@@ -2,6 +2,7 @@
 
 import { ClerkProvider, ClerkLoaded, ClerkLoading } from '@clerk/nextjs'
 import { MainLayout } from '../layout/main-layout'
+import { ProjectProvider } from '../../contexts/project-context'
 import { Loader2 } from 'lucide-react'
 
 interface ClientLayoutProps {
@@ -26,9 +27,11 @@ export function ClientLayout({ children }: ClientLayoutProps) {
         <LoadingState />
       </ClerkLoading>
       <ClerkLoaded>
-        <MainLayout>
-          {children}
-        </MainLayout>
+        <ProjectProvider>
+          <MainLayout>
+            {children}
+          </MainLayout>
+        </ProjectProvider>
       </ClerkLoaded>
     </ClerkProvider>
   )

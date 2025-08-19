@@ -1,6 +1,7 @@
 import { clerkMiddleware, createRouteMatcher, clerkClient } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import type { Roles } from './types/globals';
+import { enforceProjectSelection } from './middleware/project-enforcement';
 
 // Define which routes should be protected
 const isProtectedRoute = createRouteMatcher([
@@ -13,6 +14,10 @@ const isProtectedRoute = createRouteMatcher([
   '/profile(.*)',
   '/organizations(.*)',
   '/organization(.*)',
+  '/projects(.*)',
+  '/recommendations(.*)',
+  '/claude-md(.*)',
+  '/analytics(.*)',
 ]);
 
 // Define which routes require admin role
@@ -57,6 +62,12 @@ export default clerkMiddleware(async (auth, req) => {
   }
   
   const { sessionClaims, orgRole, userId } = await auth();
+  
+  // Enforce project selection for protected routes
+  const projectResponse = await enforceProjectSelection(req);
+  if (projectResponse.status !== 200) {
+    return projectResponse;
+  }
   
   // Get user role - first from session, then fallback to fetching
   let userRole: Roles = 'user';

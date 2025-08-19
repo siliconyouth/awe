@@ -10,9 +10,10 @@ datasource db {
 
 model Project {
   id                   String                @id @default(cuid())
+  userId               String                // Owner of the project
   name                 String
   description          String?
-  path                 String                @unique
+  path                 String                
   type                 String
   languages            String[]
   frameworks           String[]
@@ -26,13 +27,20 @@ model Project {
   hasClaudeMd          Boolean               @default(false)
   hasMemoryFile        Boolean               @default(false)
   optimizationLevel    Float                 @default(0)
+  isDefault            Boolean               @default(false) // Default project for user
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   configuration        ProjectConfiguration?
   dependencies         ProjectDependency[]
   templates            ProjectTemplate[]
   recommendations      Recommendation[]
+  knowledgeSources     KnowledgeSource[]     // Project-specific sources
+  patterns             ExtractedPattern[]     // Project-specific patterns
+  patternUsage         PatternUsage[]        // Track usage per project
+  telemetryEvents      TelemetryEvent[]      // Project-specific events
 
+  @@unique([userId, name])
+  @@index([userId])
   @@map("projects")
 }
 
@@ -127,9 +135,12 @@ model TelemetryEvent {
   projectId String?
   data      Json?
   createdAt DateTime @default(now())
+  
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([event])
   @@index([userId])
+  @@index([projectId])
   @@index([createdAt])
   @@map("telemetry_events")
 }
@@ -212,7 +223,8 @@ model ProjectConfiguration {
 
 model KnowledgeSource {
   id           String            @id @default(cuid())
-  name         String            @unique
+  projectId    String?           // Optional for global sources
+  name         String            
   type         String
   url          String
   scrapeConfig Json
@@ -222,9 +234,12 @@ model KnowledgeSource {
   reliability  Float             @default(0.8)
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
+  project      Project?          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   updates      KnowledgeUpdate[]
   patterns     ExtractedPattern[]
 
+  @@unique([projectId, name])
+  @@index([projectId])
   @@map("knowledge_sources")
 }
 
@@ -320,6 +335,7 @@ enum PatternCategory {
 // Pattern extracted from knowledge sources
 model ExtractedPattern {
   id          String          @id @default(cuid())
+  projectId   String?         // Optional for global patterns
   sourceId    String
   updateId    String?         // Reference to specific KnowledgeUpdate
   pattern     String          @db.Text
@@ -336,9 +352,12 @@ model ExtractedPattern {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   
+  project     Project?        @relation(fields: [projectId], references: [id], onDelete: Cascade)
   source      KnowledgeSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
   reviews     PatternReview[]
+  usage       PatternUsage[]
   
+  @@index([projectId, status])
   @@index([sourceId, status])
   @@index([category, status])
   @@index([extractedAt])
@@ -381,4 +400,26 @@ model PatternQueue {
   @@index([status, priority])
   @@index([sourceId])
   @@map("pattern_queue")
+}
+
+// Pattern usage tracking
+model PatternUsage {
+  id            String   @id @default(cuid())
+  patternId     String
+  userId        String?
+  projectId     String?
+  action        String   // viewed, applied, exported, shared
+  context       Json?    // Additional context about usage
+  sessionId     String?  // Track usage within a session
+  createdAt     DateTime @default(now())
+  
+  pattern       ExtractedPattern @relation(fields: [patternId], references: [id], onDelete: Cascade)
+  project       Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@index([patternId])
+  @@index([userId])
+  @@index([projectId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("pattern_usage")
 }
