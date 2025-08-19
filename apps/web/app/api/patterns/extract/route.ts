@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
     const { updateId, sourceId, content, forceExtract = false } = body
 
     // Get the update or source to process
-    let updateToProcess
-    let sourceInfo
+    let updateToProcess: any = null
+    let sourceInfo: any = null
 
     if (updateId) {
       // Process specific update

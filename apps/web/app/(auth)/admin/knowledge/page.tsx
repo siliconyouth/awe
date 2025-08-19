@@ -41,7 +41,6 @@ import { ChangeAnalytics } from '../../../../components/knowledge/change-analyti
 import { 
   Plus, 
   RefreshCw, 
-  AlertCircle, 
   CheckCircle, 
   Clock,
   Edit,
