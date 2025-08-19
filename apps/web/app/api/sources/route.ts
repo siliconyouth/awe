@@ -76,15 +76,25 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json()
     
+    // Map category to type if needed
+    const sourceType = data.category || data.type || 'DOCUMENTATION'
+    
     const source = await db.knowledgeSource.create({
       data: {
         name: data.name,
         url: data.url,
-        type: data.type || 'DOCUMENTATION',
-        frequency: data.frequency || 'DAILY',
+        type: sourceType,
+        category: data.category || 'DOCUMENTATION',
+        frequency: data.frequency || data.checkFrequency || 'DAILY',
+        priority: data.priority || 1,
+        extractPatterns: data.extractPatterns !== false, // Default true
         scrapeConfig: data.scrapeConfig || {},
-        active: true,
-        reliability: data.reliability || 0.8
+        active: data.active !== false, // Default true
+        status: 'ACTIVE',
+        reliability: data.reliability || 1.0,
+        metadata: {
+          addedAt: new Date().toISOString()
+        }
       }
     })
     
