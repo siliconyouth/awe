@@ -8,6 +8,7 @@ import { UserMenu } from './user-menu'
 import { ProjectSelector } from './project-selector'
 import { ThemeToggle } from '../ui/theme-toggle'
 import { Button } from '../ui/button'
+import { Logo } from '../ui/logo'
 import { designSystem, cn } from '../../lib/design-system'
 import {
   NavigationMenu,
@@ -143,14 +144,9 @@ export function ModernHeader() {
             <Link
               href="/"
               className="flex items-center gap-2 font-semibold transition-opacity hover:opacity-80"
+              aria-label="AWE Home"
             >
-              <div className="relative h-8 w-8">
-                <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 opacity-90" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Command className="h-4 w-4 text-white" />
-                </div>
-              </div>
-              <span className="text-lg font-bold">AWE</span>
+              <Logo size="sm" />
             </Link>
 
             {/* Main Navigation */}

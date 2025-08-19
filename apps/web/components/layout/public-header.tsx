@@ -8,12 +8,12 @@ import { Button } from '../ui/button'
 import { ThemeToggle } from '../ui/theme-toggle'
 import { ProjectSelector } from './project-selector'
 import { designSystem, cn } from '../../lib/design-system'
+import { Logo } from '../ui/logo'
 import {
   Home,
   Menu,
   X,
   ArrowRight,
-  Sparkles,
 } from 'lucide-react'
 
 export function PublicHeader() {
@@ -69,10 +69,7 @@ export function PublicHeader() {
               className="mr-6 flex items-center space-x-2"
               aria-label="AWE Home"
             >
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="hidden font-bold sm:inline-block">
-                AWE
-              </span>
+              <Logo size="sm" />
             </Link>
           </div>
 
