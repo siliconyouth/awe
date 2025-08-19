@@ -104,17 +104,10 @@ export async function POST(request: NextRequest) {
         name: data.name,
         url: data.url,
         type: sourceType,
-        category: data.category || 'DOCUMENTATION',
         frequency: data.frequency || data.checkFrequency || 'DAILY',
-        priority: data.priority || 1,
-        extractPatterns: data.extractPatterns !== false, // Default true
         scrapeConfig: data.scrapeConfig || {},
         active: data.active !== false, // Default true
-        status: 'ACTIVE',
-        reliability: data.reliability || 1.0,
-        metadata: {
-          addedAt: new Date().toISOString()
-        }
+        reliability: data.reliability || 1.0
       }
     })
     

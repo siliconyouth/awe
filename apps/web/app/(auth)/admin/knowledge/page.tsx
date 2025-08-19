@@ -55,15 +55,15 @@ interface KnowledgeSource {
   id: string
   name: string
   url: string
-  category: string
-  status: 'ACTIVE' | 'PAUSED' | 'ERROR'
-  checkFrequency: 'HOURLY' | 'DAILY' | 'WEEKLY'
-  lastChecked?: string
-  lastChanged?: string
-  errorCount?: number
+  type: string
+  frequency: string
+  active: boolean
+  reliability: number
+  lastScraped?: string
+  createdAt: string
+  updatedAt: string
   _count?: {
-    versions: number
-    patterns: number
+    updates: number
   }
 }
 
@@ -91,7 +91,7 @@ export default function KnowledgeAdmin() {
   const [activeTab, setActiveTab] = useState('sources')
   const [showAddSourceDialog, setShowAddSourceDialog] = useState(false)
   // const [selectedSource, setSelectedSource] = useState<KnowledgeSource | null>(null) // Currently unused
-  const [filterStatus, setFilterStatus] = useState('all')
+  const [filterActive, setFilterActive] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const { toast } = useToast()
 
@@ -99,14 +99,14 @@ export default function KnowledgeAdmin() {
   const [newSource, setNewSource] = useState({
     name: '',
     url: '',
-    category: 'DOCUMENTATION',
-    checkFrequency: 'DAILY'
+    type: 'DOCUMENTATION',
+    frequency: 'DAILY'
   })
 
   const fetchSources = useCallback(async () => {
     try {
       const params = new URLSearchParams()
-      if (filterStatus !== 'all') params.append('status', filterStatus)
+      if (filterActive !== 'all') params.append('active', filterActive)
       
       const response = await fetch(`/api/sources?${params}`)
       if (!response.ok) throw new Error('Failed to fetch sources')
@@ -121,7 +121,7 @@ export default function KnowledgeAdmin() {
         variant: 'destructive'
       })
     }
-  }, [filterStatus, toast])
+  }, [filterActive, toast])
 
   const fetchPatterns = useCallback(async () => {
     try {
@@ -147,7 +147,7 @@ export default function KnowledgeAdmin() {
       setLoading(false)
     }
     loadData()
-  }, [filterStatus, fetchSources, fetchPatterns])
+  }, [filterActive, fetchSources, fetchPatterns])
 
   const handleAddSource = async () => {
     try {
@@ -168,8 +168,8 @@ export default function KnowledgeAdmin() {
       setNewSource({
         name: '',
         url: '',
-        category: 'DOCUMENTATION',
-        checkFrequency: 'DAILY'
+        type: 'DOCUMENTATION',
+        frequency: 'DAILY'
       })
       fetchSources()
     } catch {
@@ -316,7 +316,7 @@ export default function KnowledgeAdmin() {
           <CardContent>
             <div className="text-2xl font-bold">{sources.length}</div>
             <p className="text-xs text-muted-foreground">
-              {sources.filter(s => s.status === 'ACTIVE').length} active
+              {sources.filter(s => s.active).length} active
             </p>
           </CardContent>
         </Card>
@@ -337,7 +337,7 @@ export default function KnowledgeAdmin() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {sources.reduce((sum, s) => sum + (s._count?.versions || 0), 0)}
+              {sources.reduce((sum, s) => sum + (s._count?.updates || 0), 0)}
             </div>
             <p className="text-xs text-muted-foreground">Content snapshots</p>
           </CardContent>
@@ -349,7 +349,7 @@ export default function KnowledgeAdmin() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {sources.filter(s => s.status === 'ERROR').length}
+              {sources.filter(s => !s.active).length}
             </div>
             <p className="text-xs text-muted-foreground">Sources with errors</p>
           </CardContent>
@@ -417,10 +417,10 @@ export default function KnowledgeAdmin() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="category">Category</Label>
+                          <Label htmlFor="type">Type</Label>
                           <Select 
-                            value={newSource.category} 
-                            onValueChange={(value) => setNewSource({ ...newSource, category: value })}
+                            value={newSource.type} 
+                            onValueChange={(value) => setNewSource({ ...newSource, type: value })}
                           >
                             <SelectTrigger>
                               <SelectValue />
@@ -439,8 +439,8 @@ export default function KnowledgeAdmin() {
                         <div>
                           <Label htmlFor="frequency">Check Frequency</Label>
                           <Select 
-                            value={newSource.checkFrequency} 
-                            onValueChange={(value) => setNewSource({ ...newSource, checkFrequency: value })}
+                            value={newSource.frequency} 
+                            onValueChange={(value) => setNewSource({ ...newSource, frequency: value })}
                           >
                             <SelectTrigger>
                               <SelectValue />
@@ -472,15 +472,14 @@ export default function KnowledgeAdmin() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="max-w-sm"
                 />
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <Select value={filterActive} onValueChange={setFilterActive}>
                   <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Filter status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="ACTIVE">Active</SelectItem>
-                    <SelectItem value="PAUSED">Paused</SelectItem>
-                    <SelectItem value="ERROR">Error</SelectItem>
+                    <SelectItem value="all">All Sources</SelectItem>
+                    <SelectItem value="true">Active</SelectItem>
+                    <SelectItem value="false">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -490,11 +489,11 @@ export default function KnowledgeAdmin() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Source</TableHead>
-                      <TableHead>Category</TableHead>
+                      <TableHead>Type</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Frequency</TableHead>
-                      <TableHead>Last Checked</TableHead>
-                      <TableHead>Versions</TableHead>
+                      <TableHead>Last Scraped</TableHead>
+                      <TableHead>Updates</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -524,22 +523,22 @@ export default function KnowledgeAdmin() {
                                 </p>
                               </div>
                             </TableCell>
-                            <TableCell>{source.category}</TableCell>
+                            <TableCell>{source.type}</TableCell>
                             <TableCell>
-                              <Badge variant={getStatusColor(source.status)}>
+                              <Badge variant={source.active ? 'default' : 'secondary'}>
                                 <span className="flex items-center gap-1">
-                                  {getStatusIcon(source.status)}
-                                  {source.status}
+                                  {source.active ? <CheckCircle className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
+                                  {source.active ? 'Active' : 'Inactive'}
                                 </span>
                               </Badge>
                             </TableCell>
-                            <TableCell>{source.checkFrequency}</TableCell>
+                            <TableCell>{source.frequency}</TableCell>
                             <TableCell>
-                              {source.lastChecked 
-                                ? new Date(source.lastChecked).toLocaleDateString()
+                              {source.lastScraped 
+                                ? new Date(source.lastScraped).toLocaleDateString()
                                 : 'Never'}
                             </TableCell>
-                            <TableCell>{source._count?.versions || 0}</TableCell>
+                            <TableCell>{source._count?.updates || 0}</TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">
                                 <Button size="icon" variant="ghost">

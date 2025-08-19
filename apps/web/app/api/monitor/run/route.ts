@@ -142,19 +142,19 @@ export async function POST(request: NextRequest) {
           }
         })
 
-        // If content changed and patterns are enabled, mark for pattern extraction
-        if (changed && source.extractPatterns) {
+        // If content changed, mark for pattern extraction
+        if (changed) {
           await db.patternQueue.create({
             data: {
               sourceId: source.id,
               updateId: update.id,
               status: 'PENDING',
-              priority: source.priority || 1
+              priority: 1
             }
           })
 
-          // Optionally, trigger pattern extraction immediately for high-priority sources
-          if (source.priority && source.priority >= 3) {
+          // Optionally, trigger pattern extraction immediately for important sources
+          if (source.type === 'DOCUMENTATION' || source.type === 'API_REFERENCE') {
             try {
               const extractResponse = await fetch(`${request.url.replace('/monitor/run', '/patterns/extract')}`, {
                 method: 'POST',
