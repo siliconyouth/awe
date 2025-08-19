@@ -48,6 +48,12 @@ const products = [
     icon: LayoutDashboard,
   },
   {
+    title: 'Resources',
+    href: '/resources',
+    description: 'Browse Claude Code optimization resources',
+    icon: Sparkles,
+  },
+  {
     title: 'Projects',
     href: '/projects',
     description: 'Manage and organize your work',
@@ -63,7 +69,7 @@ const products = [
     title: 'Recommendations',
     href: '/recommendations',
     description: 'AI-powered optimization suggestions',
-    icon: Sparkles,
+    icon: Brain,
   },
 ]
 
@@ -98,6 +104,18 @@ const platform = [
 
 const admin = [
   {
+    title: 'Admin Dashboard',
+    href: '/admin',
+    description: 'Resource Hub administration',
+    icon: Shield,
+  },
+  {
+    title: 'Resources',
+    href: '/admin/resources',
+    description: 'Manage all resources',
+    icon: Sparkles,
+  },
+  {
     title: 'Users',
     href: '/admin/users',
     description: 'User management and roles',
@@ -108,12 +126,6 @@ const admin = [
     href: '/admin/config',
     description: 'System settings and features',
     icon: Settings,
-  },
-  {
-    title: 'Organizations',
-    href: '/organizations',
-    description: 'Manage team workspaces',
-    icon: Building2,
   },
 ]
 
