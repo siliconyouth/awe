@@ -87,6 +87,7 @@ export default function KnowledgeAdmin() {
   const [sources, setSources] = useState<KnowledgeSource[]>([])
   const [patterns, setPatterns] = useState<ExtractedPattern[]>([])
   const [loading, setLoading] = useState(true)
+  const [isMonitoring, setIsMonitoring] = useState(false)
   const [activeTab, setActiveTab] = useState('sources')
   const [showAddSourceDialog, setShowAddSourceDialog] = useState(false)
   // const [selectedSource, setSelectedSource] = useState<KnowledgeSource | null>(null) // Currently unused
@@ -234,24 +235,35 @@ export default function KnowledgeAdmin() {
 
   const triggerMonitoring = async () => {
     try {
-      const response = await fetch('/api/monitor', {
+      setIsMonitoring(true)
+      const response = await fetch('/api/monitor/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify({ all: false }) // Monitor sources that need updating
       })
 
-      if (!response.ok) throw new Error('Failed to trigger monitoring')
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Failed to trigger monitoring')
+      }
 
+      const result = await response.json()
+      
       toast({
-        title: 'Success',
-        description: 'Monitoring triggered successfully'
+        title: 'Monitoring Complete',
+        description: `Monitored ${result.monitored} sources. ${result.stats?.changed || 0} changes detected.`
       })
-    } catch {
+
+      // Refresh the sources list
+      await fetchSources()
+    } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to trigger monitoring',
+        description: error instanceof Error ? error.message : 'Failed to trigger monitoring',
         variant: 'destructive'
       })
+    } finally {
+      setIsMonitoring(false)
     }
   }
 
@@ -362,9 +374,14 @@ export default function KnowledgeAdmin() {
                   </CardDescription>
                 </div>
                 <div className="flex gap-2">
-                  <Button onClick={triggerMonitoring} variant="outline" size="sm">
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Run Monitor
+                  <Button 
+                    onClick={triggerMonitoring} 
+                    variant="outline" 
+                    size="sm"
+                    disabled={isMonitoring}
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-2 ${isMonitoring ? 'animate-spin' : ''}`} />
+                    {isMonitoring ? 'Monitoring...' : 'Run Monitor'}
                   </Button>
                   <Dialog open={showAddSourceDialog} onOpenChange={setShowAddSourceDialog}>
                     <DialogTrigger asChild>
