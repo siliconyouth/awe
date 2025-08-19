@@ -142,35 +142,23 @@ export async function POST(request: NextRequest) {
           }
         })
 
-        // If content changed, mark for pattern extraction
-        if (changed) {
-          await db.patternQueue.create({
-            data: {
-              sourceId: source.id,
-              updateId: update.id,
-              status: 'PENDING',
-              priority: 1
+        // If content changed, trigger pattern extraction for important sources
+        if (changed && (source.type === 'DOCUMENTATION' || source.type === 'API_REFERENCE')) {
+          try {
+            const extractResponse = await fetch(`${request.url.replace('/monitor/run', '/patterns/extract')}`, {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Cookie': request.headers.get('cookie') || ''
+              },
+              body: JSON.stringify({ updateId: update.id })
+            })
+            
+            if (extractResponse.ok) {
+              console.log(`Pattern extraction triggered for source: ${source.name}`)
             }
-          })
-
-          // Optionally, trigger pattern extraction immediately for important sources
-          if (source.type === 'DOCUMENTATION' || source.type === 'API_REFERENCE') {
-            try {
-              const extractResponse = await fetch(`${request.url.replace('/monitor/run', '/patterns/extract')}`, {
-                method: 'POST',
-                headers: { 
-                  'Content-Type': 'application/json',
-                  'Cookie': request.headers.get('cookie') || ''
-                },
-                body: JSON.stringify({ updateId: update.id })
-              })
-              
-              if (extractResponse.ok) {
-                console.log(`Pattern extraction triggered for high-priority source: ${source.name}`)
-              }
-            } catch (extractError) {
-              console.error('Failed to trigger pattern extraction:', extractError)
-            }
+          } catch (extractError) {
+            console.error('Failed to trigger pattern extraction:', extractError)
           }
         }
 

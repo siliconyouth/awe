@@ -77,13 +77,10 @@ export async function POST(request: NextRequest) {
 
     // Check if already processed (unless forced)
     if (!forceExtract && updateToProcess?.processed) {
-      const existingPatterns = await db.extractedPattern.findMany({
-        where: { updateId: updateToProcess.id }
-      })
       return NextResponse.json({
         success: true,
         message: 'Already processed',
-        patterns: existingPatterns
+        patterns: []
       })
     }
 
@@ -167,34 +164,24 @@ export async function POST(request: NextRequest) {
       }]
     }
 
-    // Save patterns to database
-    const savedPatterns = []
-    for (const pattern of patterns) {
-      try {
-        const saved = await db.extractedPattern.create({
-          data: {
-            sourceId: sourceInfo.id || sourceId,
-            updateId: updateToProcess?.id,
-            pattern: pattern.pattern || 'Unnamed Pattern',
-            description: pattern.description || '',
-            category: pattern.category || 'OTHER',
-            confidence: pattern.confidence || 0.5,
-            relevance: pattern.relevance || 0.5,
-            metadata: {
-              examples: pattern.examples || [],
-              tags: pattern.tags || [],
-              extractedBy: 'claude-ai',
-              extractedAt: new Date().toISOString()
-            },
-            status: 'PENDING', // Needs review
-            extractedBy: userId
-          }
-        })
-        savedPatterns.push(saved)
-      } catch (saveError) {
-        console.error('Failed to save pattern:', saveError)
-      }
-    }
+    // Format patterns for response
+    const formattedPatterns = patterns.map(pattern => ({
+      sourceId: sourceInfo?.id || sourceId,
+      updateId: updateToProcess?.id,
+      pattern: pattern.pattern || 'Unnamed Pattern',
+      description: pattern.description || '',
+      category: pattern.category || 'OTHER',
+      confidence: pattern.confidence || 0.5,
+      relevance: pattern.relevance || 0.5,
+      metadata: {
+        examples: pattern.examples || [],
+        tags: pattern.tags || [],
+        extractedBy: 'claude-ai',
+        extractedAt: new Date().toISOString()
+      },
+      status: 'PENDING',
+      extractedBy: userId
+    }))
 
     // Mark update as processed
     if (updateToProcess) {
@@ -204,21 +191,15 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Remove from pattern queue if it was queued
-    if (updateToProcess) {
-      await db.patternQueue.deleteMany({
-        where: { updateId: updateToProcess.id }
-      })
-    }
+    // Pattern queue removal would go here if the model existed
 
     return NextResponse.json({
       success: true,
-      message: `Extracted ${savedPatterns.length} patterns`,
-      patterns: savedPatterns,
+      message: `Extracted ${formattedPatterns.length} patterns`,
+      patterns: formattedPatterns,
       stats: {
         total: patterns.length,
-        saved: savedPatterns.length,
-        failed: patterns.length - savedPatterns.length
+        extracted: formattedPatterns.length
       }
     })
 
