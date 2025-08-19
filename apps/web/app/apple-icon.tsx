@@ -15,14 +15,14 @@ export default function AppleIcon() {
       <div
         style={{
           fontSize: 120,
-          background: 'hsl(262 83% 58%)', // Primary color
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #ffa585 100%)',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: 'white',
-          borderRadius: 36,
+          borderRadius: '50%',
           fontWeight: 'bold',
           fontFamily: 'system-ui',
         }}
