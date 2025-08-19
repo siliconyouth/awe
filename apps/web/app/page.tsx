@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { designSystem, cn } from '../lib/design-system'
-import { ModernHeaderAccessible } from '../components/layout/modern-header-accessible'
+import { PublicHeader } from '../components/layout/public-header'
 import {
   ArrowRight,
   Zap,
@@ -27,7 +27,7 @@ import {
 export default function HomePage() {
   return (
     <>
-      <ModernHeaderAccessible />
+      <PublicHeader />
       <div className="relative">
         {/* Background Pattern */}
         <div className="absolute inset-0 -z-10">
