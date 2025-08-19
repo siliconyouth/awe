@@ -5,16 +5,21 @@ import type { Config } from '@awe/shared'
 export * from '@prisma/client'
 
 // Global database instances
-let prisma: PrismaClient | null = null
+let prismaInstance: PrismaClient | null = null
 let supabase: ReturnType<typeof createClient> | null = null
 
+// Export prisma instance for direct use
+export const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+})
+
 export function getPrisma(): PrismaClient {
-  if (!prisma) {
-    prisma = new PrismaClient({
+  if (!prismaInstance) {
+    prismaInstance = new PrismaClient({
       log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
     })
   }
-  return prisma
+  return prismaInstance
 }
 
 export function getSupabase() {
@@ -62,9 +67,12 @@ export async function initializeDatabase(config?: Config) {
 }
 
 export async function closeDatabase() {
+  if (prismaInstance) {
+    await prismaInstance.$disconnect()
+    prismaInstance = null
+  }
   if (prisma) {
     await prisma.$disconnect()
-    prisma = null
   }
 }
 

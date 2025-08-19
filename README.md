@@ -1,9 +1,9 @@
-# 🌆 AWE - Awesome Workspace Engineering v2.4
+# 🌆 AWE - Awesome Workspace Engineering v2.5
 
 > **The Industry-Leading AI Companion for Claude Code**  
-> Transform your development workflow with Claude Opus 4.1 powered intelligence, project-centric organization, world-class UI/UX, and automated optimization.
+> Transform your development workflow with Claude Opus 4.1 powered intelligence, project-centric organization, comprehensive Resource Hub, world-class UI/UX, and automated optimization.
 
-[![Version](https://img.shields.io/badge/Version-2.4.0-red)](https://github.com/awe-team/awe/releases)
+[![Version](https://img.shields.io/badge/Version-2.5.0-red)](https://github.com/siliconyouth/awe/releases)
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-green)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
 [![Claude Opus](https://img.shields.io/badge/Claude-Opus%204.1-purple)](https://www.anthropic.com/claude)
@@ -48,12 +48,23 @@
 - **🔒 Enterprise Ready**: Role-based access control, audit logging
 - **🌐 Offline Support**: Graceful degradation when services unavailable
 
-#### Security & Infrastructure (v2.4)
+#### Resource Hub & Pattern Library (v2.5) 🆕
+- **📚 Comprehensive Resource Management**: Store and organize Claude Code optimization resources
+- **🔄 Multi-Format Support**: Process markdown, YAML, JSON, TypeScript, JavaScript, shell scripts
+- **🤖 AI-Powered Categorization**: Automatic tagging and quality scoring
+- **📦 Collections & Bundles**: Curated resource collections for specific use cases
+- **⭐ Review System**: Community feedback with ratings and verification
+- **📊 Usage Analytics**: Track resource popularity and effectiveness
+- **🔌 Import Pipeline**: Bulk import from GitHub repositories and documentation sites
+- **🎯 Smart Recommendations**: AI-driven resource suggestions based on context
+
+#### Security & Infrastructure (v2.5)
 - **🛡️ Rate Limiting**: Configurable API rate limits with role exemptions
 - **🔑 Webhook Security**: Svix signature verification with retry logic
 - **📊 Session Monitoring**: JWT size tracking for performance
 - **🔄 Retry Logic**: Exponential backoff for database operations
 - **🏥 Health Checks**: Production-ready monitoring endpoints
+- **🔐 Resource Access Control**: Fine-grained permissions for resource management
 
 ## 🏗️ Architecture
 

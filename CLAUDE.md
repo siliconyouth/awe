@@ -1,4 +1,4 @@
-# CLAUDE.md - AWE Workspace Engineering v2.4
+# CLAUDE.md - AWE Workspace Engineering v2.5
 
 ## Development Guidelines
 
@@ -8,11 +8,11 @@
 - **Unified Development**: Full-stack changes in single commits when appropriate
 
 ## Project Overview
-AWE (Awesome Workspace Engineering) is an intelligent AI-powered development companion specifically designed to enhance Claude Code workflows. Built with Claude Opus 4.1 and ultrathinking capabilities, AWE provides project-centric organization, deep project analysis, pattern management, optimization recommendations, authentication, web scraping, and intelligent automation for modern development teams.
+AWE (Awesome Workspace Engineering) is an intelligent AI-powered development companion specifically designed to enhance Claude Code workflows. Built with Claude Opus 4.1 and ultrathinking capabilities, AWE provides project-centric organization, deep project analysis, pattern management, optimization recommendations, authentication, web scraping, intelligent automation, and a comprehensive Resource Hub for Claude Code optimization resources.
 
 **🎯 Vision**: Industry-leading Claude Code optimization platform  
-**🚀 Mission**: Transform development workflows through AI-powered intelligence  
-**⚡ Current Version**: 2.4.0 - Production-Ready Clerk Integration & Security Hardening  
+**🚀 Mission**: Transform development workflows through AI-powered intelligence and curated resources  
+**⚡ Current Version**: 2.5.0 - Resource Hub & Enhanced Pattern Management System  
 **📅 Release Date**: August 19, 2025
 
 ## Architecture
@@ -182,6 +182,18 @@ pnpm db:migrate   # Run migrations
 - **Queue System**: Background job processing
 - **Distributed Locks**: Concurrency control
 
+### Resource Hub & Pattern Library (v2.5)
+- **Comprehensive Resource Management**: Store and organize Claude Code optimization resources
+- **Multi-Format Support**: Handle markdown, YAML, JSON, TypeScript, shell scripts
+- **AI-Powered Categorization**: Automatic tagging and quality scoring
+- **Collections & Bundles**: Curated resource collections for specific use cases
+- **Advanced Tagging System**: Multi-dimensional tags (user, AI, system)
+- **Resource Reviews & Ratings**: Community feedback and verification system
+- **Usage Analytics**: Track resource popularity and effectiveness
+- **Import Pipeline**: Bulk import from GitHub repositories and documentation sites
+- **Resource Processor**: Convert various formats to Claude-friendly markdown
+- **Quality Scoring**: AI-driven quality assessment of resources
+
 ### UI/UX Excellence (v2.3)
 - **Vercel-Inspired Design System**: Modern, clean aesthetics with glass morphism
 - **WCAG 2.1 AA Compliance**: Full accessibility with ARIA labels, keyboard navigation
@@ -193,16 +205,17 @@ pnpm db:migrate   # Run migrations
 - **Optimistic UI**: Instant feedback with automatic rollback on errors
 - **Image Optimization**: Next.js Image component with lazy loading
 
-### Security & Infrastructure (v2.4)
+### Security & Infrastructure (v2.5)
 - **Enhanced Clerk Integration**: Complete auth flow with database sync
 - **Rate Limiting System**: In-memory rate limiting with configurable tiers
 - **Session Token Monitoring**: Track JWT size to prevent performance issues
 - **Webhook Security**: Svix signature verification with retry logic
 - **Error Boundaries**: Auth-specific error handling with recovery actions
-- **Database Models**: User, Organization, and OrganizationMember models
+- **Enhanced Database Models**: Resource, Tag, Category, Collection, Review, Usage tracking
 - **Retry Logic**: Exponential backoff for webhook processing
 - **Public Routes**: Proper middleware configuration for test endpoints
 - **Production Build**: Optimized and tested for deployment
+- **Resource Access Control**: Fine-grained permissions for resource management
 
 ## AI-Powered Development Assistance
 

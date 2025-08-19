@@ -169,3 +169,231 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
     hasPrev: boolean
   }
 }
+
+// Resource Management Types
+export enum ResourceType {
+  PATTERN = 'PATTERN',
+  SNIPPET = 'SNIPPET',
+  HOOK = 'HOOK',
+  AGENT = 'AGENT',
+  TEMPLATE = 'TEMPLATE',
+  GUIDE = 'GUIDE',
+  TOOL = 'TOOL',
+  CONFIG = 'CONFIG',
+  WORKFLOW = 'WORKFLOW',
+  INTEGRATION = 'INTEGRATION'
+}
+
+export enum ResourceStatus {
+  DRAFT = 'DRAFT',
+  PUBLISHED = 'PUBLISHED',
+  ARCHIVED = 'ARCHIVED',
+  DEPRECATED = 'DEPRECATED'
+}
+
+export enum ResourceVisibility {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+  UNLISTED = 'UNLISTED'
+}
+
+export enum TagType {
+  USER = 'USER',
+  AI = 'AI',
+  SYSTEM = 'SYSTEM'
+}
+
+export interface Resource {
+  id: string
+  slug: string
+  name: string
+  description: string
+  type: ResourceType
+  status: ResourceStatus
+  visibility: ResourceVisibility
+  content: ResourceContent
+  metadata: Record<string, any>
+  quality: number
+  usageCount: number
+  downloads: number
+  stars: number
+  rating?: number
+  tags?: ResourceTag[]
+  category?: Category
+  categoryId?: string
+  authorId?: string
+  workspaceId?: string
+  projectId?: string
+  author?: string
+  version?: string
+  sourceUrl?: string
+  changelog?: string
+  reviews?: ResourceReview[]
+  usage?: ResourceUsage[]
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface ResourceContent {
+  main: string
+  examples?: string[]
+  prerequisites?: string[]
+  relatedResources?: string[]
+  supportedVersions?: string[]
+}
+
+export interface Tag {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  category?: string | null
+  icon?: string | null
+  color?: string | null
+  usageCount: number
+  isOfficial: boolean
+  metadata?: Record<string, any> | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface ResourceTag {
+  id: string
+  resourceId: string
+  tagId: string
+  tag?: Tag
+  tagType: TagType
+  confidence?: number
+  addedBy?: string
+  createdAt: Date
+}
+
+export interface Category {
+  id: string
+  name: string
+  slug: string
+  description?: string
+  icon?: string
+  color?: string
+  parentId?: string
+  parent?: Category
+  children?: Category[]
+  order: number
+  isActive: boolean
+  metadata?: Record<string, any>
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface TagCategory {
+  id: string
+  name: string
+  description: string
+  icon: string
+  tags: Tag[]
+}
+
+export interface Collection {
+  id: string
+  name: string
+  slug: string
+  description: string
+  isOfficial: boolean
+  isCurated: boolean
+  resources?: Resource[]
+  author?: string | null
+  metadata?: Record<string, any> | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface ResourceSearchParams {
+  query?: string
+  type?: ResourceType[]
+  types?: ResourceType[]  // Alias for compatibility
+  status?: ResourceStatus[]
+  visibility?: ResourceVisibility[]
+  tags?: string[]
+  categories?: string[]
+  qualityMin?: number
+  minQuality?: number  // Alias for compatibility
+  minRating?: number
+  author?: string
+  authorId?: string
+  workspaceId?: string
+  projectId?: string
+  sortBy?: 'relevance' | 'quality' | 'usage' | 'downloads' | 'created' | 'updated' | 'createdAt' | 'rating'
+  sortOrder?: 'asc' | 'desc'
+  limit?: number
+  offset?: number
+  page?: number  // For pagination
+}
+
+export interface ResourceSearchResult {
+  resources: Resource[]
+  total: number
+  page?: number
+  pages?: number
+  facets: {
+    types: Record<ResourceType, number>
+    tags: Record<string, number>
+    categories: Record<string, number>
+    qualityDistribution: Record<string, number>
+  }
+}
+
+export interface ResourceFilter {
+  type?: string
+  category?: string
+  tags?: string[]
+  verified?: boolean
+  official?: boolean
+  search?: string
+}
+
+export interface ResourceRecommendation {
+  resourceId: string
+  resource?: Resource
+  reason: string
+  relevanceScore: number
+  priority: 'high' | 'medium' | 'low'
+  suggestedTags?: string[]
+  relatedResources?: string[]
+}
+
+export interface ResourceStats {
+  totalResources: number
+  verifiedResources: number
+  officialResources: number
+  resourcesByType: Record<string, number>
+  resourcesByCategory: Record<string, number>
+  topTags: Array<{ tag: string; count: number }>
+  averageQuality: number
+  totalDownloads: number
+  totalUsage: number
+}
+
+export interface ResourceReview {
+  id: string
+  resourceId: string
+  resource?: Resource
+  userId: string
+  rating: number
+  comment?: string
+  helpful: number
+  verified: boolean
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface ResourceUsage {
+  id: string
+  resourceId: string
+  resource?: Resource
+  userId?: string
+  projectId?: string
+  action: string
+  context?: Record<string, any>
+  sessionId?: string
+  createdAt: Date
+}

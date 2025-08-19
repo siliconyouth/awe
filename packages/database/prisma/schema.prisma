@@ -486,42 +486,95 @@ model PatternUsage {
 
 
 // ============================================
-// RESOURCE HUB - Simple MVP
+// RESOURCE HUB - Full System
 // ============================================
+
+enum ResourceType {
+  PATTERN
+  SNIPPET
+  HOOK
+  AGENT
+  TEMPLATE
+  GUIDE
+  TOOL
+  CONFIG
+  WORKFLOW
+  INTEGRATION
+}
+
+enum ResourceStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  DEPRECATED
+}
+
+enum ResourceVisibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
+enum TagType {
+  USER
+  AI
+  SYSTEM
+}
 
 model Resource {
   id          String   @id @default(cuid())
   slug        String   @unique
-  title       String
+  name        String
+  title       String?  // Backwards compatibility
   description String   @db.Text
   
   // Content storage - supports different formats
-  content     String   @db.Text  // Main content (markdown, code, etc.)
+  content     Json     // ResourceContent structure
   rawContent  String?  @db.Text  // Original file content if different
   fileType    String   @default("markdown") // markdown, json, yaml, js, ts, etc.
   
   // Resource categorization
-  type        String   // template, command, pattern, guide, hook, workflow, config
-  category    String?  // More specific category within type
+  type        ResourceType
+  status      ResourceStatus    @default(PUBLISHED)
+  visibility  ResourceVisibility @default(PUBLIC)
+  
+  // Relations
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  authorId    String?  // User who created it
+  workspaceId String?  // Workspace context
+  projectId   String?  // Project context
   
   // Flexible tagging system
-  tags        String[] // Simple array for MVP
+  tags        ResourceTag[]
   keywords    String[] // Auto-extracted keywords
+  
+  // Collections
+  collections CollectionResource[]
+  
+  // Reviews and feedback
+  reviews     ResourceReview[]
+  usage       ResourceUsage[]
   
   // Metadata
   author      String   @default("community")
   authorGithub String?
+  version     String?
   sourceUrl   String?
   sourceRepo  String?  // GitHub repo if applicable
   sourceId    String?  // Link to KnowledgeSource
   license     String?
+  changelog   String?  @db.Text
   
   // Usage metrics
+  usageCount  Int      @default(0)
   downloads   Int      @default(0)
   views       Int      @default(0)
   stars       Int      @default(0)
+  rating      Float?   // Average rating from reviews
   
   // Quality indicators
+  quality     Float    @default(0.5)
   verified    Boolean  @default(false)
   official    Boolean  @default(false)
   
@@ -534,9 +587,145 @@ model Resource {
   metadata    Json?    // Store any additional data
   
   @@index([type])
-  @@index([category])
-  @@index([fileType])
+  @@index([status])
+  @@index([visibility])
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([workspaceId])
+  @@index([projectId])
+  @@index([quality])
+  @@index([rating])
   @@index([verified])
   @@index([createdAt])
   @@map("resources")
+}
+
+model Category {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String?
+  icon        String?
+  color       String?
+  parentId    String?
+  parent      Category?   @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[]  @relation("CategoryHierarchy")
+  order       Int         @default(0)
+  isActive    Boolean     @default(true)
+  metadata    Json?
+  resources   Resource[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@index([parentId])
+  @@index([slug])
+  @@map("categories")
+}
+
+model Tag {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String?
+  category    String?       // Tag category/group
+  icon        String?
+  color       String?
+  usageCount  Int           @default(0)
+  isOfficial  Boolean       @default(false)
+  metadata    Json?
+  resources   ResourceTag[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  @@index([category])
+  @@index([slug])
+  @@map("tags")
+}
+
+model ResourceTag {
+  id          String   @id @default(cuid())
+  resourceId  String
+  resource    Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  tagId       String
+  tag         Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagType     TagType  @default(USER)
+  confidence  Float?   // For AI-generated tags
+  addedBy     String?  // User who added the tag
+  createdAt   DateTime @default(now())
+  
+  @@unique([resourceId, tagId])
+  @@index([resourceId])
+  @@index([tagId])
+  @@index([tagType])
+  @@map("resource_tags")
+}
+
+model Collection {
+  id          String               @id @default(cuid())
+  name        String
+  slug        String               @unique
+  description String
+  isOfficial  Boolean              @default(false)
+  isCurated   Boolean              @default(false)
+  resources   CollectionResource[]
+  author      String?
+  metadata    Json?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  
+  @@index([slug])
+  @@map("collections")
+}
+
+model CollectionResource {
+  id           String     @id @default(cuid())
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  resourceId   String
+  resource     Resource   @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  order        Int        @default(0)
+  notes        String?    // Curator notes about why this resource is in the collection
+  addedAt      DateTime   @default(now())
+  
+  @@unique([collectionId, resourceId])
+  @@index([collectionId])
+  @@index([resourceId])
+  @@map("collection_resources")
+}
+
+model ResourceReview {
+  id          String   @id @default(cuid())
+  resourceId  String
+  resource    Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  userId      String
+  rating      Float    // 1-5 stars
+  comment     String?  @db.Text
+  helpful     Int      @default(0) // Number of people who found this helpful
+  verified    Boolean  @default(false) // Verified purchase/usage
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([resourceId])
+  @@index([userId])
+  @@index([rating])
+  @@map("resource_reviews")
+}
+
+model ResourceUsage {
+  id          String   @id @default(cuid())
+  resourceId  String
+  resource    Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  userId      String?
+  projectId   String?
+  action      String   // viewed, downloaded, applied, starred, shared
+  context     Json?    // Additional context about usage
+  sessionId   String?  // Track usage within a session
+  createdAt   DateTime @default(now())
+  
+  @@index([resourceId])
+  @@index([userId])
+  @@index([projectId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("resource_usage")
 }

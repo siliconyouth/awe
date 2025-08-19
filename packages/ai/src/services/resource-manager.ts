@@ -4,20 +4,23 @@
  */
 
 import { 
-  Resource, 
-  ResourceType, 
+  Resource,
+  ResourceType,
   ResourceStatus,
   ResourceVisibility,
-  Tag, 
-  TagCategory,
+  ResourceContent,
+  Tag,
+  ResourceTag,
   TagType,
+  Category,
+  TagCategory,
+  Collection,
   ResourceSearchParams,
   ResourceSearchResult,
+  ResourceFilter,
   ResourceRecommendation,
-  Collection,
-  ResourceTag,
-  ResourceContent
-} from '@awe/shared/types/resources'
+  ResourceStats
+} from '@awe/shared'
 import { ClaudeAIService } from '../claude'
 import { prisma } from '@awe/database'
 
@@ -36,10 +39,36 @@ export class ResourceManager {
    * Create a new resource with automatic tagging
    */
   async createResource(
-    data: Omit<Resource, 'id' | 'createdAt' | 'updatedAt' | 'quality' | 'usageCount' | 'downloads'>
+    data: {
+      name?: string
+      description?: string
+      type?: ResourceType
+      status?: ResourceStatus
+      visibility?: ResourceVisibility
+      content?: ResourceContent
+      rawContent?: string
+      fileType?: string
+      categoryId?: string
+      authorId?: string
+      workspaceId?: string
+      projectId?: string
+      author?: string
+      authorGithub?: string
+      version?: string
+      sourceUrl?: string
+      sourceRepo?: string
+      sourceId?: string
+      license?: string
+      changelog?: string
+      keywords?: string[]
+      metadata?: Record<string, any>
+      verified?: boolean
+      official?: boolean
+      slug?: string
+    }
   ): Promise<Resource> {
     // Generate slug if not provided
-    const slug = data.slug || this.generateSlug(data.name)
+    const slug = data.slug || this.generateSlug(data.name || 'resource')
 
     // Auto-generate AI tags
     const aiTags = await this.generateAITags(data)
@@ -50,11 +79,35 @@ export class ResourceManager {
     // Create resource in database
     const resource = await prisma.resource.create({
       data: {
-        ...data,
         slug,
+        name: data.name || 'Untitled Resource',
+        description: data.description || '',
+        type: data.type || ResourceType.PATTERN,
+        status: data.status || ResourceStatus.PUBLISHED,
+        visibility: data.visibility || ResourceVisibility.PUBLIC,
+        content: data.content ? JSON.stringify(data.content) : JSON.stringify({ main: '' }),
+        rawContent: data.rawContent,
+        fileType: data.fileType || 'markdown',
+        categoryId: data.categoryId,
+        authorId: data.authorId,
+        workspaceId: data.workspaceId,
+        projectId: data.projectId,
+        author: data.author || 'community',
+        authorGithub: data.authorGithub,
+        version: data.version,
+        sourceUrl: data.sourceUrl,
+        sourceRepo: data.sourceRepo,
+        sourceId: data.sourceId,
+        license: data.license,
+        changelog: data.changelog,
+        keywords: data.keywords || [],
+        metadata: data.metadata,
         quality,
         usageCount: 0,
         downloads: 0,
+        stars: 0,
+        verified: data.verified || false,
+        official: data.official || false,
         tags: {
           create: aiTags.map(tag => ({
             tagId: tag.id,
@@ -84,17 +137,26 @@ export class ResourceManager {
     updates: Partial<Resource>
   ): Promise<Resource> {
     // Recalculate quality score if content changed
+    let quality = updates.quality
     if (updates.content || updates.metadata) {
       const existing = await this.getResource(id)
-      updates.quality = await this.calculateQualityScore({
-        ...existing,
-        ...updates
-      } as Resource)
+      if (existing) {
+        quality = await this.calculateQualityScore({
+          ...existing,
+          ...updates
+        } as Resource)
+      }
     }
+
+    // Remove non-updatable fields
+    const { tags, reviews, usage, category, ...updateData } = updates
 
     const resource = await prisma.resource.update({
       where: { id },
-      data: updates,
+      data: {
+        ...updateData,
+        quality
+      } as any,
       include: {
         category: true,
         tags: {
@@ -122,11 +184,7 @@ export class ResourceManager {
           }
         },
         reviews: true,
-        dependencies: {
-          include: {
-            dependsOn: true
-          }
-        }
+        usage: true
       }
     })
 
@@ -179,7 +237,23 @@ export class ResourceManager {
     // Update tag usage counts
     await this.updateTagUsageCounts(tagIds)
 
-    return tags
+    return tags.map(t => ({
+      id: t.id,
+      resourceId: t.resourceId,
+      tagId: t.tagId,
+      tag: t.tag ? {
+        ...t.tag,
+        description: t.tag.description || undefined,
+        category: t.tag.category || undefined,
+        icon: t.tag.icon || undefined,
+        color: t.tag.color || undefined,
+        metadata: t.tag.metadata || undefined
+      } : undefined,
+      tagType: t.tagType as TagType,
+      confidence: t.confidence || undefined,
+      addedBy: t.addedBy || undefined,
+      createdAt: t.createdAt
+    })) as ResourceTag[]
   }
 
   /**
@@ -222,7 +296,7 @@ Suggest tags from these categories:
 Return as JSON array of objects with tagName and confidence (0-1).`
 
     try {
-      const response = await this.ai.generateCompletion(prompt)
+      const response = await this.ai.chat(prompt)
       const suggestions = JSON.parse(response)
       
       // Find or create tags and return with confidence scores
@@ -238,7 +312,7 @@ Return as JSON array of objects with tagName and confidence (0-1).`
                 name: s.tagName,
                 slug: this.generateSlug(s.tagName),
                 category: this.inferTagCategory(s.tagName),
-                isSystem: false
+                isOfficial: false
               }
             })
           }
@@ -269,20 +343,17 @@ Return as JSON array of objects with tagName and confidence (0-1).`
   ): Promise<ResourceSearchResult> {
     const {
       query,
-      types,
+      type,
       categories,
       tags,
       status = [ResourceStatus.PUBLISHED],
       visibility,
-      authorId,
-      workspaceId,
-      projectId,
-      minQuality,
-      minRating,
-      sortBy = 'createdAt',
+      author,
+      qualityMin,
+      sortBy = 'created',
       sortOrder = 'desc',
-      page = 1,
-      limit = 20
+      limit = 20,
+      offset = 0
     } = params
 
     // Build where clause
@@ -299,8 +370,8 @@ Return as JSON array of objects with tagName and confidence (0-1).`
       })
     }
 
-    if (types?.length) {
-      where.AND.push({ type: { in: types } })
+    if (type?.length) {
+      where.AND.push({ type: { in: type } })
     }
 
     if (categories?.length) {
@@ -327,24 +398,12 @@ Return as JSON array of objects with tagName and confidence (0-1).`
       where.AND.push({ visibility: { in: visibility } })
     }
 
-    if (authorId) {
-      where.AND.push({ authorId })
+    if (author) {
+      where.AND.push({ author })
     }
 
-    if (workspaceId) {
-      where.AND.push({ workspaceId })
-    }
-
-    if (projectId) {
-      where.AND.push({ projectId })
-    }
-
-    if (minQuality !== undefined) {
-      where.AND.push({ quality: { gte: minQuality } })
-    }
-
-    if (minRating !== undefined) {
-      where.AND.push({ rating: { gte: minRating } })
+    if (qualityMin !== undefined) {
+      where.AND.push({ quality: { gte: qualityMin } })
     }
 
     // Execute search
@@ -352,7 +411,7 @@ Return as JSON array of objects with tagName and confidence (0-1).`
       prisma.resource.findMany({
         where: where.AND.length ? where : undefined,
         orderBy: { [sortBy]: sortOrder },
-        skip: (page - 1) * limit,
+        skip: offset,
         take: limit,
         include: {
           category: true,
@@ -372,10 +431,8 @@ Return as JSON array of objects with tagName and confidence (0-1).`
     const facets = await this.getSearchFacets(where)
 
     return {
-      resources: resources.map(r => this.mapPrismaResource(r)),
+      resources: resources.map((r: any) => this.mapPrismaResource(r)),
       total,
-      page,
-      pages: Math.ceil(total / limit),
       facets
     }
   }
@@ -430,16 +487,25 @@ Return as JSON array of objects with tagName and confidence (0-1).`
    * Create a resource collection
    */
   async createCollection(
-    data: Omit<Collection, 'id' | 'createdAt' | 'updatedAt'>
+    data: Omit<Collection, 'id' | 'createdAt' | 'updatedAt' | 'resources'>
   ): Promise<Collection> {
     const collection = await prisma.collection.create({
       data: {
-        ...data,
-        slug: data.slug || this.generateSlug(data.name)
+        name: data.name,
+        slug: data.slug || this.generateSlug(data.name),
+        description: data.description,
+        isOfficial: data.isOfficial || false,
+        isCurated: data.isCurated || false,
+        author: data.author,
+        metadata: data.metadata
       }
     })
 
-    return collection
+    return {
+      ...collection,
+      author: collection.author || undefined,
+      metadata: collection.metadata as Record<string, any> | null | undefined
+    } as Collection
   }
 
   /**
@@ -515,7 +581,7 @@ Return as JSON array of objects with tagName and confidence (0-1).`
       score += weights.hasTests
     }
 
-    if (resource.changelog) {
+    if (resource.metadata?.changelog) {
       score += weights.hasChangelog
     }
 
@@ -524,8 +590,8 @@ Return as JSON array of objects with tagName and confidence (0-1).`
     }
 
     // Add community rating if available
-    if (resource.rating) {
-      score += (resource.rating / 5) * weights.communityRating
+    if (resource.metadata?.rating) {
+      score += (resource.metadata.rating / 5) * weights.communityRating
     }
 
     return Math.min(100, Math.max(0, score))
@@ -578,22 +644,22 @@ Return as JSON array of objects with tagName and confidence (0-1).`
       .replace(/^-+|-+$/g, '')
   }
 
-  private inferTagCategory(tagName: string): TagCategory {
+  private inferTagCategory(tagName: string): string {
     const patterns = {
-      [TagCategory.LANGUAGE]: /^(javascript|typescript|python|rust|go|java|c\+\+|c#|ruby|php)/i,
-      [TagCategory.FRAMEWORK]: /^(react|vue|angular|express|django|fastapi|spring|rails)/i,
-      [TagCategory.DOMAIN]: /^(web|mobile|api|cli|desktop|embedded|iot|blockchain)/i,
-      [TagCategory.PURPOSE]: /^(auth|database|ui|testing|deployment|monitoring|security)/i,
-      [TagCategory.DIFFICULTY]: /^(beginner|intermediate|advanced|expert)/i
+      'language': /^(javascript|typescript|python|rust|go|java|c\+\+|c#|ruby|php)/i,
+      'framework': /^(react|vue|angular|express|django|fastapi|spring|rails)/i,
+      'domain': /^(web|mobile|api|cli|desktop|embedded|iot|blockchain)/i,
+      'purpose': /^(auth|database|ui|testing|deployment|monitoring|security)/i,
+      'difficulty': /^(beginner|intermediate|advanced|expert)/i
     }
 
     for (const [category, pattern] of Object.entries(patterns)) {
       if (pattern.test(tagName)) {
-        return category as TagCategory
+        return category
       }
     }
 
-    return TagCategory.CUSTOM
+    return 'custom'
   }
 
   private async updateTagUsageCounts(tagIds: string[]): Promise<void> {
@@ -682,7 +748,7 @@ Return as JSON array of objects with tagName and confidence (0-1).`
       },
       orderBy: [
         { usageCount: 'desc' },
-        { rating: 'desc' }
+        { stars: 'desc' }
       ],
       take: limit,
       include: {
@@ -695,13 +761,12 @@ Return as JSON array of objects with tagName and confidence (0-1).`
       }
     })
 
-    return trending.map(resource => ({
+    return trending.map((resource: any) => ({
+      resourceId: resource.id,
       resource: this.mapPrismaResource(resource),
-      score: resource.usageCount * 0.7 + (resource.rating || 0) * 0.3,
+      relevanceScore: resource.usageCount * 0.7 + (resource.metadata?.rating || 0) * 0.3,
       reason: 'Trending resource with high usage',
-      context: {
-        basedOn: 'trending'
-      }
+      priority: 'medium' as const
     }))
   }
 
@@ -710,9 +775,9 @@ Return as JSON array of objects with tagName and confidence (0-1).`
   ): ResourceRecommendation[] {
     const seen = new Set<string>()
     return recommendations
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => b.relevanceScore - a.relevanceScore)
       .filter(rec => {
-        if (seen.has(rec.resource.id)) {
+        if (!rec.resource || seen.has(rec.resource.id)) {
           return false
         }
         seen.add(rec.resource.id)

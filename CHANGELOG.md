@@ -5,6 +5,61 @@ All notable changes to AWE (Awesome Workspace Engineering) will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2025-08-19
+
+### 📚 Resource Hub & Enhanced Pattern Management
+
+### Added
+
+#### Resource Hub System
+- **Comprehensive Resource Management**: Full CRUD operations for Claude Code optimization resources
+- **Multi-Format Support**: Process and store markdown, YAML, JSON, TypeScript, JavaScript, shell scripts
+- **AI-Powered Features**:
+  - Automatic tag generation and categorization
+  - Quality scoring algorithm for resource assessment
+  - Smart recommendations based on usage patterns
+- **Advanced Database Schema**:
+  - Resource model with flexible content storage
+  - Tag system with user, AI, and system tag types
+  - Category hierarchy for organization
+  - Collection support for curated bundles
+  - Review and rating system for community feedback
+  - Usage tracking for analytics
+- **Admin Dashboard Enhancements**:
+  - Resource management interface with filtering and search
+  - Import hub for bulk resource ingestion
+  - Tag and category management
+  - Collection curation tools
+  - Review moderation interface
+
+#### Resource Processing
+- **ResourceProcessor Service**: Convert various file formats to Claude-friendly markdown
+- **ResourceManager Service**: Handle resource lifecycle, tagging, and recommendations
+- **GitHub Integration**: Import resources directly from repositories
+- **Quality Assessment**: AI-driven evaluation of resource completeness and usefulness
+
+#### API Enhancements
+- **Resource API Endpoints**:
+  - `/api/resources` - CRUD operations
+  - `/api/resources/[id]/tags` - Tag management
+  - `/api/resources/import` - Bulk import
+  - `/api/resources/recommendations` - AI recommendations
+  - `/api/resources/search` - Advanced search with facets
+- **Collection API**: Manage resource collections and bundles
+- **Review API**: Handle resource reviews and ratings
+
+### Improved
+- **Database Schema**: Enhanced with full resource management models
+- **Type System**: Comprehensive TypeScript types for all resource entities
+- **Build System**: Fixed all UI component import issues
+- **Admin Interface**: More intuitive and feature-rich admin pages
+
+### Fixed
+- **UI Component Imports**: Resolved all shadcn/ui component path issues
+- **TypeScript Paths**: Fixed tsconfig path aliases for proper module resolution
+- **Database Exports**: Properly exported Prisma client from database package
+- **Build Errors**: Resolved all package build and type checking errors
+
 ## [2.4.0] - 2025-08-19
 
 ### 🔒 Security & Infrastructure Hardening
