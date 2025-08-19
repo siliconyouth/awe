@@ -10,21 +10,35 @@ interface LogoProps {
 
 export function Logo({ className, size = 'md', variant = 'default' }: LogoProps) {
   const sizes = {
-    sm: 'h-5 w-auto',
-    md: 'h-6 w-auto',
-    lg: 'h-7 w-auto',
-    xl: 'h-8 w-auto',
+    sm: 'h-6 w-6',
+    md: 'h-8 w-8',
+    lg: 'h-10 w-10',
+    xl: 'h-12 w-12',
   }
 
-  const colors = {
-    default: 'text-foreground',
-    white: 'text-white',
-    black: 'text-black',
+  const fontSizes = {
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-lg',
+    xl: 'text-xl',
   }
 
   return (
-    <div className={cn(sizes[size], 'flex items-center justify-center font-bold', colors[variant], className)}>
-      <span style={{ fontSize: '1.2em', letterSpacing: '-0.02em' }}>a!</span>
+    <div 
+      className={cn(
+        sizes[size], 
+        'rounded-full flex items-center justify-center font-bold text-white shadow-md',
+        'bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500',
+        'hover:shadow-lg transition-shadow',
+        className
+      )}
+      style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #ffa585 100%)'
+      }}
+    >
+      <span className={cn('font-bold', fontSizes[size])} style={{ letterSpacing: '-0.02em' }}>
+        a!
+      </span>
     </div>
   )
 }
@@ -58,13 +72,14 @@ export function LogoIcon({ className, size = 32 }: { className?: string; size?: 
   return (
     <div 
       className={cn(
-        "flex items-center justify-center font-bold text-white bg-primary rounded-lg",
+        "flex items-center justify-center font-bold text-white rounded-full shadow-md",
         className
       )}
       style={{ 
         width: size, 
         height: size,
-        fontSize: size * 0.6
+        fontSize: size * 0.6,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #ffa585 100%)'
       }}
     >
       a!
