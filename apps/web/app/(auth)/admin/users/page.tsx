@@ -175,7 +175,7 @@ export default function AdminUsersPage() {
       </Alert>
 
       {/* User List Section */}
-      <Card className={cn("mb-6", designSystem.patterns.card, designSystem.animations.fadeIn)}>
+      <Card className={cn("mb-6", designSystem.components.card.default, designSystem.animations.fadeIn)}>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -248,7 +248,7 @@ export default function AdminUsersPage() {
           </div>
 
           {/* Users Table */}
-          <div className={cn("border rounded-lg overflow-hidden", designSystem.patterns.card)}>
+          <div className={cn("border rounded-lg overflow-hidden", designSystem.components.card.default)}>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -267,7 +267,7 @@ export default function AdminUsersPage() {
                       <div className="flex flex-col items-center gap-3">
                         <div className={cn(
                           "h-12 w-12 rounded-full bg-muted flex items-center justify-center",
-                          designSystem.animations.pulse
+                          'animate-pulse'
                         )}>
                           <Users className="h-6 w-6 text-muted-foreground" />
                         </div>
@@ -407,7 +407,7 @@ export default function AdminUsersPage() {
       )}
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className={cn(designSystem.patterns.card, designSystem.animations.fadeIn)}>
+        <Card className={cn(designSystem.components.card.default, designSystem.animations.fadeIn)}>
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
@@ -472,7 +472,7 @@ export default function AdminUsersPage() {
           </CardContent>
         </Card>
 
-        <Card className={cn(designSystem.patterns.card, designSystem.animations.fadeIn)}>
+        <Card className={cn(designSystem.components.card.default, designSystem.animations.fadeIn)}>
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-yellow-500/20 to-yellow-500/10 flex items-center justify-center">

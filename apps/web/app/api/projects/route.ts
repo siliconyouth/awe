@@ -101,15 +101,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if project already exists
-    const existing = await db.project.findUnique({
-      where: { path }
+    const existing = await db.project.findFirst({
+      where: { 
+        userId,
+        path 
+      }
     })
 
     let project
     if (existing) {
       // Update existing project
       project = await db.project.update({
-        where: { path },
+        where: { id: existing.id },
         data: {
           name,
           description,
@@ -124,6 +127,7 @@ export async function POST(request: NextRequest) {
       // Create new project
       project = await db.project.create({
         data: {
+          userId,
           name,
           path,
           description,

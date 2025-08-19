@@ -380,7 +380,7 @@ export default function KnowledgeAdmin() {
             <Button 
               size="sm"
               onClick={() => setShowAddSourceDialog(true)}
-              className={cn(designSystem.patterns.gradientButton)}
+              className={cn('bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90')}
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Source
@@ -392,13 +392,13 @@ export default function KnowledgeAdmin() {
       {/* Stats Grid */}
       <div className={cn(
         "grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8",
-        designSystem.animations.stagger
+        designSystem.animations.fadeIn
       )}>
         {stats.map((stat, index) => (
           <Card 
             key={stat.title}
             className={cn(
-              designSystem.patterns.card,
+              designSystem.components.card.default,
               designSystem.animations.fadeIn,
               designSystem.animations.hover.lift
             )}
@@ -439,7 +439,7 @@ export default function KnowledgeAdmin() {
         </TabsList>
 
         <TabsContent value="sources">
-          <Card className={cn(designSystem.patterns.card, designSystem.animations.fadeIn)}>
+          <Card className={cn(designSystem.components.card.default, designSystem.animations.fadeIn)}>
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div>
@@ -511,7 +511,7 @@ export default function KnowledgeAdmin() {
               </div>
 
               {/* Sources Table */}
-              <div className={cn("border rounded-lg overflow-hidden", designSystem.patterns.card)}>
+              <div className={cn("border rounded-lg overflow-hidden", designSystem.components.card.default)}>
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -530,8 +530,7 @@ export default function KnowledgeAdmin() {
                         <TableCell colSpan={7} className="text-center py-12">
                           <div className="flex flex-col items-center gap-3">
                             <div className={cn(
-                              "h-12 w-12 rounded-full bg-muted flex items-center justify-center",
-                              designSystem.animations.pulse
+                              "h-12 w-12 rounded-full bg-muted flex items-center justify-center"
                             )}>
                               <Database className="h-6 w-6 text-muted-foreground" />
                             </div>
@@ -679,7 +678,7 @@ export default function KnowledgeAdmin() {
         </TabsContent>
 
         <TabsContent value="patterns">
-          <Card className={cn(designSystem.patterns.card, designSystem.animations.fadeIn)}>
+          <Card className={cn(designSystem.components.card.default, designSystem.animations.fadeIn)}>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -848,7 +847,7 @@ export default function KnowledgeAdmin() {
             </Button>
             <Button 
               onClick={handleAddSource}
-              className={cn(designSystem.patterns.gradientButton)}
+              className={cn('bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90')}
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Source

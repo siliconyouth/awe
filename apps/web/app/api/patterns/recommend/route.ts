@@ -165,7 +165,7 @@ Format your response as a JSON array with this structure:
     }
 
     // Get full pattern details for recommendations
-    const patternIds = recommendations.map(r => r.patternId)
+    const patternIds = recommendations.map((r: any) => r.patternId)
     const fullPatterns = await db.extractedPattern.findMany({
       where: { id: { in: patternIds } },
       include: {
@@ -177,8 +177,8 @@ Format your response as a JSON array with this structure:
     })
 
     // Merge recommendation data with full pattern data
-    const enrichedRecommendations = recommendations.map(rec => {
-      const fullPattern = fullPatterns.find(p => p.id === rec.patternId)
+    const enrichedRecommendations = recommendations.map((rec: any) => {
+      const fullPattern = fullPatterns.find((p: any) => p.id === rec.patternId)
       return {
         ...rec,
         fullPattern,

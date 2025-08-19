@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     const scanResult = await scanner.scan()
 
     // Get relevant patterns if requested
-    let patterns = []
+    let patterns: any[] = []
     if (usePatterns) {
       // Fetch approved patterns that match project technologies
       const techQuery = scanResult.technologies.map(t => 
@@ -55,11 +55,6 @@ export async function POST(request: NextRequest) {
         where: {
           status: 'APPROVED',
           OR: [
-            // Patterns matching technologies
-            ...(techQuery ? [{
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              metadata: { path: '$.tags', array_contains: scanResult.technologies as any }
-            }] : []),
             // High relevance patterns
             { relevance: { gte: 0.8 } },
             // Best practices and security patterns
@@ -125,6 +120,7 @@ export async function POST(request: NextRequest) {
         },
         create: {
           id: projectId,
+          userId: userId,
           name: scanResult.name,
           path: scanResult.path,
           type: scanResult.type,

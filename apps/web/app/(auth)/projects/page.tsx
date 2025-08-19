@@ -194,7 +194,7 @@ export default function ProjectsPage() {
           <div className="text-center space-y-4">
             <div className={cn(
               'h-16 w-16 mx-auto rounded-full bg-muted flex items-center justify-center',
-              designSystem.animations.pulse
+              'animate-pulse'
             )}>
               <FolderOpen className="h-8 w-8 text-muted-foreground" />
             </div>
@@ -220,7 +220,7 @@ export default function ProjectsPage() {
         actions={
           <Button 
             onClick={() => setShowCreateDialog(true)}
-            className={cn(designSystem.patterns.gradientButton)}
+            className={cn('bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90')}
           >
             <Plus className="h-4 w-4 mr-2" />
             New Project
@@ -230,7 +230,7 @@ export default function ProjectsPage() {
 
       {/* Projects Grid */}
       {projects.length === 0 ? (
-        <Card className={cn(designSystem.patterns.card, designSystem.animations.fadeIn)}>
+        <Card className={cn(designSystem.components.card.default, designSystem.animations.fadeIn)}>
           <CardContent className="py-16">
             <EmptyState
               icon={FolderPlus}
@@ -246,7 +246,7 @@ export default function ProjectsPage() {
       ) : (
         <div className={cn(
           'grid gap-6 md:grid-cols-2 lg:grid-cols-3',
-          designSystem.animations.stagger
+          designSystem.animations.fadeIn
         )}>
           {projects.map((project, index) => {
             const Icon = getProjectIcon(project)
@@ -497,7 +497,7 @@ export default function ProjectsPage() {
             <Button
               onClick={editingProject ? handleUpdateProject : handleCreateProject}
               disabled={!projectData.name || saving}
-              className={cn(!projectData.name || saving ? '' : designSystem.patterns.gradientButton)}
+              className={cn(!projectData.name || saving ? '' : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90')}
             >
               {saving ? (
                 <>Saving...</>

@@ -127,7 +127,7 @@ function generateMarkdown(patterns: any[]): string {
   for (const [category, categoryPatterns] of Object.entries(grouped)) {
     markdown += `## ${category.replace(/_/g, ' ')}\n\n`
     
-    for (const pattern of categoryPatterns) {
+    for (const pattern of categoryPatterns as any[]) {
       markdown += `### ${pattern.pattern}\n\n`
       if (pattern.description) {
         markdown += `${pattern.description}\n\n`

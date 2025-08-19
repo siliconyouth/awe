@@ -711,6 +711,7 @@ export default function AnalyticsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      </div>
     </PageContainer>
   )
 }
