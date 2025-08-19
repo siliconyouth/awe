@@ -75,3 +75,4 @@ apps/web/apps.old/
 *.backup-*
 .env.local.backup*
 .env.local.old
+.vercel

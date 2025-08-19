@@ -17,7 +17,7 @@ export function Footer() {
               <Logo size="sm" variant="default" />
             </Link>
             <span className="text-sm text-muted-foreground">
-              © {currentYear} AWE - Awesome Workspace Engineering
+              © {currentYear} AWE
             </span>
           </div>
 
