@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       // Process latest update from source
       updateToProcess = await db.knowledgeUpdate.findFirst({
         where: { sourceId },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { scrapedAt: 'desc' },
         include: { source: true }
       })
       if (!updateToProcess) {

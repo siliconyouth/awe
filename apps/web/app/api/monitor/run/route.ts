@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
         // Check if content has changed
         const lastUpdate = await db.knowledgeUpdate.findFirst({
           where: { sourceId: source.id },
-          orderBy: { createdAt: 'desc' }
+          orderBy: { scrapedAt: 'desc' }
         })
 
         let changed = false
