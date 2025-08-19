@@ -245,6 +245,19 @@ export function ModernHeader() {
             </SignedIn>
 
             <SignedOut>
+              {/* Basic Navigation for non-authenticated users */}
+              <nav className="hidden md:flex items-center gap-6 mr-6">
+                <Link href="/docs" className="text-sm font-medium transition-colors hover:text-primary text-foreground/60">
+                  Documentation
+                </Link>
+                <Link href="/pricing" className="text-sm font-medium transition-colors hover:text-primary text-foreground/60">
+                  Pricing
+                </Link>
+                <Link href="/about" className="text-sm font-medium transition-colors hover:text-primary text-foreground/60">
+                  About
+                </Link>
+              </nav>
+
               {/* Theme Toggle */}
               <ThemeToggle />
 
