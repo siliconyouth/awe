@@ -16,7 +16,7 @@ import {
 import { themes } from "../../lib/themes"
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
@@ -25,21 +25,38 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="outline" size="icon">
-        <Palette className="h-[1.2rem] w-[1.2rem]" />
+      <Button variant="ghost" size="sm" className="gap-2">
+        <Palette className="h-4 w-4" />
         <span className="sr-only">Toggle theme</span>
       </Button>
     )
   }
 
-  // const currentTheme = themes.find(t => t.value === theme) || themes[0]
+  // Get the current theme display info
+  const getThemeIcon = () => {
+    if (theme === "system") {
+      return <Monitor className="h-4 w-4" />
+    }
+    if (resolvedTheme === "dark") {
+      return <Moon className="h-4 w-4" />
+    }
+    return <Sun className="h-4 w-4" />
+  }
+
+  const getThemeName = () => {
+    if (theme === "system") return "System"
+    if (theme === "dark") return "Dark"
+    if (theme === "light") return "Light"
+    const customTheme = themes.find(t => t.value === theme)
+    return customTheme?.name || "Light"
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <Button variant="ghost" size="sm" className="gap-2">
+          {getThemeIcon()}
+          <span className="hidden sm:inline-block text-sm">{getThemeName()}</span>
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
