@@ -110,6 +110,7 @@ export async function POST(request: NextRequest) {
         } else {
           // Simple change detection - compare content length
           // In production, you'd want to use a more sophisticated comparison
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const lastContent = lastUpdate.content as any
           changed = lastContent?.content !== scrapedData.content
         }

@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
     const contentToAnalyze = content || updateToProcess?.content || {}
     const textContent = typeof contentToAnalyze === 'string' 
       ? contentToAnalyze 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       : (contentToAnalyze as any).content || (contentToAnalyze as any).markdown || JSON.stringify(contentToAnalyze)
 
     // Extract patterns using Claude
