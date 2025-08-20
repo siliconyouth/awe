@@ -15,16 +15,16 @@ function Switch({
       className={cn(
         // Enhanced visibility with better contrast and size
         "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full",
-        "border-2 border-transparent transition-colors",
+        "border-2 border-transparent transition-all duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         "disabled:cursor-not-allowed disabled:opacity-50",
         // Unchecked state - more visible gray
-        "data-[state=unchecked]:bg-gray-200 dark:data-[state=unchecked]:bg-gray-700",
-        // Checked state - vibrant primary color
-        "data-[state=checked]:bg-primary",
+        "data-[state=unchecked]:bg-gray-300 dark:data-[state=unchecked]:bg-gray-600",
+        // Checked state - high contrast green for clear visibility
+        "data-[state=checked]:bg-green-600 dark:data-[state=checked]:bg-green-500",
         // Hover effects for better interactivity
-        "hover:data-[state=unchecked]:bg-gray-300 dark:hover:data-[state=unchecked]:bg-gray-600",
-        "hover:data-[state=checked]:bg-primary/90",
+        "hover:data-[state=unchecked]:bg-gray-400 dark:hover:data-[state=unchecked]:bg-gray-500",
+        "hover:data-[state=checked]:bg-green-700 dark:hover:data-[state=checked]:bg-green-400",
         className
       )}
       {...props}
