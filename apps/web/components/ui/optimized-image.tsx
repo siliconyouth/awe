@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { cn } from '../../lib/utils'
 import { Skeleton } from './skeleton'
 
@@ -18,6 +18,30 @@ interface OptimizedImageProps {
   blurDataURL?: string
   onLoad?: () => void
   onError?: () => void
+  fallbackSrc?: string
+  aspectRatio?: '1:1' | '16:9' | '4:3' | '3:2' | '21:9'
+}
+
+// Generate a simple blur placeholder
+const generateBlurPlaceholder = (width = 10, height = 10): string => {
+  if (typeof window === 'undefined') return ''
+  
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  
+  if (ctx) {
+    // Create a gradient placeholder
+    const gradient = ctx.createLinearGradient(0, 0, width, height)
+    gradient.addColorStop(0, '#f3f4f6')
+    gradient.addColorStop(0.5, '#e5e7eb')
+    gradient.addColorStop(1, '#d1d5db')
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, width, height)
+  }
+  
+  return canvas.toDataURL()
 }
 
 export function OptimizedImage({
@@ -31,13 +55,44 @@ export function OptimizedImage({
   fill = false,
   sizes,
   quality = 85,
-  placeholder,
+  placeholder = 'blur',
   blurDataURL,
   onLoad,
   onError,
+  fallbackSrc = '/images/placeholder.jpg',
+  aspectRatio,
 }: OptimizedImageProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+  const [imageSrc, setImageSrc] = useState(src)
+  const [generatedBlur, setGeneratedBlur] = useState<string>('')
+  
+  // Calculate dimensions based on aspect ratio
+  const getDimensions = () => {
+    if (aspectRatio && width && !height) {
+      const ratios: Record<string, number> = {
+        '1:1': 1,
+        '16:9': 9 / 16,
+        '4:3': 3 / 4,
+        '3:2': 2 / 3,
+        '21:9': 9 / 21
+      }
+      return {
+        width,
+        height: Math.round(width * ratios[aspectRatio])
+      }
+    }
+    return { width, height }
+  }
+  
+  const { width: calcWidth, height: calcHeight } = getDimensions()
+  
+  // Generate blur placeholder on mount
+  useEffect(() => {
+    if (!blurDataURL && placeholder === 'blur') {
+      setGeneratedBlur(generateBlurPlaceholder())
+    }
+  }, [blurDataURL, placeholder])
 
   const handleLoad = () => {
     setIsLoading(false)
@@ -47,7 +102,14 @@ export function OptimizedImage({
   const handleError = () => {
     setIsLoading(false)
     setHasError(true)
-    onError?.()
+    // Try fallback image
+    if (fallbackSrc && imageSrc !== fallbackSrc) {
+      setImageSrc(fallbackSrc)
+      setHasError(false)
+      setIsLoading(true)
+    } else {
+      onError?.()
+    }
   }
 
   if (hasError) {
@@ -92,16 +154,16 @@ export function OptimizedImage({
         />
       )}
       <Image
-        src={src}
+        src={imageSrc}
         alt={alt}
-        width={fill ? undefined : width}
-        height={fill ? undefined : height}
+        width={fill ? undefined : calcWidth}
+        height={fill ? undefined : calcHeight}
         fill={fill}
         sizes={sizes || (fill ? '100vw' : undefined)}
         priority={priority}
         quality={quality}
         placeholder={placeholder}
-        blurDataURL={blurDataURL}
+        blurDataURL={blurDataURL || generatedBlur}
         className={cn(
           className,
           isLoading && 'opacity-0',
