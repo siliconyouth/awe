@@ -32,7 +32,7 @@ export async function GET(
                 _count: {
                   select: {
                     reviews: true,
-                    usages: true
+                    usage: true
                   }
                 }
               }

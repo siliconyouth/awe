@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
           path: scanResult.path,
           description: `${scanResult.type} project with ${scanResult.languages.join(', ')}`,
           fileCount: scanResult.fileCount,
-          optimizationLevel: patterns.length / 10 // Simple optimization score
+          optimizationLevel: String(Math.round(patterns.length / 10)) // Simple optimization score as string
         },
         patterns,
         technologies: scanResult.technologies,

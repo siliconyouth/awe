@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@awe/database'
 import { auth } from '@clerk/nextjs/server'
-import { PatternExtractor } from '@awe/ai'
+import { PatternRecognitionEngine } from '@awe/ai'
 import { z } from 'zod'
 
 const extractSchema = z.object({
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { sources, options } = extractSchema.parse(body)
     
-    const extractor = new PatternExtractor()
+    const engine = new PatternRecognitionEngine()
     const allPatterns = []
     
     // Process each source
@@ -39,12 +39,12 @@ export async function POST(request: NextRequest) {
           // Fetch content from URL
           const response = await fetch(source.content)
           const text = await response.text()
-          patterns = await extractor.extractFromText(text, options)
+          patterns = await engine.analyzeCode(text)
         } else if (source.type === 'text') {
-          patterns = await extractor.extractFromText(source.content, options)
+          patterns = await engine.analyzeCode(source.content)
         } else if (source.type === 'file') {
           // For file uploads, content would be base64 or similar
-          patterns = await extractor.extractFromText(source.content, options)
+          patterns = await engine.analyzeCode(source.content)
         }
         
         allPatterns.push(...patterns)

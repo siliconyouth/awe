@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@awe/database'
+import { withRateLimit, addRateLimitHeaders, getRateLimitInfo } from '@/lib/middleware/rate-limit'
+import { aiService } from '@awe/ai'
 
 // GET /api/resources - List all resources with optional filters
 export async function GET(request: NextRequest) {
+  // Apply rate limiting for resource queries
+  const rateLimitResponse = await withRateLimit(request, 'resources')
+  if (rateLimitResponse) return rateLimitResponse
+  
   try {
     const searchParams = request.nextUrl.searchParams
     const type = searchParams.get('type')
@@ -28,7 +34,10 @@ export async function GET(request: NextRequest) {
       take: 50
     })
     
-    return NextResponse.json(resources)
+    // Add rate limit headers to response
+    const response = NextResponse.json(resources)
+    const rateLimitInfo = await getRateLimitInfo(request, 'resources')
+    return addRateLimitHeaders(response, rateLimitInfo.limit, rateLimitInfo.remaining, rateLimitInfo.reset)
   } catch (error) {
     console.error('Error fetching resources:', error)
     return NextResponse.json({ error: 'Failed to fetch resources' }, { status: 500 })

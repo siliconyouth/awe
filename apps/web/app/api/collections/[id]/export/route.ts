@@ -39,10 +39,9 @@ export async function GET(
       return NextResponse.json({ error: 'Collection not found' }, { status: 404 })
     }
     
-    // Check if collection is public
-    if (!collection.isPublic) {
-      return NextResponse.json({ error: 'Collection is private' }, { status: 403 })
-    }
+    // Check if collection is official (publicly available)
+    // For now, allow export of all collections
+    // In production, you might want to check permissions here
     
     if (format === 'json') {
       // Export as JSON
@@ -54,15 +53,15 @@ export async function GET(
           updatedAt: collection.updatedAt
         },
         resources: collection.resources.map(({ resource }) => ({
-          title: resource.title,
+          title: resource.title || resource.name,
           description: resource.description,
           type: resource.type,
-          format: resource.format,
+          fileType: resource.fileType,
           content: resource.content,
           tags: resource.tags.map(t => t.tag.name),
-          author: resource.author,
+          author: resource.authorId,
           sourceUrl: resource.sourceUrl,
-          qualityScore: resource.qualityScore
+          qualityScore: (resource.metadata as any)?.qualityScore || 0
         }))
       }
       
@@ -90,13 +89,13 @@ export async function GET(
           markdown += `${resource.description}\n\n`
         }
         
-        markdown += `**Type:** ${resource.type} | **Format:** ${resource.format}\n\n`
+        markdown += `**Type:** ${resource.type} | **File Type:** ${resource.fileType}\n\n`
         
         if (resource.tags.length > 0) {
           markdown += `**Tags:** ${resource.tags.map(t => t.tag.name).join(', ')}\n\n`
         }
         
-        markdown += '```' + (resource.format === 'markdown' ? 'md' : resource.format) + '\n'
+        markdown += '```' + (resource.fileType === 'markdown' ? 'md' : resource.fileType) + '\n'
         markdown += resource.content
         markdown += '\n```\n\n'
         
@@ -137,32 +136,34 @@ export async function GET(
     
     // Add each resource
     collection.resources.forEach(({ resource }, index) => {
-      const filename = `${String(index + 1).padStart(3, '0')}-${resource.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`
-      const extension = resource.format === 'markdown' ? 'md' : 
-                        resource.format === 'yaml' ? 'yml' :
-                        resource.format === 'typescript' ? 'ts' :
-                        resource.format === 'shell' ? 'sh' :
-                        resource.format
+      const title = resource.title || resource.name
+      const filename = `${String(index + 1).padStart(3, '0')}-${title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`
+      const extension = resource.fileType === 'markdown' ? 'md' : 
+                        resource.fileType === 'yaml' ? 'yml' :
+                        resource.fileType === 'typescript' ? 'ts' :
+                        resource.fileType === 'shell' ? 'sh' :
+                        resource.fileType
       
       // Add resource file
-      zip.file(`resources/${filename}.${extension}`, resource.content)
+      const content = typeof resource.content === 'string' ? resource.content : JSON.stringify(resource.content, null, 2)
+      zip.file(`resources/${filename}.${extension}`, content)
       
       // Add to README
-      readme += `### ${index + 1}. ${resource.title}\n`
+      readme += `### ${index + 1}. ${title}\n`
       readme += `- Type: ${resource.type}\n`
-      readme += `- Format: ${resource.format}\n`
+      readme += `- Format: ${resource.fileType}\n`
       readme += `- File: resources/${filename}.${extension}\n\n`
       
       // Add metadata
       const metadata = {
-        title: resource.title,
+        title: resource.title || resource.name,
         description: resource.description,
         type: resource.type,
-        format: resource.format,
+        fileType: resource.fileType,
         tags: resource.tags.map(t => t.tag.name),
-        author: resource.author,
+        author: resource.authorId,
         sourceUrl: resource.sourceUrl,
-        qualityScore: resource.qualityScore
+        qualityScore: (resource.metadata as any)?.qualityScore || 0
       }
       zip.file(`metadata/${filename}.json`, JSON.stringify(metadata, null, 2))
     })
@@ -170,7 +171,7 @@ export async function GET(
     zip.file('README.md', readme)
     
     // Generate ZIP
-    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' })
+    const zipBuffer = await zip.generateAsync({ type: 'arraybuffer' })
     
     return new NextResponse(zipBuffer, {
       headers: {

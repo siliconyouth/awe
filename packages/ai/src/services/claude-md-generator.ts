@@ -1,5 +1,30 @@
 import Anthropic from '@anthropic-ai/sdk'
-import type { Project, ExtractedPattern } from '@prisma/client'
+
+// Define types locally instead of importing from Prisma
+interface Project {
+  id: string
+  name: string
+  description?: string | null
+  path?: string | null
+  framework?: string | null
+  language?: string | null
+  fileCount?: number | null
+  optimizationLevel?: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+interface ExtractedPattern {
+  id: string
+  name: string
+  description: string
+  category: string
+  code: string
+  pattern?: string | null
+  projectId: string
+  createdAt: Date
+  updatedAt: Date
+}
 
 export interface ProjectContext {
   project: Partial<Project>
