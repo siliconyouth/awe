@@ -209,10 +209,12 @@ export default function AdminResourcesPage() {
                             <Eye className="mr-2 h-4 w-4" />
                             View
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit
-                          </DropdownMenuItem>
+                          <Link href={`/admin/resources/${resource.id}/edit`}>
+                            <DropdownMenuItem>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                          </Link>
                           <DropdownMenuItem 
                             className="text-red-600"
                             onClick={() => handleDelete(resource.id)}
