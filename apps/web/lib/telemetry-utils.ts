@@ -20,11 +20,10 @@ export async function trackEvent(data: TelemetryData): Promise<void> {
   try {
     await prisma.telemetryEvent.create({
       data: {
-        eventType: data.eventType,
+        event: data.eventType,
         userId: data.userId,
         projectId: data.projectId,
-        payload: data.payload ? JSON.stringify(data.payload) : undefined,
-        metadata: data.metadata || {},
+        data: data.payload || data.metadata || {},
         createdAt: new Date()
       }
     })
@@ -152,21 +151,21 @@ export async function getTelemetryStats(
         }
       },
       select: {
-        eventType: true,
+        event: true,
         userId: true,
-        payload: true
+        data: true
       }
     })
 
-    const apiRequests = events.filter(e => e.eventType === 'api_request')
-    const errors = events.filter(e => e.eventType === 'error')
+    const apiRequests = events.filter(e => e.event === 'api_request')
+    const errors = events.filter(e => e.event === 'error')
     const uniqueUsers = new Set(events.filter(e => e.userId).map(e => e.userId))
     
     // Calculate average response time
     const responseTimes = apiRequests
       .map(e => {
         try {
-          const payload = typeof e.payload === 'string' ? JSON.parse(e.payload) : e.payload
+          const payload = e.data as any
           return payload?.responseTime || 0
         } catch {
           return 0

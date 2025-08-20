@@ -101,11 +101,11 @@ export async function GET(request: NextRequest) {
       prisma.telemetryEvent.findMany({
         where: {
           createdAt: { gte: startDate },
-          eventType: { in: ['api_request', 'error', 'performance'] }
+          event: { in: ['api_request', 'error', 'performance'] }
         },
         select: {
-          eventType: true,
-          payload: true,
+          event: true,
+          data: true,
           createdAt: true
         },
         orderBy: { createdAt: 'desc' },
@@ -134,21 +134,21 @@ export async function GET(request: NextRequest) {
       prisma.telemetryEvent.count({
         where: {
           createdAt: { gte: startDate },
-          eventType: 'error'
+          event: 'error'
         }
       }).catch(() => 0)
     ])
 
     // Calculate metrics from telemetry events
-    const apiRequests = telemetryEvents.filter(e => e.eventType === 'api_request')
-    const errors = telemetryEvents.filter(e => e.eventType === 'error')
-    const performanceEvents = telemetryEvents.filter(e => e.eventType === 'performance')
+    const apiRequests = telemetryEvents.filter(e => e.event === 'api_request')
+    const errors = telemetryEvents.filter(e => e.event === 'error')
+    const performanceEvents = telemetryEvents.filter(e => e.event === 'performance')
     
     // Calculate response times from performance events
     const responseTimes = performanceEvents
       .map(e => {
         try {
-          const payload = typeof e.payload === 'string' ? JSON.parse(e.payload) : e.payload
+          const payload = e.data as any
           return payload?.duration || payload?.responseTime || 0
         } catch {
           return 0
@@ -229,7 +229,7 @@ export async function GET(request: NextRequest) {
             gte: previousStartDate,
             lt: startDate
           },
-          eventType: 'api_request'
+          event: 'api_request'
         }
       }).catch(() => 0)
     ])
@@ -286,7 +286,7 @@ export async function GET(request: NextRequest) {
       aiUsage: {
         totalRequests: telemetryEvents.filter(e => {
           try {
-            const payload = typeof e.payload === 'string' ? JSON.parse(e.payload) : e.payload
+            const payload = e.data as any
             return payload?.provider === 'anthropic' || payload?.provider === 'openai'
           } catch {
             return false
@@ -294,7 +294,7 @@ export async function GET(request: NextRequest) {
         }).length,
         claudeRequests: telemetryEvents.filter(e => {
           try {
-            const payload = typeof e.payload === 'string' ? JSON.parse(e.payload) : e.payload
+            const payload = e.data as any
             return payload?.provider === 'anthropic'
           } catch {
             return false
@@ -302,7 +302,7 @@ export async function GET(request: NextRequest) {
         }).length,
         openaiRequests: telemetryEvents.filter(e => {
           try {
-            const payload = typeof e.payload === 'string' ? JSON.parse(e.payload) : e.payload
+            const payload = e.data as any
             return payload?.provider === 'openai'
           } catch {
             return false

@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
       // Downloads (from telemetry events)
       prisma.telemetryEvent.count({
         where: {
-          eventType: 'resource_download',
+          event: 'resource_download',
           createdAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
           }
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
       // Views (from telemetry events)
       prisma.telemetryEvent.count({
         where: {
-          eventType: 'resource_view',
+          event: 'resource_view',
           createdAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
           }
