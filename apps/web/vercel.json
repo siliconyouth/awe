@@ -1,21 +1,8 @@
 {
-  "buildCommand": "cd ../.. && pnpm turbo build --filter=web",
-  "devCommand": "pnpm dev",
-  "installCommand": "cd ../.. && pnpm install",
-  "outputDirectory": ".next",
-  "framework": "nextjs",
-  "crons": [
-    {
-      "path": "/api/monitor/cron/hourly",
-      "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/monitor/cron/daily",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/monitor/cron/weekly",
-      "schedule": "0 0 * * 0"
+  "regions": ["iad1"],
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
     }
-  ]
+  }
 }
