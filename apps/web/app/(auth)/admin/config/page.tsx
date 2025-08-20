@@ -565,13 +565,20 @@ function ScraperConfigSection({ config, onChange }: ScraperConfigSectionProps) {
           </div>
         </div>
         
-        <div className="flex items-center space-x-2 mt-4">
+        <div className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors mt-4">
+          <div className="space-y-0.5">
+            <Label htmlFor="rate-enabled" className="text-base font-medium cursor-pointer">
+              Enable Rate Limiting
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              Prevent overwhelming target servers with requests
+            </p>
+          </div>
           <Switch
             id="rate-enabled"
             checked={config?.rateLimit?.enabled || false}
             onCheckedChange={(v) => onChange('scraper.rateLimit.enabled', v)}
           />
-          <Label htmlFor="rate-enabled">Enable Rate Limiting</Label>
         </div>
       </div>
       
