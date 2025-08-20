@@ -1,47 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@awe/database'
 import { withRateLimit, addRateLimitHeaders, getRateLimitInfo } from '@/lib/middleware/rate-limit'
+import { withCache } from '@/lib/cache-middleware'
 import { aiService } from '@awe/ai'
 
 // GET /api/resources - List all resources with optional filters
 export async function GET(request: NextRequest) {
-  // Apply rate limiting for resource queries
-  const rateLimitResponse = await withRateLimit(request, 'resources')
-  if (rateLimitResponse) return rateLimitResponse
-  
-  try {
-    const searchParams = request.nextUrl.searchParams
-    const type = searchParams.get('type')
-    const search = searchParams.get('search')
+  // Wrap the handler with caching
+  return withCache(async (req) => {
+    // Apply rate limiting for resource queries
+    const rateLimitResponse = await withRateLimit(req, 'resources')
+    if (rateLimitResponse) return rateLimitResponse
     
-    const where: any = {}
-    
-    if (type) {
-      where.type = type
+    try {
+      const searchParams = req.nextUrl.searchParams
+      const type = searchParams.get('type')
+      const search = searchParams.get('search')
+      
+      const where: any = {}
+      
+      if (type) {
+        where.type = type
+      }
+      
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+          { tags: { has: search.toLowerCase() } }
+        ]
+      }
+      
+      const resources = await prisma.resource.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take: 50
+      })
+      
+      // Add rate limit headers to response
+      const response = NextResponse.json(resources)
+      const rateLimitInfo = await getRateLimitInfo(req, 'resources')
+      return addRateLimitHeaders(response, rateLimitInfo.limit, rateLimitInfo.remaining, rateLimitInfo.reset)
+    } catch (error) {
+      console.error('Error fetching resources:', error)
+      return NextResponse.json({ error: 'Failed to fetch resources' }, { status: 500 })
     }
-    
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { tags: { has: search.toLowerCase() } }
-      ]
-    }
-    
-    const resources = await prisma.resource.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      take: 50
-    })
-    
-    // Add rate limit headers to response
-    const response = NextResponse.json(resources)
-    const rateLimitInfo = await getRateLimitInfo(request, 'resources')
-    return addRateLimitHeaders(response, rateLimitInfo.limit, rateLimitInfo.remaining, rateLimitInfo.reset)
-  } catch (error) {
-    console.error('Error fetching resources:', error)
-    return NextResponse.json({ error: 'Failed to fetch resources' }, { status: 500 })
-  }
+  }, {
+    ttl: 300, // Cache for 5 minutes
+    keyPrefix: 'resources',
+    includeAuth: false // Public endpoint
+  })(request)
 }
 
 // POST /api/resources - Create a new resource (for seeding)
