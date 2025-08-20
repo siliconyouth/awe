@@ -33,47 +33,42 @@ import {
   Database
 } from 'lucide-react'
 
-// Mock data - replace with real API calls
-const generateMockData = () => ({
+// Default empty data structure
+const getEmptyData = () => ({
   overview: {
-    totalUsers: 12543,
-    activeUsers: 3421,
-    totalResources: 45678,
-    totalPatterns: 8923,
-    avgResponseTime: 234,
-    apiCalls: 1234567,
-    errorRate: 0.02,
-    cacheHitRate: 0.89
+    totalUsers: 0,
+    activeUsers: 0,
+    totalResources: 0,
+    totalPatterns: 0,
+    totalProjects: 0,
+    avgResponseTime: 0,
+    apiCalls: 0,
+    errorRate: 0,
+    cacheHitRate: 0
   },
   trends: {
-    users: { current: 3421, previous: 3102, change: 10.3 },
-    resources: { current: 45678, previous: 42341, change: 7.9 },
-    patterns: { current: 8923, previous: 8456, change: 5.5 },
-    apiCalls: { current: 234567, previous: 198234, change: 18.3 }
+    users: { current: 0, previous: 0, change: 0 },
+    resources: { current: 0, previous: 0, change: 0 },
+    patterns: { current: 0, previous: 0, change: 0 },
+    apiCalls: { current: 0, previous: 0, change: 0 }
   },
   performance: {
-    uptime: 99.98,
-    avgResponseTime: 234,
-    p95ResponseTime: 456,
-    p99ResponseTime: 892,
-    errorRate: 0.02,
-    requestsPerMinute: 1234
+    uptime: 100,
+    avgResponseTime: 0,
+    p95ResponseTime: 0,
+    p99ResponseTime: 0,
+    errorRate: 0,
+    requestsPerMinute: 0
   },
   aiUsage: {
-    totalRequests: 45678,
-    claudeRequests: 34567,
-    openaiRequests: 11111,
-    tokensUsed: 12345678,
-    costEstimate: 234.56,
-    avgTokensPerRequest: 270
+    totalRequests: 0,
+    claudeRequests: 0,
+    openaiRequests: 0,
+    tokensUsed: 0,
+    costEstimate: 0,
+    avgTokensPerRequest: 0
   },
-  topResources: [
-    { name: 'Claude Code Best Practices', views: 8234, rating: 4.8 },
-    { name: 'TypeScript Advanced Patterns', views: 6543, rating: 4.9 },
-    { name: 'React Performance Guide', views: 5432, rating: 4.7 },
-    { name: 'Node.js Security Checklist', views: 4321, rating: 4.6 },
-    { name: 'Database Optimization Tips', views: 3210, rating: 4.5 }
-  ]
+  topResources: []
 })
 
 export default function AnalyticsPage() {
@@ -83,20 +78,44 @@ export default function AnalyticsPage() {
   const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
-    // Simulate loading data
-    setTimeout(() => {
-      setData(generateMockData())
-      setLoading(false)
-    }, 1000)
+    const fetchAnalytics = async () => {
+      setLoading(true)
+      try {
+        const response = await fetch(`/api/admin/analytics?timeRange=${timeRange}`)
+        const result = await response.json()
+        
+        if (result.success && result.data) {
+          setData(result.data)
+        } else {
+          // Use empty data if API fails
+          setData(getEmptyData())
+        }
+      } catch (error) {
+        console.error('Failed to fetch analytics:', error)
+        // Use empty data on error
+        setData(getEmptyData())
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAnalytics()
   }, [timeRange])
 
   const handleRefresh = async () => {
     setRefreshing(true)
-    // Simulate refresh
-    setTimeout(() => {
-      setData(generateMockData())
+    try {
+      const response = await fetch(`/api/admin/analytics?timeRange=${timeRange}`)
+      const result = await response.json()
+      
+      if (result.success && result.data) {
+        setData(result.data)
+      }
+    } catch (error) {
+      console.error('Failed to refresh analytics:', error)
+    } finally {
       setRefreshing(false)
-    }, 1500)
+    }
   }
 
   const formatNumber = (num: number) => {
@@ -400,19 +419,27 @@ export default function AnalyticsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data.topResources.map((resource: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between p-3 rounded-lg border">
-                    <div className="flex-1">
-                      <div className="font-medium">{resource.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {formatNumber(resource.views)} views
+                {data.topResources && data.topResources.length > 0 ? (
+                  data.topResources.map((resource: any, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div className="flex-1">
+                        <div className="font-medium">{resource.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {formatNumber(resource.views)} views
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">⭐ {resource.rating.toFixed(1)}</Badge>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">⭐ {resource.rating}</Badge>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Database className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No resources found yet</p>
+                    <p className="text-sm mt-1">Resources will appear here once published</p>
                   </div>
-                ))}
+                )}
               </div>
             </CardContent>
           </Card>

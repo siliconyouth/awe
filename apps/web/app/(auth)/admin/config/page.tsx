@@ -33,6 +33,106 @@ import type {
   FeaturesConfigSectionProps
 } from '../../../../types/config'
 
+// Default configuration structure
+const getDefaultConfig = (): SystemConfig => ({
+  app: {
+    name: 'AWE Platform',
+    version: '2.5.0',
+    debug: false,
+    logging: {
+      level: 'info',
+      format: 'json'
+    },
+    metrics: {
+      enabled: false
+    }
+  },
+  scraper: {
+    engine: {
+      defaultEngine: 'auto',
+      timeout: 30000,
+      retries: 3,
+      retryDelay: 1000
+    },
+    rateLimit: {
+      enabled: true,
+      default: {
+        requests: 10,
+        window: 60000
+      }
+    },
+    proxy: {
+      enabled: false,
+      rotation: {
+        enabled: false
+      }
+    }
+  },
+  knowledge: {
+    monitoring: {
+      enabled: false,
+      intervals: {
+        hourly: 3600000,
+        daily: 86400000
+      }
+    },
+    moderation: {
+      enabled: false,
+      provider: 'anthropic'
+    },
+    processing: {
+      enrichment: {
+        enabled: false
+      },
+      transformation: {
+        toMarkdown: true
+      }
+    }
+  },
+  api: {
+    port: 3000,
+    timeout: {
+      request: 10000
+    },
+    cors: {
+      enabled: true,
+      origins: ['*']
+    },
+    rateLimit: {
+      enabled: true,
+      maxRequests: 100,
+      windowMs: 60000
+    }
+  },
+  auth: {
+    provider: 'clerk',
+    clerk: {
+      signInUrl: '/sign-in',
+      signUpUrl: '/sign-up',
+      afterSignInUrl: '/dashboard',
+      afterSignUpUrl: '/projects'
+    },
+    session: {
+      maxAge: 86400000,
+      sameSite: 'lax',
+      secure: true,
+      httpOnly: true
+    }
+  },
+  features: {
+    flags: {
+      'advanced-scraping': false,
+      'distributed-crawling': false,
+      'ai-moderation': false,
+      'pattern-extraction': true,
+      'hot-reloading': false,
+      'metrics-collection': false,
+      'email-notifications': false,
+      'webhook-integration': false
+    }
+  }
+})
+
 const configSections: ConfigSection[] = [
   {
     id: 'app',
@@ -87,17 +187,27 @@ export default function ConfigPage() {
       const data = await response.json()
       
       if (data.success) {
-        setConfig(data.data)
-        setEnvironment(data.environment)
+        setConfig(data.data || getDefaultConfig())
+        setEnvironment(data.environment || 'development')
+      } else if (response.status === 403) {
+        // Permission denied - show default config in read-only mode
+        setConfig(getDefaultConfig())
+        setEnvironment('development')
+        toast({
+          title: 'Limited Access',
+          description: 'Viewing configuration in read-only mode',
+          variant: 'default'
+        })
       } else {
-        throw new Error(data.error)
+        // Use default config on error
+        setConfig(getDefaultConfig())
+        setEnvironment('development')
       }
     } catch (error) {
-      toast({
-        title: 'Error loading configuration',
-        description: error instanceof Error ? error.message : 'Unknown error',
-        variant: 'destructive'
-      })
+      // Use default config on error
+      setConfig(getDefaultConfig())
+      setEnvironment('development')
+      console.error('Config load error:', error)
     } finally {
       setLoading(false)
     }

@@ -85,19 +85,29 @@ export default function AdminDashboard() {
 
       if (statsRes.ok) {
         const statsData = await statsRes.json()
-        setStats(statsData)
-      } else {
-        // Use mock data if API fails
         setStats({
-          totalResources: 156,
-          verifiedResources: 89,
-          totalCollections: 12,
-          totalTags: 234,
-          totalUsers: 1847,
-          activeUsers: 423,
-          totalDownloads: 15234,
-          totalViews: 48293,
-          avgQuality: 82
+          totalResources: statsData.totalResources || 0,
+          verifiedResources: statsData.verifiedResources || 0,
+          totalCollections: statsData.totalCollections || 0,
+          totalTags: statsData.totalTags || 0,
+          totalUsers: statsData.totalUsers || 0,
+          activeUsers: statsData.activeUsers || 0,
+          totalDownloads: statsData.totalDownloads || 0,
+          totalViews: statsData.totalViews || 0,
+          avgQuality: statsData.avgQuality || 0
+        })
+      } else {
+        // Use empty data if API fails (safe defaults)
+        setStats({
+          totalResources: 0,
+          verifiedResources: 0,
+          totalCollections: 0,
+          totalTags: 0,
+          totalUsers: 0,
+          activeUsers: 0,
+          totalDownloads: 0,
+          totalViews: 0,
+          avgQuality: 0
         })
       }
 
@@ -120,54 +130,58 @@ export default function AdminDashboard() {
   const statsCards = [
     {
       title: 'Total Resources',
-      value: stats.totalResources,
-      change: '+12%',
-      trend: 'up',
+      value: stats.totalResources || 0,
+      change: stats.totalResources > 0 ? 'Active' : 'No data',
+      trend: stats.totalResources > 0 ? 'up' : 'neutral',
       icon: Sparkles,
       href: '/admin/resources',
       color: 'text-violet-500'
     },
     {
       title: 'Verified',
-      value: stats.verifiedResources,
-      change: '+8%',
-      trend: 'up',
+      value: stats.verifiedResources || 0,
+      change: stats.totalResources > 0 
+        ? `${Math.round((stats.verifiedResources / stats.totalResources) * 100)}%` 
+        : '0%',
+      trend: stats.verifiedResources > 0 ? 'up' : 'neutral',
       icon: FileText,
       href: '/admin/resources?verified=true',
       color: 'text-green-500'
     },
     {
       title: 'Collections',
-      value: stats.totalCollections,
-      change: '+2',
-      trend: 'up',
+      value: stats.totalCollections || 0,
+      change: stats.totalCollections > 0 ? 'Active' : 'Empty',
+      trend: 'neutral',
       icon: Package,
       href: '/admin/collections',
       color: 'text-blue-500'
     },
     {
       title: 'Total Tags',
-      value: stats.totalTags,
-      change: '+23',
-      trend: 'up',
+      value: stats.totalTags || 0,
+      change: stats.totalTags > 0 ? 'In use' : 'None',
+      trend: 'neutral',
       icon: Tags,
       href: '/admin/tags',
       color: 'text-orange-500'
     },
     {
       title: 'Active Users',
-      value: stats.activeUsers,
-      change: '+5%',
-      trend: 'up',
+      value: stats.activeUsers || 0,
+      change: stats.totalUsers > 0 
+        ? `${Math.round((stats.activeUsers / stats.totalUsers) * 100)}% active`
+        : 'No users',
+      trend: stats.activeUsers > 0 ? 'up' : 'neutral',
       icon: Users,
       href: '/admin/users',
       color: 'text-pink-500'
     },
     {
       title: 'Downloads',
-      value: stats.totalDownloads.toLocaleString(),
-      change: '+18%',
-      trend: 'up',
+      value: (stats.totalDownloads || 0).toLocaleString(),
+      change: stats.totalDownloads > 0 ? 'This month' : 'No activity',
+      trend: stats.totalDownloads > 0 ? 'up' : 'neutral',
       icon: Download,
       href: '/admin/analytics',
       color: 'text-indigo-500'
