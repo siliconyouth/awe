@@ -20,6 +20,7 @@ import {
   Sparkles
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ClientLayout } from '@/components/providers/client-layout'
 
 const adminNavItems = [
   {
@@ -111,17 +112,20 @@ export default function AdminLayout({
 
   if (!isLoaded) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
+      <ClientLayout>
+        <div className="flex h-[50vh] items-center justify-center">
+          <div className="text-muted-foreground">Loading...</div>
+        </div>
+      </ClientLayout>
     )
   }
 
   return (
-    <div className="flex">
-      {/* Admin Sidebar */}
-      <aside className="w-[240px] min-h-[calc(100vh-4rem)] border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="sticky top-16 p-4">
+    <ClientLayout>
+      <div className="flex">
+        {/* Admin Sidebar */}
+        <aside className="w-[240px] min-h-[calc(100vh-4rem)] border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="sticky top-16 p-4">
           {/* Admin Header */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold">Admin Panel</h2>
@@ -171,10 +175,11 @@ export default function AdminLayout({
         </div>
       </aside>
       
-      {/* Main Content */}
-      <main className="flex-1 p-8">
-        {children}
-      </main>
-    </div>
+        {/* Main Content */}
+        <main className="flex-1 p-8">
+          {children}
+        </main>
+      </div>
+    </ClientLayout>
   )
 }
