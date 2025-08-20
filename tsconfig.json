@@ -18,8 +18,8 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "verbatimModuleSyntax": false,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],

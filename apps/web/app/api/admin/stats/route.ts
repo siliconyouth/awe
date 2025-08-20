@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@awe/database'
-import { checkUserRole } from '../../../../lib/auth-utils'
-import { cache } from '../../../../lib/upstash'
+import { checkUserRole } from '@/lib/auth-utils'
+import { cache } from '@/lib/upstash'
 
 export async function GET(request: NextRequest) {
   try {
