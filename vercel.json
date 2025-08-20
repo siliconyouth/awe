@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs",
+  "framework": null,
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm build",
-  "outputDirectory": "apps/web/.next",
+  "buildCommand": "pnpm build && echo 'Build artifacts location:' && ls -la apps/web/.next",
+  "outputDirectory": "apps/web",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet -- apps/web packages",
   "git": {
     "deploymentEnabled": {
