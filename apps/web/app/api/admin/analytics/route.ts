@@ -5,6 +5,10 @@ import { cache } from '@/lib/upstash'
 import { checkUserRole } from '@/lib/auth-utils'
 
 export async function GET(request: NextRequest) {
+  // Get time range from query params (outside try for error handler access)
+  const searchParams = request.nextUrl.searchParams
+  const timeRange = searchParams.get('timeRange') || '7d'
+  
   try {
     // Check authentication
     const session = await auth()
@@ -23,10 +27,6 @@ export async function GET(request: NextRequest) {
         { status: 403 }
       )
     }
-
-    // Get time range from query params
-    const searchParams = request.nextUrl.searchParams
-    const timeRange = searchParams.get('timeRange') || '7d'
     
     // Calculate date range
     const now = new Date()

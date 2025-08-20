@@ -56,7 +56,7 @@ export async function getCurrentUser() {
 /**
  * Ensure user exists in database (for webhook sync)
  */
-export async function ensureUserExists(clerkId: string, email: string, name?: string) {
+export async function ensureUserExists(clerkId: string, email: string, firstName?: string, lastName?: string) {
   try {
     const existingUser = await prisma.user.findUnique({
       where: { clerkId }
@@ -71,7 +71,8 @@ export async function ensureUserExists(clerkId: string, email: string, name?: st
       data: {
         clerkId,
         email,
-        name: name || email.split('@')[0],
+        firstName: firstName || email.split('@')[0],
+        lastName: lastName || '',
         role: 'user',
         lastSignIn: new Date()
       }
