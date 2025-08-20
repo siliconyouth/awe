@@ -376,7 +376,7 @@ export async function GET(request: NextRequest) {
           avgTokensPerRequest: 0
         },
         topResources: [],
-        timeRange: searchParams.get('timeRange') || '7d',
+        timeRange: timeRange || '7d',
         generatedAt: new Date().toISOString(),
         error: 'Failed to fetch some metrics'
       }
