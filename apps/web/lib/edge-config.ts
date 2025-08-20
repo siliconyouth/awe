@@ -103,7 +103,7 @@ class EdgeConfigService {
         })
       }
       
-      return allConfig as EdgeConfigData
+      return allConfig as unknown as EdgeConfigData
     } catch (error) {
       console.error('Edge Config error:', error)
       return undefined
@@ -127,7 +127,7 @@ class EdgeConfigService {
    */
   async isFeatureEnabled(feature: keyof EdgeConfigData['features']): Promise<boolean> {
     const features = await this.get<EdgeConfigData['features']>('features')
-    return features?.[feature] ?? false
+    return !!features?.[feature]
   }
   
   /**

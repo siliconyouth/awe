@@ -16,6 +16,7 @@ interface ResourceMetadata {
   tags?: string[]
   createdAt: string
   score?: number
+  [key: string]: any // Index signature for Dict constraint
 }
 
 // Initialize Upstash Vector with built-in embeddings
@@ -142,7 +143,7 @@ export async function searchSimilar(
     const processedResults = results.map(result => ({
       ...result.metadata,
       score: includeScore ? result.score : undefined
-    }))
+    })) as ResourceMetadata[]
 
     // Cache results
     if (cache) {
@@ -167,9 +168,11 @@ export async function findSimilarResources(
 
   try {
     // Fetch the resource's vector
-    const resource = await vectorIndex.fetch([resourceId])
-    if (!resource || resource.length === 0) {
-      console.warn(`Resource ${resourceId} not found in vector index`)
+    const resource = await vectorIndex.fetch([resourceId], {
+      includeVectors: true
+    })
+    if (!resource || resource.length === 0 || !resource[0]?.vector) {
+      console.warn(`Resource ${resourceId} not found in vector index or missing vector`)
       return []
     }
 
@@ -184,7 +187,7 @@ export async function findSimilarResources(
     return results
       .filter(r => r.id !== resourceId)
       .slice(0, limit)
-      .map(r => r.metadata)
+      .map(r => r.metadata) as ResourceMetadata[]
   } catch (error) {
     console.error('Find similar resources failed:', error)
     return []

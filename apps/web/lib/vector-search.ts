@@ -1,5 +1,4 @@
 import { Index } from '@upstash/vector'
-import { OpenAI } from 'openai'
 
 /**
  * Upstash Vector Database for Semantic Search
@@ -21,45 +20,19 @@ const getVectorIndex = () => {
   })
 }
 
-// Initialize OpenAI for embeddings (fallback to local if not available)
-const getEmbeddingClient = () => {
-  const apiKey = process.env.OPENAI_API_KEY
-  
-  if (!apiKey) {
-    console.warn('OpenAI API key not configured. Using simplified embeddings.')
-    return null
-  }
-
-  return new OpenAI({ apiKey })
-}
-
 export const vectorIndex = getVectorIndex()
-const openai = getEmbeddingClient()
 
 /**
  * Generate embeddings for text
+ * Note: Upstash Vector now handles embeddings internally
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
   if (!text || text.trim().length === 0) {
     throw new Error('Text is required for embedding generation')
   }
 
-  // Use OpenAI if available
-  if (openai) {
-    try {
-      const response = await openai.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: text.slice(0, 8192), // Limit text length
-      })
-      return response.data[0].embedding
-    } catch (error) {
-      console.error('OpenAI embedding error:', error)
-      // Fall through to simple embedding
-    }
-  }
-
-  // Simple fallback embedding (for demo/development)
-  // In production, you'd use a proper embedding model
+  // For compatibility, return a simple embedding
+  // Actual embedding is handled by Upstash Vector when using data field
   return generateSimpleEmbedding(text)
 }
 
@@ -120,10 +93,10 @@ export async function indexResource(resource: {
 
     const embedding = await generateEmbedding(textToEmbed)
 
-    // Upsert to vector index
+    // Upsert to vector index with Upstash's built-in embeddings
     await vectorIndex.upsert({
       id: resource.id,
-      vector: embedding,
+      data: textToEmbed, // Upstash will generate embeddings from this
       metadata: {
         title: resource.title,
         description: resource.description || '',
@@ -155,12 +128,11 @@ export async function searchSimilar(
   }
 
   try {
-    const embedding = await generateEmbedding(query)
-
+    // Use Upstash's built-in embedding for queries
     const results = await vectorIndex.query({
-      vector: embedding,
+      data: query, // Upstash will generate embeddings from this
       topK: options.limit || 10,
-      filter: options.filter,
+      filter: options.filter ? JSON.stringify(options.filter) : undefined,
       includeVectors: options.includeVectors || false,
       includeMetadata: true
     })
@@ -252,11 +224,9 @@ export async function batchIndexResources(resources: Array<{
         ...(resource.tags || [])
       ].join(' ')
 
-      const embedding = await generateEmbedding(textToEmbed)
-      
       vectors.push({
         id: resource.id,
-        vector: embedding,
+        data: textToEmbed, // Upstash will generate embeddings from this
         metadata: {
           title: resource.title,
           description: resource.description || '',

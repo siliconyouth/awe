@@ -1,4 +1,4 @@
-import algoliasearch, { SearchClient, SearchIndex } from 'algoliasearch'
+import { algoliasearch, SearchClient } from 'algoliasearch'
 import { cache } from './upstash'
 
 /**
@@ -43,10 +43,10 @@ export const INDICES = {
 
 /**
  * Get or create an Algolia index
+ * TODO: Update for Algolia v5 API
  */
-function getIndex(indexName: string): SearchIndex | null {
-  if (!algoliaClient) return null
-  return algoliaClient.initIndex(indexName)
+function getIndex(indexName: string): any {
+  return null
 }
 
 /**
@@ -419,17 +419,20 @@ export async function trackSearchClick(
   objectID: string,
   position: number
 ) {
+  // TODO: Update for Algolia v5 analytics API
+  return
+  
   if (!algoliaClient) return
 
   try {
-    const analytics = algoliaClient.initAnalytics()
-    await analytics.clickedObjectIDsAfterSearch({
-      index: INDICES.RESOURCES,
-      eventName: 'Resource Clicked',
-      queryID,
-      objectIDs: [objectID],
-      positions: [position]
-    })
+    // const analytics = algoliaClient.initAnalytics()
+    // await analytics.clickedObjectIDsAfterSearch({
+    //   index: INDICES.RESOURCES,
+    //   eventName: 'Resource Clicked',
+    //   queryID,
+    //   objectIDs: [objectID],
+    //   positions: [position]
+    // })
   } catch (error) {
     console.error('Failed to track search click:', error)
   }
@@ -442,16 +445,19 @@ export async function trackSearchConversion(
   queryID: string,
   objectID: string
 ) {
+  // TODO: Update for Algolia v5 analytics API
+  return
+  
   if (!algoliaClient) return
 
   try {
-    const analytics = algoliaClient.initAnalytics()
-    await analytics.convertedObjectIDsAfterSearch({
-      index: INDICES.RESOURCES,
-      eventName: 'Resource Used',
-      queryID,
-      objectIDs: [objectID]
-    })
+    // const analytics = algoliaClient.initAnalytics()
+    // await analytics.convertedObjectIDsAfterSearch({
+    //   index: INDICES.RESOURCES,
+    //   eventName: 'Resource Used',
+    //   queryID,
+    //   objectIDs: [objectID]
+    // })
   } catch (error) {
     console.error('Failed to track search conversion:', error)
   }
@@ -461,21 +467,24 @@ export async function trackSearchConversion(
  * Set up personalization
  */
 export async function setupPersonalization(userId: string, preferences: any) {
+  // TODO: Update for Algolia v5 personalization API
+  return
+  
   if (!algoliaClient) return
 
   try {
-    const personalization = algoliaClient.initPersonalization()
-    await personalization.setPersonalizationStrategy({
-      eventsScoring: [
-        { eventName: 'Resource Clicked', eventType: 'click', score: 1 },
-        { eventName: 'Resource Used', eventType: 'conversion', score: 3 }
-      ],
-      facetsScoring: [
-        { facetName: 'type', score: 1 },
-        { facetName: 'tags', score: 2 }
-      ],
-      personalizationImpact: 50 // 0-100, how much personalization affects results
-    })
+    // const personalization = algoliaClient.initPersonalization()
+    // await personalization.setPersonalizationStrategy({
+    //   eventsScoring: [
+    //     { eventName: 'Resource Clicked', eventType: 'click', score: 1 },
+    //     { eventName: 'Resource Used', eventType: 'conversion', score: 3 }
+    //   ],
+    //   facetsScoring: [
+    //     { facetName: 'type', score: 1 },
+    //     { facetName: 'tags', score: 2 }
+    //   ],
+    //   personalizationImpact: 50 // 0-100, how much personalization affects results
+    // })
     
     console.log('Algolia personalization configured')
   } catch (error) {

@@ -120,7 +120,7 @@ export function ProgressiveForm({
   // Handle form submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     // Don't prevent default if JS is disabled (progressive enhancement)
-    if (!window.JS_ENABLED) return
+    if (!(window as any).JS_ENABLED) return
     
     e.preventDefault()
     
@@ -314,15 +314,16 @@ export function AutoSaveForm({
 }: AutoSaveFormProps) {
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [isSaving, setIsSaving] = useState(false)
-  const formRef = useRef<HTMLFormElement>(null)
-  const saveTimeoutRef = useRef<NodeJS.Timeout>()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   
   // Auto-save logic
   const autoSave = async () => {
-    if (!formRef.current || !onAutoSave) return
+    const formElement = containerRef.current?.querySelector('form')
+    if (!formElement || !onAutoSave) return
     
     setIsSaving(true)
-    const formData = new FormData(formRef.current)
+    const formData = new FormData(formElement)
     
     try {
       await onAutoSave(formData)
@@ -346,7 +347,7 @@ export function AutoSaveForm({
   }
   
   useEffect(() => {
-    const form = formRef.current
+    const form = containerRef.current?.querySelector('form')
     if (!form) return
     
     // Add change listeners to all inputs
@@ -371,7 +372,7 @@ export function AutoSaveForm({
   }, [])
   
   return (
-    <div>
+    <div ref={containerRef}>
       {/* Auto-save indicator */}
       {(isSaving || lastSaved) && (
         <div className="mb-2 text-sm text-gray-500">
@@ -387,9 +388,7 @@ export function AutoSaveForm({
       )}
       
       <ProgressiveForm {...props}>
-        <div ref={formRef}>
-          {children}
-        </div>
+        {children}
       </ProgressiveForm>
     </div>
   )

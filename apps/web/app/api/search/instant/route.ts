@@ -7,7 +7,7 @@ import { prisma } from '@awe/database'
 // GET /api/search/instant - Instant search with Algolia
 export async function GET(request: NextRequest) {
   // Apply rate limiting
-  const rateLimitResponse = await withRateLimit(request, 'search')
+  const rateLimitResponse = await withRateLimit(request, 'resources')
   if (rateLimitResponse) return rateLimitResponse
 
   try {
@@ -115,15 +115,15 @@ export async function GET(request: NextRequest) {
         .map(id => resourceMap.get(id))
         .filter(Boolean)
         .map(resource => ({
-          objectID: resource.id,
-          title: resource.title,
-          description: resource.description,
-          type: resource.type,
-          tags: resource.tags?.map(t => t.tag.name) || [],
-          createdAt: resource.createdAt,
+          objectID: resource!.id,
+          title: resource!.title,
+          description: resource!.description,
+          type: resource!.type,
+          tags: resource!.tags?.map((t: any) => t.tag.name) || [],
+          createdAt: resource!.createdAt,
           _highlightResult: {
-            title: { value: resource.title, matchLevel: 'none' },
-            description: { value: resource.description || '', matchLevel: 'none' }
+            title: { value: resource!.title, matchLevel: 'none' },
+            description: { value: resource!.description || '', matchLevel: 'none' }
           }
         }))
 
@@ -172,7 +172,7 @@ export async function GET(request: NextRequest) {
       title: resource.title,
       description: resource.description,
       type: resource.type,
-      tags: resource.tags?.map(t => t.tag.name) || [],
+      tags: resource.tags?.map((t: any) => t.tag.name) || [],
       createdAt: resource.createdAt,
       _highlightResult: {
         title: { value: resource.title, matchLevel: 'none' },

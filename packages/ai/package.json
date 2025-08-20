@@ -9,6 +9,16 @@
       "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "import": "./dist/index.js"
+    },
+    "./services/queue-service": {
+      "types": "./dist/services/queue-service.d.ts",
+      "require": "./dist/services/queue-service.js",
+      "import": "./dist/services/queue-service.js"
+    },
+    "./services/queue-service-upstash": {
+      "types": "./dist/services/queue-service-upstash.d.ts",
+      "require": "./dist/services/queue-service-upstash.js",
+      "import": "./dist/services/queue-service-upstash.js"
     }
   },
   "scripts": {

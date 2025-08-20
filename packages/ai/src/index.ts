@@ -55,3 +55,19 @@ export {
   ProjectContextSchema,
   TemplateRecommendationSchema
 } from './types'
+
+// Queue services exports
+export { 
+  queueManager, 
+  QueueManager,
+  QueueName,
+  Priority,
+  JobStatus,
+  type Job,
+  type JobProcessor
+} from './services/queue-service-upstash'
+
+export {
+  sendNotification,
+  trackAnalyticsEvent
+} from './services/queue-service'

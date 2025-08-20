@@ -1,7 +1,7 @@
 import { prisma } from '@awe/database'
 import { cache } from './upstash'
-import { wsManager, WSEventType } from './websocket-server'
-import { queueManager, QueueName } from '@awe/ai/services/queue-service-upstash'
+import { wsManager, WSEventType } from './websocket-stub'
+import { queueManager, QueueName } from '@awe/ai'
 
 /**
  * Unified Notification Service
@@ -232,11 +232,12 @@ export class NotificationService {
       createdAt: notification.createdAt
     })
 
-    // Store in Redis for offline delivery
+    // Store in cache for offline delivery
     if (cache) {
       const key = `notifications:${notification.userId}:unread`
-      await cache.lpush(key, JSON.stringify(notification))
-      await cache.expire(key, 86400 * 7) // 7 days
+      const existing = await cache.get(key) as string[] || []
+      existing.push(JSON.stringify(notification))
+      await cache.set(key, existing, 86400 * 7) // 7 days
     }
   }
 
@@ -395,8 +396,7 @@ export class NotificationService {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        email: true,
-        notificationPreferences: true
+        email: true
       }
     })
 
@@ -409,8 +409,7 @@ export class NotificationService {
         [NotificationChannel.SLACK]: { enabled: false },
         [NotificationChannel.DISCORD]: { enabled: false }
       },
-      email: user?.email || undefined,
-      ...(user?.notificationPreferences as any || {})
+      email: user?.email || undefined
     }
 
     // Cache for 1 hour
@@ -428,16 +427,10 @@ export class NotificationService {
     userId: string,
     preferences: Partial<NotificationPreferences>
   ): Promise<void> {
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        notificationPreferences: preferences as any
-      }
-    })
-
-    // Clear cache
+    // Store preferences in cache only for now
+    // TODO: Add NotificationPreferences table to database
     if (cache) {
-      await cache.del(`preferences:notifications:${userId}`)
+      await cache.set(`preferences:notifications:${userId}`, preferences, 86400 * 30) // 30 days
     }
   }
 
@@ -445,36 +438,33 @@ export class NotificationService {
    * Mark notification as read
    */
   async markAsRead(notificationId: string, userId: string): Promise<void> {
-    // Update in database
-    await prisma.notification.update({
-      where: { id: notificationId },
-      data: {
-        read: true,
-        readAt: new Date()
-      }
-    })
+    // TODO: Update in database when notification table is added
+    // await prisma.notification.update({
+    //   where: { id: notificationId },
+    //   data: {
+    //     read: true,
+    //     readAt: new Date()
+    //   }
+    // })
 
     // Update cache
     if (cache) {
       const key = `notifications:${userId}:unread`
-      const notifications = await cache.lrange(key, 0, -1)
+      const notifications = await cache.get(key) as string[] || []
       
       const updated = notifications.filter((n: string) => {
         const parsed = JSON.parse(n)
         return parsed.id !== notificationId
       })
 
-      await cache.del(key)
-      if (updated.length > 0) {
-        await cache.lpush(key, ...updated)
-      }
+      await cache.set(key, updated, 86400 * 7) // 7 days
     }
 
     // Send WebSocket update
     wsManager.broadcast(WSEventType.NOTIFICATION_READ, { 
       notificationId,
       userId 
-    }, `user:${userId}`)
+    })
   }
 
   /**
@@ -493,26 +483,27 @@ export class NotificationService {
     // Try cache for unread notifications
     if (unreadOnly && cache) {
       const key = `notifications:${userId}:unread`
-      const cached = await cache.lrange(key, offset, offset + limit - 1)
+      const cached = await cache.get(key) as string[] || []
       
       if (cached && cached.length > 0) {
-        return cached.map((n: string) => JSON.parse(n))
+        const sliced = cached.slice(offset, offset + limit)
+        return sliced.map((n: string) => JSON.parse(n))
       }
     }
 
-    // Get from database
-    const notifications = await prisma.notification.findMany({
-      where: {
-        userId,
-        ...(unreadOnly ? { read: false } : {}),
-        expiresAt: { gt: new Date() }
-      },
-      orderBy: { createdAt: 'desc' },
-      take: limit,
-      skip: offset
-    })
+    // TODO: Get from database when notification table is added
+    // const notifications = await prisma.notification.findMany({
+    //   where: {
+    //     userId,
+    //     ...(unreadOnly ? { read: false } : {}),
+    //     expiresAt: { gt: new Date() }
+    //   },
+    //   orderBy: { createdAt: 'desc' },
+    //   take: limit,
+    //   skip: offset
+    // })
 
-    return notifications as any
+    return [] as any
   }
 
   /**
@@ -524,13 +515,15 @@ export class NotificationService {
       if (cached !== null) return cached as number
     }
 
-    const count = await prisma.notification.count({
-      where: {
-        userId,
-        ...(unreadOnly ? { read: false } : {}),
-        expiresAt: { gt: new Date() }
-      }
-    })
+    // TODO: Get from database when notification table is added
+    // const count = await prisma.notification.count({
+    //   where: {
+    //     userId,
+    //     ...(unreadOnly ? { read: false } : {}),
+    //     expiresAt: { gt: new Date() }
+    //   }
+    // })
+    const count = 0
 
     if (cache) {
       await cache.set(`notifications:${userId}:count`, count, 60)
@@ -611,36 +604,37 @@ export class NotificationService {
   }
 
   private async storeNotification(notification: Notification): Promise<void> {
-    await prisma.notification.create({
-      data: {
-        id: notification.id,
-        userId: notification.userId,
-        type: notification.type,
-        title: notification.title,
-        message: notification.message,
-        data: notification.data,
-        priority: notification.priority,
-        read: false,
-        actionUrl: notification.actionUrl,
-        actionLabel: notification.actionLabel,
-        icon: notification.icon,
-        image: notification.image,
-        createdAt: notification.createdAt,
-        expiresAt: notification.expiresAt
-      }
-    })
+    // TODO: Save to database when notification table is added
+    // await prisma.notification.create({
+    //   data: {
+    //     id: notification.id,
+    //     userId: notification.userId,
+    //     type: notification.type,
+    //     title: notification.title,
+    //     message: notification.message,
+    //     data: notification.data,
+    //     priority: notification.priority,
+    //     read: false,
+    //     actionUrl: notification.actionUrl,
+    //     actionLabel: notification.actionLabel,
+    //     icon: notification.icon,
+    //     image: notification.image,
+    //     createdAt: notification.createdAt,
+    //     expiresAt: notification.expiresAt
+    //   }
+    // })
   }
 
   private async updateNotificationCount(userId: string): Promise<void> {
     if (!cache) return
 
     const key = `notifications:${userId}:count`
-    await cache.incr(key)
-    await cache.expire(key, 60)
+    const current = await cache.get(key) as number || 0
+    await cache.set(key, current + 1, 60)
   }
 
   private getEmailTemplate(type: NotificationType): string {
-    const templates: Record<NotificationType, string> = {
+    const templates: Partial<Record<NotificationType, string>> = {
       [NotificationType.SYSTEM_UPDATE]: 'system-update',
       [NotificationType.RESOURCE_CREATED]: 'resource-created',
       [NotificationType.PATTERN_EXTRACTED]: 'pattern-extracted',

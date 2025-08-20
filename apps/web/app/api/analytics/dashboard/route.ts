@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@awe/database'
 import { auth } from '@clerk/nextjs/server'
 import { cache } from '@/lib/upstash'
-import { queueManager, QueueName } from '@awe/ai/services/queue-service'
+import { queueManager, QueueName } from '@awe/ai'
 import { subDays, startOfDay, endOfDay, format } from 'date-fns'
 
 // GET /api/analytics/dashboard - Get analytics dashboard data
@@ -93,10 +93,10 @@ async function getOverviewMetrics(startDate: Date, endDate: Date) {
   ] = await Promise.all([
     prisma.resource.count(),
     prisma.user.count(),
-    prisma.pattern.count(),
+    prisma.extractedPattern.count(),
     prisma.user.count({
       where: {
-        lastActiveAt: {
+        lastSignIn: {
           gte: startDate
         }
       }
@@ -120,11 +120,11 @@ async function getOverviewMetrics(startDate: Date, endDate: Date) {
   
   // Get error rate from cache
   if (cache) {
-    const errorRate = await cache.get('metrics:error_rate:daily') || 0
+    const errorRate = (await cache.get('metrics:error_rate:daily') as number) || 0
     if (errorRate > 0.01) healthScore -= 10
     if (errorRate > 0.05) healthScore -= 20
     
-    const avgResponseTime = await cache.get('metrics:response_time:avg') || 0
+    const avgResponseTime = (await cache.get('metrics:response_time:avg') as number) || 0
     if (avgResponseTime > 500) healthScore -= 10
     if (avgResponseTime > 1000) healthScore -= 20
   }
@@ -139,7 +139,7 @@ async function getOverviewMetrics(startDate: Date, endDate: Date) {
     totalUsers,
     totalPatterns,
     activeUsers,
-    growthRate: parseFloat(growthRate),
+    growthRate: typeof growthRate === 'string' ? parseFloat(growthRate) : growthRate,
     healthScore: Math.max(0, healthScore)
   }
 }
@@ -161,13 +161,13 @@ async function getResourceMetrics(startDate: Date, endDate: Date) {
   const trendingEvents = await prisma.telemetryEvent.findMany({
     where: {
       event: 'resource_viewed',
-      timestamp: {
+      createdAt: {
         gte: startDate,
         lte: endDate
       }
     },
     orderBy: {
-      timestamp: 'desc'
+      createdAt: 'desc'
     },
     take: 100
   })
@@ -229,7 +229,7 @@ async function getUserMetrics(startDate: Date, endDate: Date) {
     
     const count = await prisma.user.count({
       where: {
-        lastActiveAt: {
+        lastSignIn: {
           gte: dayStart,
           lte: dayEnd
         }
@@ -268,7 +268,7 @@ async function getUserMetrics(startDate: Date, endDate: Date) {
   const totalUsers = await prisma.user.count()
   const activeInPeriod = await prisma.user.count({
     where: {
-      lastActiveAt: {
+      lastSignIn: {
         gte: startDate
       }
     }
@@ -279,7 +279,7 @@ async function getUserMetrics(startDate: Date, endDate: Date) {
       createdAt: {
         lt: startDate
       },
-      lastActiveAt: {
+      lastSignIn: {
         gte: startDate
       }
     }
@@ -313,8 +313,8 @@ async function getSystemMetrics(startDate: Date, endDate: Date) {
       const hour = subDays(endDate, i / 24)
       const hourKey = format(hour, 'yyyy-MM-dd-HH')
       
-      const requests = await cache.get(`metrics:requests:${hourKey}`) || 0
-      const errors = await cache.get(`metrics:errors:${hourKey}`) || 0
+      const requests = (await cache.get(`metrics:requests:${hourKey}`) as number) || 0
+      const errors = (await cache.get(`metrics:errors:${hourKey}`) as number) || 0
       
       hourlyMetrics.unshift({
         time: format(hour, 'HH:mm'),
@@ -339,8 +339,8 @@ async function getSystemMetrics(startDate: Date, endDate: Date) {
     systemMetrics.responseTime = responseMetrics
 
     // Error rate
-    const totalRequests = await cache.get('metrics:requests:total') || 1
-    const totalErrors = await cache.get('metrics:errors:total') || 0
+    const totalRequests = (await cache.get('metrics:requests:total') as number) || 1
+    const totalErrors = (await cache.get('metrics:errors:total') as number) || 0
     systemMetrics.errorRate = totalErrors / totalRequests
   }
 
@@ -350,10 +350,10 @@ async function getSystemMetrics(startDate: Date, endDate: Date) {
     const queueHealthData = []
     
     for (const queueName of queueNames) {
-      const counts = await queueManager.getJobCounts(queueName)
+      const stats = await queueManager.getQueueStats(queueName)
       queueHealthData.push({
         queue: queueName,
-        ...counts
+        ...stats
       })
     }
     
@@ -375,13 +375,13 @@ async function getSearchMetrics(startDate: Date, endDate: Date) {
   const searchEvents = await prisma.telemetryEvent.findMany({
     where: {
       event: { in: ['search_performed', 'search_clicked'] },
-      timestamp: {
+      createdAt: {
         gte: startDate,
         lte: endDate
       }
     },
     orderBy: {
-      timestamp: 'desc'
+      createdAt: 'desc'
     },
     take: 1000
   })
@@ -429,7 +429,7 @@ async function getSearchMetrics(startDate: Date, endDate: Date) {
     const searches = await prisma.telemetryEvent.count({
       where: {
         event: 'search_performed',
-        timestamp: {
+        createdAt: {
           gte: dayStart,
           lte: dayEnd
         }

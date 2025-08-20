@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@awe/database'
-import { queueManager, QueueName, Priority, trackAnalyticsEvent } from '@awe/ai/services/queue-service'
+import { queueManager, QueueName, Priority, trackAnalyticsEvent, sendNotification } from '@awe/ai'
 import { cache } from '@/lib/upstash'
 import { batchIndexResources } from '@/lib/vector-search'
-import { sendNotification } from '@awe/ai/services/queue-service'
 
 export async function GET(request: NextRequest) {
   // Verify this is called by Vercel Cron
@@ -129,7 +128,7 @@ async function aggregateDailyAnalytics() {
     // User activity metrics
     const activeUsers = await prisma.user.count({
       where: {
-        lastActiveAt: {
+        lastSignIn: {
           gte: yesterday,
           lt: today
         }
@@ -166,8 +165,8 @@ async function aggregateDailyAnalytics() {
     // API usage metrics (from cache if available)
     let apiMetrics = { requests: 0, errors: 0 }
     if (cache) {
-      apiMetrics.requests = await cache.get('api:requests:daily') || 0
-      apiMetrics.errors = await cache.get('api:errors:daily') || 0
+      apiMetrics.requests = (await cache.get('api:requests:daily') as number) || 0
+      apiMetrics.errors = (await cache.get('api:errors:daily') as number) || 0
       
       // Reset daily counters
       await cache.set('api:requests:daily', 0)
@@ -193,7 +192,7 @@ async function aggregateDailyAnalytics() {
       data: {
         event: 'daily_analytics',
         data: metrics as any,
-        timestamp: new Date()
+        createdAt: new Date()
       }
     })
 
@@ -224,7 +223,7 @@ async function cleanupOldData() {
     // Clean old telemetry events
     const deletedTelemetry = await prisma.telemetryEvent.deleteMany({
       where: {
-        timestamp: {
+        createdAt: {
           lt: thirtyDaysAgo
         }
       }
@@ -291,14 +290,9 @@ async function reindexResources() {
     // Get resources that need reindexing
     const resources = await prisma.resource.findMany({
       where: {
-        OR: [
-          { indexed: false },
-          { 
-            updatedAt: {
-              gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Updated in last 24 hours
-            }
-          }
-        ],
+        updatedAt: {
+          gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Updated in last 24 hours
+        },
         status: 'PUBLISHED'
       },
       include: {
@@ -322,27 +316,17 @@ async function reindexResources() {
     // Prepare for vector indexing
     const resourcesToIndex = resources.map(resource => ({
       id: resource.id,
-      title: resource.title,
+      title: resource.title || resource.name || 'Untitled',
       description: resource.description || '',
-      content: resource.content || '',
-      type: resource.type,
+      content: typeof resource.content === 'string' ? resource.content : JSON.stringify(resource.content),
+      type: resource.type as string,
       tags: resource.tags?.map(t => t.tag.name) || []
     }))
 
     // Batch index
     await batchIndexResources(resourcesToIndex)
 
-    // Mark as indexed
-    await prisma.resource.updateMany({
-      where: {
-        id: {
-          in: resources.map(r => r.id)
-        }
-      },
-      data: {
-        indexed: true
-      }
-    })
+    // Resources are now indexed in vector search
 
     return {
       success: true,
@@ -386,14 +370,14 @@ async function generateDailyReport() {
       totalUsers: await prisma.user.count(),
       activeUsers: await prisma.user.count({
         where: {
-          lastActiveAt: {
+          lastSignIn: {
             gte: yesterday
           }
         }
       }),
       
       // Pattern metrics
-      totalPatterns: await prisma.pattern.count(),
+      totalPatterns: await prisma.extractedPattern.count(),
       patternsUsedToday: await prisma.patternUsage.count({
         where: {
           createdAt: {
@@ -410,8 +394,8 @@ async function generateDailyReport() {
 
     // Get error rate and response time from cache
     if (cache) {
-      metrics.errorRate = await cache.get('metrics:error_rate:daily') || 0
-      metrics.avgResponseTime = await cache.get('metrics:response_time:avg') || 0
+      metrics.errorRate = (await cache.get('metrics:error_rate:daily') as number) || 0
+      metrics.avgResponseTime = (await cache.get('metrics:response_time:avg') as number) || 0
     }
 
     // Generate report content

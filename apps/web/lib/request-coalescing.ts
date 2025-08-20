@@ -159,7 +159,7 @@ export const requestCoalescing = new RequestCoalescingService()
 import { useCallback, useRef } from 'react'
 
 export function useCoalescedFetch<T = any>() {
-  const abortControllerRef = useRef<AbortController>()
+  const abortControllerRef = useRef<AbortController | null>(null)
   
   const fetch = useCallback(async (
     url: string,

@@ -1,11 +1,27 @@
 {
   "name": "@awe/cli",
   "version": "2.5.0",
-  "description": "AWE CLI - TypeScript command line interface for Awesome Workspace Engineering",
+  "description": "AWE CLI - AI-powered development companion for Claude Code optimization",
+  "keywords": ["cli", "ai", "claude", "development", "automation", "typescript", "productivity"],
+  "homepage": "https://github.com/awe-team/awe#readme",
+  "bugs": {
+    "url": "https://github.com/awe-team/awe/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awe-team/awe.git",
+    "directory": "apps/cli"
+  },
+  "license": "MIT",
+  "author": "AWE Team",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
     "awe": "./dist/bin/awe.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "build": "tsup",
@@ -21,6 +37,9 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
+    "@awe/ai": "workspace:*",
+    "@awe/database": "workspace:*",
+    "@awe/shared": "workspace:*",
     "@prisma/client": "^6.1.0",
     "@supabase/supabase-js": "^2.48.0",
     "boxen": "^7.1.1",
@@ -32,11 +51,6 @@
     "winston": "^3.17.0",
     "zod": "^3.24.1"
   },
-  "bundledDependencies": [
-    "@awe/ai",
-    "@awe/database",
-    "@awe/shared"
-  ],
   "devDependencies": {
     "@types/inquirer": "^9.0.9",
     "@types/node": "^22.10.6",

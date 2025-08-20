@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic'
 
 export const LazyInstantSearch = dynamic(
-  () => import('@/components/instant-search').then(mod => mod.InstantSearch),
+  () => import('@/components/search/instant-search').then(mod => mod.InstantSearch),
   {
     loading: () => (
       <div className="p-4">
@@ -16,7 +16,7 @@ export const LazyInstantSearch = dynamic(
 )
 
 export const LazySearchResults = dynamic(
-  () => import('@/components/instant-search').then(mod => mod.SearchResults),
+  () => import('@/components/search/instant-search').then(mod => mod.InstantSearch),
   {
     loading: () => (
       <div className="space-y-4 p-4">

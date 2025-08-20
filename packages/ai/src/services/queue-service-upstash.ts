@@ -1,5 +1,4 @@
 import { Redis } from '@upstash/redis'
-import { Queue as UpstashQueue } from '@upstash/qstash'
 
 /**
  * Modern Queue Service using Upstash Redis
@@ -160,12 +159,12 @@ export class QueueManager {
       try {
         // Get jobs ready for processing
         const now = Date.now()
-        const jobIds = await redis.zrangebyscore(
+        const jobIds = await redis.zrange(
           queueName,
           0,
-          now,
-          { limit: { offset: 0, count: batchSize } }
-        )
+          batchSize - 1,
+          { byScore: true, rev: false, withScores: false }
+        ) as string[]
 
         for (const jobId of jobIds) {
           // Skip if already processing
@@ -211,7 +210,7 @@ export class QueueManager {
               if (job.attempts < job.maxAttempts) {
                 // Retry with exponential backoff
                 job.status = JobStatus.RETRYING
-                job.error = error.message
+                job.error = error instanceof Error ? error.message : String(error)
                 await this.updateJob(job)
                 
                 const delay = Math.pow(2, job.attempts) * 1000
@@ -221,7 +220,7 @@ export class QueueManager {
                 // Mark as failed
                 job.status = JobStatus.FAILED
                 job.failedAt = new Date()
-                job.error = error.message
+                job.error = error instanceof Error ? error.message : String(error)
                 await this.updateJob(job)
                 
                 // Move to dead letter queue

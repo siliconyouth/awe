@@ -8,7 +8,7 @@ import { searchSimilar, hybridSearch } from '@/lib/vector-search'
 export async function GET(request: NextRequest) {
   return withCache(async (req) => {
     // Apply rate limiting
-    const rateLimitResponse = await withRateLimit(req, 'search')
+    const rateLimitResponse = await withRateLimit(req, 'resources')
     if (rateLimitResponse) return rateLimitResponse
 
     try {
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 })
       }
 
-      let results = []
+      let results: any[] = []
 
       if (mode === 'semantic') {
         // Pure semantic search
@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
         description: resource.description,
         type: resource.type,
         fileType: resource.fileType,
-        tags: resource.tags?.map(t => t.tag.name) || [],
+        tags: resource.tags?.map((t: any) => t.tag.name) || [],
         author: resource.authorId,
         createdAt: resource.createdAt,
         qualityScore: (resource.metadata as any)?.qualityScore || 0

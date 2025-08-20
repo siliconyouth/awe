@@ -3,10 +3,10 @@ import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@awe/database'
 import { Redis } from '@upstash/redis'
 import { Index } from '@upstash/vector'
-import algoliasearch from 'algoliasearch'
+import { algoliasearch } from 'algoliasearch'
 import { cache } from '@/lib/upstash'
 import { vectorIndex } from '@/lib/vector-search-modern'
-import { queueManager } from '@awe/ai/services/queue-service-upstash'
+import { queueManager, QueueName } from '@awe/ai'
 
 interface ServiceCheck {
   name: string
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
             const testKey = `health:check:${Date.now()}`
             await cache.set(testKey, 'test', 10)
             const value = await cache.get(testKey)
-            await cache.del(testKey)
+            await cache.delete(testKey)
             
             if (value !== 'test') {
               return { status: 'degraded', error: 'Read/write test failed' }
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
           } catch (error) {
             return {
               status: 'down',
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
               latency: Date.now() - start
             }
           }
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
           } catch (error) {
             return {
               status: 'down',
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
               latency: Date.now() - start
             }
           }
@@ -123,23 +123,28 @@ export async function GET(request: NextRequest) {
             }
 
             const client = algoliasearch(appId, apiKey)
-            const index = client.initIndex('resources')
             
-            // Test search
-            const results = await index.search('', { hitsPerPage: 1 })
+            // Test search - using v5 API
+            const { results } = await client.search({
+              requests: [{
+                indexName: 'resources',
+                query: '',
+                hitsPerPage: 1
+              }]
+            })
             
             return {
               status: 'operational',
               latency: Date.now() - start,
               metrics: {
-                totalRecords: results.nbHits,
-                indexSize: results.nbPages
+                totalRecords: (results[0] as any)?.nbHits || 0,
+                indexSize: (results[0] as any)?.nbPages || 0
               }
             }
           } catch (error) {
             return {
               status: 'down',
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
               latency: Date.now() - start
             }
           }
@@ -157,7 +162,7 @@ export async function GET(request: NextRequest) {
             const [userCount, resourceCount, patternCount] = await Promise.all([
               prisma.user.count(),
               prisma.resource.count(),
-              prisma.pattern.count()
+              prisma.extractedPattern.count()
             ])
 
             return {
@@ -172,7 +177,7 @@ export async function GET(request: NextRequest) {
           } catch (error) {
             return {
               status: 'down',
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
               latency: Date.now() - start
             }
           }
@@ -203,7 +208,7 @@ export async function GET(request: NextRequest) {
           } catch (error) {
             return {
               status: 'down',
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
               latency: Date.now() - start
             }
           }
@@ -233,7 +238,7 @@ export async function GET(request: NextRequest) {
           } catch (error) {
             return {
               status: 'down',
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
               latency: Date.now() - start
             }
           }
@@ -249,7 +254,7 @@ export async function GET(request: NextRequest) {
             }
 
             // Get queue statistics
-            const stats = await queueManager.getQueueStats('queue:resource-processing')
+            const stats = await queueManager.getQueueStats(QueueName.RESOURCE_PROCESSING)
             
             return {
               status: 'operational',
@@ -264,7 +269,7 @@ export async function GET(request: NextRequest) {
           } catch (error) {
             return {
               status: 'degraded',
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
               latency: Date.now() - start
             }
           }
@@ -302,7 +307,7 @@ export async function GET(request: NextRequest) {
           } catch (error) {
             return {
               status: 'down',
-              error: error.message
+              error: error instanceof Error ? error.message : String(error)
             }
           }
         }

@@ -33,10 +33,10 @@ export async function POST(request: NextRequest) {
     // Prepare resources for indexing
     const resourcesToIndex = resources.map(resource => ({
       id: resource.id,
-      title: resource.title,
+      title: resource.title || resource.name || 'Untitled',
       description: resource.description || '',
-      content: resource.content || '',
-      type: resource.type,
+      content: typeof resource.content === 'string' ? resource.content : JSON.stringify(resource.content),
+      type: resource.type as string,
       tags: resource.tags?.map(t => t.tag.name) || []
     }))
 

@@ -29,7 +29,6 @@ export async function GET() {
         status: session.status,
         expireAt: session.expireAt,
         abandonAt: session.abandonAt,
-        lastActiveAt: session.lastActiveAt,
         createdAt: session.createdAt,
         updatedAt: session.updatedAt,
       },

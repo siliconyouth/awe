@@ -44,6 +44,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.3",
+    "@upstash/vector": "^1.2.2",
     "@vercel/edge-config": "^1.4.0",
     "algoliasearch": "^5.35.0",
     "class-variance-authority": "^0.7.0",

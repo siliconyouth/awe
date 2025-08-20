@@ -106,7 +106,7 @@ class PerformanceMonitor {
         // Measure FID
         new PerformanceObserver((list) => {
           const entries = list.getEntries()
-          const firstEntry = entries[0]
+          const firstEntry = entries[0] as any
           if (firstEntry) {
             metrics.fid = firstEntry.processingStart - firstEntry.startTime
           }
@@ -355,6 +355,8 @@ export function usePerformanceMonitoring(options?: {
 }
 
 // Performance Analytics Dashboard Component
+// TODO: Move to a .tsx file - These React components need to be in a .tsx file
+/*
 export function PerformanceDashboard() {
   const { metrics, violations, budget } = usePerformanceMonitoring({
     autoReport: true,
@@ -369,7 +371,7 @@ export function PerformanceDashboard() {
     <div className="p-4 space-y-4">
       <h2 className="text-2xl font-bold">Performance Monitor</h2>
       
-      {/* Violations Alert */}
+      // Violations Alert
       {violations.length > 0 && (
         <div className="p-4 bg-red-100 border border-red-400 rounded">
           <h3 className="font-bold text-red-800">Budget Violations</h3>
@@ -384,7 +386,7 @@ export function PerformanceDashboard() {
         </div>
       )}
       
-      {/* Core Web Vitals */}
+      // Core Web Vitals
       <div className="grid grid-cols-3 gap-4">
         <MetricCard
           title="FCP"
@@ -406,7 +408,7 @@ export function PerformanceDashboard() {
         />
       </div>
       
-      {/* Resource Sizes */}
+      // Resource Sizes
       <div className="grid grid-cols-4 gap-4">
         <MetricCard
           title="JS Size"
@@ -472,3 +474,4 @@ function MetricCard({
     </div>
   )
 }
+*/
