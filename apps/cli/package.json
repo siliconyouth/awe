@@ -9,26 +9,34 @@
   },
   "scripts": {
     "build": "tsup",
+    "build:prod": "tsup --config tsup.config.prod.ts",
     "dev": "tsup --watch",
     "start": "node dist/bin/awe.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "clean": "rm -rf dist",
     "setup": "node dist/scripts/setup.js",
-    "validate": "node dist/scripts/validate-setup.js"
+    "validate": "node dist/scripts/validate-setup.js",
+    "prepublishOnly": "pnpm build:prod"
   },
   "dependencies": {
-    "@awe/ai": "workspace:*",
-    "@awe/database": "workspace:*",
-    "@awe/shared": "workspace:*",
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@prisma/client": "^6.1.0",
     "@supabase/supabase-js": "^2.48.0",
     "boxen": "^7.1.1",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
+    "dotenv": "^16.4.7",
     "inquirer": "^12.9.2",
     "ora": "^8.2.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "zod": "^3.24.1"
   },
+  "bundledDependencies": [
+    "@awe/ai",
+    "@awe/database",
+    "@awe/shared"
+  ],
   "devDependencies": {
     "@types/inquirer": "^9.0.9",
     "@types/node": "^22.10.6",
