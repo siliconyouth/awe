@@ -6,7 +6,8 @@ import { z } from 'zod'
 const createCollectionSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
-  isPublic: z.boolean().default(true),
+  isOfficial: z.boolean().default(false),
+  isCurated: z.boolean().default(false),
   resourceIds: z.array(z.string()).optional()
 })
 
@@ -19,13 +20,13 @@ export async function GET(request: NextRequest) {
     
     const where: any = {}
     
-    // Only show public collections unless user is authenticated and requests private
+    // Only show official collections unless user is authenticated and requests private
     if (!includePrivate || !userId) {
-      where.isPublic = true
+      where.isOfficial = true
     } else if (userId) {
       where.OR = [
-        { isPublic: true },
-        { createdBy: userId }
+        { isOfficial: true },
+        { author: userId }
       ]
     }
     
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
                 id: true,
                 title: true,
                 type: true,
-                format: true
+                fileType: true
               }
             }
           }
@@ -77,9 +78,11 @@ export async function POST(request: NextRequest) {
     const collection = await prisma.collection.create({
       data: {
         name: data.name,
-        description: data.description,
-        isPublic: data.isPublic,
-        createdBy: userId,
+        description: data.description || '',
+        isOfficial: data.isOfficial,
+        isCurated: data.isCurated,
+        author: userId,
+        slug: data.name.toLowerCase().replace(/\s+/g, '-'),
         resources: data.resourceIds ? {
           create: data.resourceIds.map(resourceId => ({
             resourceId
@@ -99,7 +102,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating collection:', error)
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid data', details: error.issues }, { status: 400 })
     }
     return NextResponse.json({ error: 'Failed to create collection' }, { status: 500 })
   }

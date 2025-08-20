@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ClaudeAIService } from '@awe/ai'
+import { aiService } from '@awe/ai'
 import { z } from 'zod'
 
 const analyzeSchema = z.object({
@@ -9,29 +9,29 @@ const analyzeSchema = z.object({
 
 // POST /api/resources/analyze - Analyze resource content with AI
 export async function POST(request: NextRequest) {
+  let type: string | undefined
+  
   try {
     const body = await request.json()
-    const { content, type } = analyzeSchema.parse(body)
+    const parsed = analyzeSchema.parse(body)
+    type = parsed.type
+    const content = parsed.content
     
-    const ai = new ClaudeAIService()
-    
-    // Analyze the content
-    const analysis = await ai.analyzeContent({
-      content,
-      type,
-      includeQualityScore: true,
-      includeSuggestions: true,
-      includeTags: true
+    // Analyze the content using analyzeCode method
+    const analysis = await aiService.analyzeCode({
+      code: content,
+      language: type || 'markdown',
+      useCache: true
     })
     
     return NextResponse.json({
-      title: analysis.suggestedTitle,
-      description: analysis.suggestedDescription,
-      tags: analysis.suggestedTags || [],
-      qualityScore: analysis.qualityScore || 0.7,
-      improvements: analysis.improvements || [],
-      category: analysis.category,
-      bestPractices: analysis.bestPractices
+      title: null, // analyzeCode doesn't return title
+      description: analysis.summary,
+      tags: analysis.patterns?.map(p => p.name.toLowerCase().replace(/\s+/g, '-')) || [],
+      qualityScore: analysis.score / 100,
+      improvements: analysis.recommendations || [],
+      category: 'development',
+      bestPractices: analysis.insights || []
     })
   } catch (error) {
     console.error('Error analyzing resource:', error)

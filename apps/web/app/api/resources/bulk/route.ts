@@ -54,14 +54,25 @@ export async function POST(request: NextRequest) {
         // Bulk update resources
         const updateData = bulkUpdateSchema.parse(data)
         
+        const dataToUpdate: any = {
+          updatedAt: new Date()
+        }
+        
+        if (updateData.status !== undefined) {
+          dataToUpdate.status = updateData.status
+        }
+        if (updateData.visibility !== undefined) {
+          dataToUpdate.visibility = updateData.visibility
+        }
+        if (updateData.verified !== undefined) {
+          dataToUpdate.verified = updateData.verified
+        }
+        
         const result = await prisma.resource.updateMany({
           where: {
             id: { in: resourceIds }
           },
-          data: {
-            ...updateData,
-            updatedAt: new Date()
-          }
+          data: dataToUpdate
         })
         
         return NextResponse.json({ 
@@ -77,12 +88,13 @@ export async function POST(request: NextRequest) {
         if (tagData.addTags && tagData.addTags.length > 0) {
           // Create tags if they don't exist
           const tagPromises = tagData.addTags.map(async (tagName) => {
+            const slug = tagName.toLowerCase().replace(/\s+/g, '-')
             return prisma.tag.upsert({
-              where: { name: tagName },
+              where: { slug },
               create: { 
                 name: tagName,
-                type: 'user' as any,
-                category: 'general' as any
+                slug,
+                category: 'general'
               },
               update: {}
             })
@@ -159,12 +171,12 @@ export async function POST(request: NextRequest) {
           title: resource.title,
           description: resource.description,
           type: resource.type,
-          format: resource.format,
+          fileType: resource.fileType,
           content: resource.content,
           tags: resource.tags.map(t => t.tag.name),
-          author: resource.author,
+          author: resource.authorId,
           sourceUrl: resource.sourceUrl,
-          qualityScore: resource.qualityScore,
+          qualityScore: (resource.metadata as any)?.qualityScore || 0,
           status: resource.status,
           visibility: resource.visibility
         }))
@@ -178,7 +190,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error performing bulk operation:', error)
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid data', details: error.issues }, { status: 400 })
     }
     return NextResponse.json({ error: 'Failed to perform bulk operation' }, { status: 500 })
   }

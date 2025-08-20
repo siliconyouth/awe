@@ -19,7 +19,6 @@ export async function withRateLimit(
     const identifier = userId || 
                       request.headers.get('x-forwarded-for')?.split(',')[0] || 
                       request.headers.get('x-real-ip') ||
-                      request.ip ||
                       'anonymous'
 
     const { success, limit, remaining, reset } = await rateLimiter.checkLimit({
@@ -89,7 +88,6 @@ export async function getRateLimitInfo(
     const identifier = userId || 
                       request.headers.get('x-forwarded-for')?.split(',')[0] || 
                       request.headers.get('x-real-ip') ||
-                      request.ip ||
                       'anonymous'
 
     const usage = await rateLimiter.getUsage({

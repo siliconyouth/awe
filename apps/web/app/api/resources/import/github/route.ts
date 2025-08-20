@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@awe/database'
 import { auth } from '@clerk/nextjs/server'
-import { ResourceManager } from '@awe/ai'
+// import { ResourceManager } from '@awe/ai' // Temporarily disabled
 import { z } from 'zod'
-import { ResourceType, ResourceStatus } from '@awe/shared'
+import { ResourceType, ResourceStatus, ResourceVisibility } from '@awe/shared'
 
 const importSchema = z.object({
   url: z.string().url(),
@@ -27,7 +27,17 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json()
-    const { url, options = {} } = importSchema.parse(body)
+    const parsed = importSchema.parse(body)
+    const url = parsed.url
+    const options = parsed.options || {
+      branch: 'main',
+      path: '',
+      type: ResourceType.PATTERN,
+      autoTag: true,
+      qualityCheck: true,
+      includeTests: false,
+      maxFiles: 20
+    }
     
     // Parse GitHub URL
     const urlParts = url.match(/github\.com\/([^\/]+)\/([^\/]+)/)
@@ -36,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
     
     const [, owner, repo] = urlParts
-    const branch = options.branch || 'main'
+    const branch = options.branch
     const path = options.path || ''
     
     // Fetch repository contents
@@ -74,18 +84,22 @@ export async function POST(request: NextRequest) {
       // Filter by extension based on resource type
       const validExtensions = {
         [ResourceType.PATTERN]: ['.ts', '.tsx', '.js', '.jsx', '.md'],
+        [ResourceType.SNIPPET]: ['.ts', '.tsx', '.js', '.jsx', '.sh', '.bash'],
         [ResourceType.HOOK]: ['.ts', '.tsx', '.js', '.jsx'],
         [ResourceType.AGENT]: ['.ts', '.tsx', '.js', '.jsx', '.json'],
         [ResourceType.TEMPLATE]: ['.md', '.mdx', '.json', '.yaml', '.yml'],
         [ResourceType.GUIDE]: ['.md', '.mdx'],
-        [ResourceType.SNIPPET]: ['.ts', '.tsx', '.js', '.jsx', '.sh', '.bash']
+        [ResourceType.TOOL]: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+        [ResourceType.CONFIG]: ['.json', '.yaml', '.yml', '.toml', '.ini'],
+        [ResourceType.WORKFLOW]: ['.yaml', '.yml', '.json'],
+        [ResourceType.INTEGRATION]: ['.ts', '.tsx', '.js', '.jsx', '.json']
       }
       
       const extensions = validExtensions[options.type as ResourceType] || ['.md', '.ts', '.js']
       return extensions.some(ext => name.endsWith(ext))
     }).slice(0, options.maxFiles || 20)
     
-    const manager = new ResourceManager()
+    // ResourceManager temporarily disabled
     const importedResources = []
     
     // Process each file
@@ -113,54 +127,41 @@ export async function POST(request: NextRequest) {
           qualityScore: 0.7
         }
         
-        if (options.autoTag || options.qualityCheck) {
-          const analysis = await manager.analyzeResource(content, {
-            type: options.type,
-            generateTags: options.autoTag,
-            assessQuality: options.qualityCheck
-          })
-          
-          if (analysis.tags) processedResource.tags = analysis.tags
-          if (analysis.qualityScore) processedResource.qualityScore = analysis.qualityScore
-          if (analysis.title) processedResource.title = analysis.title
-          if (analysis.description) processedResource.description = analysis.description
-        }
+        // AI analysis temporarily disabled - ResourceManager.analyzeResource method doesn't exist
+        // if (options.autoTag || options.qualityCheck) {
+        //   const analysis = await manager.analyzeResource(content, {
+        //     type: options.type,
+        //     generateTags: options.autoTag,
+        //     assessQuality: options.qualityCheck
+        //   })
+        //   
+        //   if (analysis.tags) processedResource.tags = analysis.tags
+        //   if (analysis.qualityScore) processedResource.qualityScore = analysis.qualityScore
+        //   if (analysis.title) processedResource.title = analysis.title
+        //   if (analysis.description) processedResource.description = analysis.description
+        // }
         
         // Save to database
         const resource = await prisma.resource.create({
           data: {
+            name: processedResource.title,
+            slug: processedResource.title.toLowerCase().replace(/\s+/g, '-'),
             title: processedResource.title,
             description: processedResource.description,
             content: processedResource.content,
             type: processedResource.type as any,
-            format: processedResource.format as any,
+            fileType: processedResource.format as any,
             status: ResourceStatus.PUBLISHED as any,
-            visibility: 'public' as any,
+            visibility: ResourceVisibility.PUBLIC as any,
             sourceUrl: processedResource.sourceUrl,
-            author: processedResource.author,
-            qualityScore: processedResource.qualityScore,
-            importedBy: userId,
-            tags: processedResource.tags.length > 0 ? {
-              create: await Promise.all(
-                processedResource.tags.map(async (tagName: string) => {
-                  const tag = await prisma.tag.upsert({
-                    where: { name: tagName },
-                    create: { 
-                      name: tagName,
-                      type: 'ai' as any,
-                      category: 'imported' as any
-                    },
-                    update: {}
-                  })
-                  
-                  return {
-                    tagId: tag.id,
-                    confidence: 0.8,
-                    addedBy: 'system'
-                  }
-                })
-              )
-            } : undefined
+            authorId: userId,
+            metadata: {
+              source: 'github',
+              repository: `${owner}/${repo}`,
+              branch: branch,
+              qualityScore: processedResource.qualityScore
+            },
+            // Tags will be handled separately after resource creation
           },
           include: {
             tags: {
@@ -191,7 +192,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error importing from GitHub:', error)
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid data', details: error.issues }, { status: 400 })
     }
     return NextResponse.json({ error: 'Failed to import from GitHub' }, { status: 500 })
   }

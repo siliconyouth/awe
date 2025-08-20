@@ -6,7 +6,8 @@ import { z } from 'zod'
 const updateCollectionSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
-  isPublic: z.boolean().optional()
+  isOfficial: z.boolean().optional(),
+  isCurated: z.boolean().optional()
 })
 
 // GET /api/collections/[id] - Get a single collection
@@ -54,10 +55,10 @@ export async function GET(
       return NextResponse.json({ error: 'Collection not found' }, { status: 404 })
     }
     
-    // Check if collection is private
-    if (!collection.isPublic) {
+    // Check if collection is not official (requires authentication)
+    if (!collection.isOfficial) {
       const { userId } = await auth()
-      if (!userId || collection.createdBy !== userId) {
+      if (!userId || (collection.author && collection.author !== userId)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
       }
     }
@@ -87,14 +88,14 @@ export async function PUT(
     // Check ownership
     const existing = await prisma.collection.findUnique({
       where: { id },
-      select: { createdBy: true }
+      select: { author: true }
     })
     
     if (!existing) {
       return NextResponse.json({ error: 'Collection not found' }, { status: 404 })
     }
     
-    if (existing.createdBy !== userId) {
+    if (existing.author && existing.author !== userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
     
@@ -118,7 +119,7 @@ export async function PUT(
   } catch (error) {
     console.error('Error updating collection:', error)
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid data', details: error.issues }, { status: 400 })
     }
     return NextResponse.json({ error: 'Failed to update collection' }, { status: 500 })
   }
@@ -140,14 +141,14 @@ export async function DELETE(
     // Check ownership
     const existing = await prisma.collection.findUnique({
       where: { id },
-      select: { createdBy: true }
+      select: { author: true }
     })
     
     if (!existing) {
       return NextResponse.json({ error: 'Collection not found' }, { status: 404 })
     }
     
-    if (existing.createdBy !== userId) {
+    if (existing.author && existing.author !== userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
     
