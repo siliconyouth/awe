@@ -25,6 +25,8 @@ import { GenerateConfigCommand } from '../commands/generate-config'
 import { HooksCommand } from '../commands/hooks'
 import { AgentsCommand } from '../commands/agents'
 import { ScrapeCommand } from '../commands/scrape'
+import { PatternsCommand } from '../commands/patterns-cli'
+import { ResourcesCommand } from '../commands/resources'
 
 import { validateEnvironment } from '../utils/validation'
 import { createLogger } from '../utils/logger'
@@ -97,6 +99,8 @@ async function main() {
     program.addCommand(new HooksCommand().getCommand())
     program.addCommand(new AgentsCommand().getCommand())
     program.addCommand(new ScrapeCommand().getCommand())
+    program.addCommand(new PatternsCommand().getCommand())
+    program.addCommand(new ResourcesCommand().getCommand())
 
     // Default action for bare command
     program.action(() => {
