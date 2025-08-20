@@ -1,10 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "rootDirectory": "apps/web",
-  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm build",
-  "outputDirectory": ".next",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "apps/web/.next",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet -- apps/web packages",
   "git": {
     "deploymentEnabled": {
@@ -31,22 +30,22 @@
     }
   ],
   "functions": {
-    "app/api/monitor/cron/hourly/route.ts": {
+    "apps/web/app/api/monitor/cron/hourly/route.ts": {
       "maxDuration": 60
     },
-    "app/api/monitor/cron/daily/route.ts": {
+    "apps/web/app/api/monitor/cron/daily/route.ts": {
       "maxDuration": 120
     },
-    "app/api/monitor/cron/weekly/route.ts": {
+    "apps/web/app/api/monitor/cron/weekly/route.ts": {
       "maxDuration": 180
     },
-    "app/api/monitor/run/route.ts": {
+    "apps/web/app/api/monitor/run/route.ts": {
       "maxDuration": 60
     },
-    "app/api/scrape/route.ts": {
+    "apps/web/app/api/scrape/route.ts": {
       "maxDuration": 30
     },
-    "app/api/**/*.ts": {
+    "apps/web/app/api/**/*.ts": {
       "maxDuration": 10
     }
   }
